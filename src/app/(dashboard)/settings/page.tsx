@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { User, MapPin, Lock, LogOut, X, BarChart3 } from "lucide-react";
+import { User, MapPin, Lock, LogOut, X, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function SettingsPage() {
@@ -258,15 +258,15 @@ export default function SettingsPage() {
 
         <div className="card space-y-6 md:col-span-2 md:hidden">
           <div className="flex items-center gap-3 border-b border-gray-50 pb-4">
-            <BarChart3 className="w-5 h-5 text-gray-400" />
-            <h2 className="text-lg font-bold text-gray-900">Reports</h2>
+            <Trash2 className="w-5 h-5 text-gray-400" />
+            <h2 className="text-lg font-bold text-gray-900">Trash</h2>
           </div>
           <div className="space-y-4 max-w-md">
             <button 
-              onClick={() => router.push('/reports')}
+              onClick={() => router.push('/trash')}
               className="w-full btn-secondary text-left flex justify-between items-center"
             >
-              Generate Excel Reports
+              View Removed Workers
               <span className="text-gray-400">&rarr;</span>
             </button>
           </div>
