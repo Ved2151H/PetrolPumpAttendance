@@ -155,7 +155,7 @@ export default function AttendancePage() {
                   </div>
                 </div>
                 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 w-full md:w-auto">
                   <button 
                     onClick={() => toggleStatus(worker.id, "PRESENT")}
                     className={`flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-xl border transition-all ${

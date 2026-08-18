@@ -204,7 +204,7 @@ export default function SettingsPage() {
             <button 
               type="submit" 
               disabled={isProfileSaving || isProfileLoading} 
-              className="btn-primary disabled:opacity-70"
+              className="btn-primary w-full md:w-auto disabled:opacity-70"
             >
               {isProfileSaving ? 'Saving...' : 'Save Profile'}
             </button>
@@ -249,7 +249,7 @@ export default function SettingsPage() {
             <button 
               type="submit"
               disabled={isPumpSaving || isPumpLoading} 
-              className="btn-secondary disabled:opacity-70"
+              className="btn-secondary w-full md:w-auto disabled:opacity-70"
             >
               {isPumpSaving ? 'Updating...' : 'Update Info'}
             </button>
