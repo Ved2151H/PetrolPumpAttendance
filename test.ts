@@ -8,8 +8,7 @@ async function runTests() {
   const worker = await prisma.worker.create({
     data: {
       name: 'Rahul Sharma',
-      phone: '9998887776',
-      status: 'ACTIVE'
+      phone: '9998887776'
     }
   })
   console.log('PASS: Worker created ->', worker.id)
@@ -70,9 +69,9 @@ async function runTests() {
   console.log('\nTesting Worker Deactivation...')
   const deactivated = await prisma.worker.update({
     where: { id: worker.id },
-    data: { status: 'INACTIVE' }
+    data: { deletedAt: new Date() }
   })
-  if (deactivated.status === 'INACTIVE') console.log('PASS: Worker deactivated')
+  if (deactivated.deletedAt) console.log('PASS: Worker deactivated')
   
   const historyCount = await prisma.attendance.count({
     where: { workerId: worker.id }

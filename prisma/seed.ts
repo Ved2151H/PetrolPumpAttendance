@@ -30,7 +30,6 @@ async function main() {
       data: {
         name: w.name,
         phone: w.phone,
-        status: 'ACTIVE',
       }
     })
   }

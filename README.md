@@ -98,3 +98,8 @@ The mobile application is built using Expo and is located inside the `mobile/` d
 - **To add a new Screen:** Create a new component for your screen and register it in your React Navigation stack/tabs configuration.
 - **To fetch new data:** Create a custom hook using TanStack React Query (`useQuery` / `useMutation`) that calls your API using Axios.
 - **To style components:** Use standard Tailwind CSS classes via the `className` prop, provided by NativeWind.
+
+
+env second variable 
+Key : JWT_SECRET
+ Value : petrol-pump-secure-key-9988!
