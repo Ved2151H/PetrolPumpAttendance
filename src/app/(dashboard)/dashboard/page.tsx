@@ -11,7 +11,16 @@ export default function DashboardPage() {
     attendanceRate: 0
   });
 
+  const [greeting, setGreeting] = useState("Good Morning");
   const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const hour = new Date().getHours();
+    if (hour >= 5 && hour < 12) setGreeting("Good Morning");
+    else if (hour >= 12 && hour < 17) setGreeting("Good Afternoon");
+    else if (hour >= 17 && hour < 21) setGreeting("Good Evening");
+    else setGreeting("Good Night");
+  }, []);
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -64,7 +73,7 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6">
       <header className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Good Morning, Admin</h1>
+        <h1 className="text-2xl font-bold text-gray-900">{greeting}, Shubham sir</h1>
         <p className="text-gray-500">{new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
       </header>
 

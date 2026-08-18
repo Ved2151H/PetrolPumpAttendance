@@ -53,9 +53,9 @@ export default function Sidebar() {
       <div className="p-4 border-t border-gray-50">
         <div className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-500">
           <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
-            A
+            S
           </div>
-          <div className="text-sm font-medium">Admin User</div>
+          <div className="text-sm font-medium">Shubham sir</div>
         </div>
       </div>
     </div>
