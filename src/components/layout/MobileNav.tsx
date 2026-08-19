@@ -26,7 +26,7 @@ export default function MobileNav() {
       <nav className="flex justify-around items-center h-16">
         {links.map((link) => {
           const Icon = link.icon;
-          const isActive = pathname === link.href || pathname.startsWith(link.href + "/");
+          const isActive = pathname === link.href || (pathname.startsWith(link.href + "/") && link.href !== "/settings");
           return (
             <Link 
               key={link.name} 
