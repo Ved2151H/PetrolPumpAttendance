@@ -43,6 +43,17 @@ export async function POST(request: Request) {
     }
 
     const targetDate = new Date(date)
+    const currentDate = new Date()
+    
+    // Check if date is more than 7 days old
+    const sevenDaysAgo = new Date()
+    sevenDaysAgo.setDate(currentDate.getDate() - 7)
+    sevenDaysAgo.setHours(0, 0, 0, 0)
+    
+    if (targetDate < sevenDaysAgo) {
+      return NextResponse.json({ success: false, error: { message: 'Cannot edit attendance older than 7 days' } }, { status: 400 })
+    }
+
     targetDate.setHours(0, 0, 0, 0) // Normalize to midnight
 
     // Use transaction to ensure data integrity

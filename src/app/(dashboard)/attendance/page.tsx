@@ -13,11 +13,20 @@ export default function AttendancePage() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [workers, setWorkers] = useState<Worker[]>([]);
   const [attendance, setAttendance] = useState<Record<string, 'PRESENT' | 'ABSENT'>>({});
+  const [originalAttendance, setOriginalAttendance] = useState<Record<string, 'PRESENT' | 'ABSENT'>>({});
+  const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+  sevenDaysAgo.setHours(0, 0, 0, 0);
+  
+  const isReadOnly = currentDate < sevenDaysAgo;
+
   useEffect(() => {
+    setIsEditing(false); // Reset edit mode on date change
     fetchData();
   }, [currentDate]);
 
@@ -47,6 +56,7 @@ export default function AttendancePage() {
         newAtt[record.workerId] = record.status;
       });
       setAttendance(newAtt);
+      setOriginalAttendance({ ...newAtt });
     } catch (err: any) {
       console.error(err);
       setMessage({ type: 'error', text: err.message });
@@ -83,6 +93,8 @@ export default function AttendancePage() {
 
       if (!res.ok) throw new Error('Failed to save attendance');
       
+      setOriginalAttendance({ ...attendance });
+      setIsEditing(false);
       setMessage({ type: 'success', text: 'Attendance saved successfully.' });
       setTimeout(() => setMessage(null), 3000);
     } catch (err: any) {
@@ -126,16 +138,39 @@ export default function AttendancePage() {
         </div>
       )}
 
+      {isReadOnly && !message && (
+        <div className="p-4 rounded-xl text-sm font-medium bg-blue-50 text-blue-700 flex items-center gap-2">
+          This attendance record is older than 7 days and is view-only.
+        </div>
+      )}
+
       <div className="card">
         <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-50">
-          <h2 className="text-lg font-bold text-gray-900">Active Workers</h2>
-          <button 
-            onClick={markAllPresent}
-            disabled={isLoading || workers.length === 0}
-            className="text-sm px-4 py-2 bg-green-50 text-green-700 font-medium rounded-lg hover:bg-green-100 transition-colors disabled:opacity-50"
-          >
-            Mark All Present
-          </button>
+          <div className="flex items-center gap-3">
+            <h2 className="text-lg font-bold text-gray-900">Active Workers</h2>
+            {isEditing && (
+              <span className="px-2.5 py-1 text-xs font-bold bg-blue-100 text-blue-700 rounded-md">
+                Edit Mode
+              </span>
+            )}
+          </div>
+          {!isReadOnly && !isEditing && (
+            <button 
+              onClick={() => setIsEditing(true)}
+              className="text-sm px-4 py-2 bg-blue-50 text-blue-700 font-medium rounded-lg hover:bg-blue-100 transition-colors"
+            >
+              Edit
+            </button>
+          )}
+          {isEditing && (
+            <button 
+              onClick={markAllPresent}
+              disabled={isLoading || workers.length === 0}
+              className="text-sm px-4 py-2 bg-green-50 text-green-700 font-medium rounded-lg hover:bg-green-100 transition-colors disabled:opacity-50"
+            >
+              Mark All Present
+            </button>
+          )}
         </div>
 
         <div className="space-y-3">
@@ -158,22 +193,26 @@ export default function AttendancePage() {
                 <div className="flex items-center gap-2 w-full md:w-auto">
                   <button 
                     onClick={() => toggleStatus(worker.id, "PRESENT")}
+                    disabled={isReadOnly || !isEditing}
                     className={`flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-xl border transition-all ${
                       attendance[worker.id] === "PRESENT" 
                         ? "bg-green-600 border-green-600 text-white" 
-                        : "bg-white border-gray-200 text-gray-500 hover:border-green-600 hover:text-green-600"
-                    }`}
+                        : `bg-white border-gray-200 text-gray-500 ${(!isReadOnly && isEditing) ? 'hover:border-green-600 hover:text-green-600' : ''}`
+                    } ${(isReadOnly || !isEditing) && attendance[worker.id] !== "PRESENT" ? 'opacity-50 cursor-not-allowed bg-gray-50' : ''}
+                    ${isReadOnly || !isEditing ? 'cursor-default' : ''}`}
                   >
                     <CheckCircle2 className="w-5 h-5" />
                     <span className="font-medium">Present</span>
                   </button>
                   <button 
                     onClick={() => toggleStatus(worker.id, "ABSENT")}
+                    disabled={isReadOnly || !isEditing}
                     className={`flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-xl border transition-all ${
                       attendance[worker.id] === "ABSENT" 
                         ? "bg-red-500 border-red-500 text-white" 
-                        : "bg-white border-gray-200 text-gray-500 hover:border-red-500 hover:text-red-500"
-                    }`}
+                        : `bg-white border-gray-200 text-gray-500 ${(!isReadOnly && isEditing) ? 'hover:border-red-500 hover:text-red-500' : ''}`
+                    } ${(isReadOnly || !isEditing) && attendance[worker.id] !== "ABSENT" ? 'opacity-50 cursor-not-allowed bg-gray-50' : ''}
+                    ${isReadOnly || !isEditing ? 'cursor-default' : ''}`}
                   >
                     <XCircle className="w-5 h-5" />
                     <span className="font-medium">Absent</span>
@@ -184,15 +223,27 @@ export default function AttendancePage() {
           )}
         </div>
         
-        <div className="mt-8 flex justify-end pt-6 border-t border-gray-50">
-          <button 
-            onClick={saveAttendance}
-            disabled={isSaving || isLoading || workers.length === 0}
-            className="btn-primary w-full md:w-auto disabled:opacity-70"
-          >
-            {isSaving ? "Saving..." : "Save Attendance"}
-          </button>
-        </div>
+        {!isReadOnly && isEditing && (
+          <div className="mt-8 flex justify-end gap-4 pt-6 border-t border-gray-50">
+            <button 
+              onClick={() => {
+                setAttendance({ ...originalAttendance });
+                setIsEditing(false);
+              }}
+              disabled={isSaving || isLoading}
+              className="px-6 py-2 rounded-xl font-medium border border-gray-200 text-gray-700 bg-white hover:bg-gray-50 transition-colors disabled:opacity-70"
+            >
+              Cancel
+            </button>
+            <button 
+              onClick={saveAttendance}
+              disabled={isSaving || isLoading || workers.length === 0}
+              className="btn-primary w-full md:w-auto disabled:opacity-70"
+            >
+              {isSaving ? "Saving..." : "Save Changes"}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
