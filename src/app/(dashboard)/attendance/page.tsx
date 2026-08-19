@@ -107,16 +107,6 @@ export default function AttendancePage() {
   };
 
   const saveAttendance = async () => {
-    for (const [workerId, record] of Object.entries(attendance)) {
-      if (record.status === 'PRESENT' && record.timeIn && record.timeOut) {
-        if (record.timeOut <= record.timeIn) {
-          const workerName = workers.find(w => w.id === workerId)?.name || 'Unknown';
-          setMessage({ type: 'error', text: `Time Out must be later than Time In for ${workerName}.` });
-          return;
-        }
-      }
-    }
-
     setIsSaving(true);
     setMessage(null);
     try {

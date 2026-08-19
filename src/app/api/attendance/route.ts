@@ -65,11 +65,6 @@ export async function POST(request: Request) {
         record.timeIn = null;
         record.timeOut = null;
       }
-      if (record.timeIn && record.timeOut) {
-        if (record.timeOut <= record.timeIn) {
-          return NextResponse.json({ success: false, error: { message: 'Time Out must be later than Time In.' } }, { status: 400 });
-        }
-      }
     }
 
     // Use transaction to ensure data integrity
