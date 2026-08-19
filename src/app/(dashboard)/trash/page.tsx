@@ -19,10 +19,6 @@ export default function TrashPage() {
   const [error, setError] = useState("");
   const [restoringId, setRestoringId] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchTrashedWorkers();
-  }, []);
-
   async function fetchTrashedWorkers() {
     try {
       setLoading(true);
@@ -37,7 +33,11 @@ export default function TrashPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }
+
+  useEffect(() => {
+    fetchTrashedWorkers();
+  }, []);
 
   const handleRestore = async (workerId: string) => {
     if (!confirm("Are you sure you want to restore this worker?")) return;

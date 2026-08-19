@@ -23,11 +23,6 @@ export default function SettingsPage() {
   const [isPasswordSaving, setIsPasswordSaving] = useState(false);
   const [passwordMessage, setPasswordMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
-  useEffect(() => {
-    fetchProfile();
-    fetchPumpInfo();
-  }, []);
-
   async function fetchProfile() {
     try {
       const res = await fetch('/api/auth/me');
@@ -44,7 +39,7 @@ export default function SettingsPage() {
     } finally {
       setIsProfileLoading(false);
     }
-  };
+  }
 
   async function fetchPumpInfo() {
     try {
@@ -59,7 +54,12 @@ export default function SettingsPage() {
     } finally {
       setIsPumpLoading(false);
     }
-  };
+  }
+
+  useEffect(() => {
+    fetchProfile();
+    fetchPumpInfo();
+  }, []);
 
   const handleProfileSave = async (e: React.FormEvent) => {
     e.preventDefault();

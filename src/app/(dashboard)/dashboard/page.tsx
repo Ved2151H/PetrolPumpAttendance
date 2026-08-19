@@ -76,10 +76,10 @@ export default function DashboardPage() {
   };
 
   const statCards = [
-    { title: "Total Workers", value: stats.totalWorkers, icon: Users, color: "text-blue-600", bg: "bg-blue-50" },
-    { title: "Present Today", value: stats.presentToday, icon: UserCheck, color: "text-green-600", bg: "bg-green-50" },
-    { title: "Absent Today", value: stats.absentToday, icon: UserX, color: "text-red-600", bg: "bg-red-50" },
-    { title: "Attendance Rate", value: `${stats.attendanceRate}%`, icon: Activity, color: "text-amber-600", bg: "bg-amber-50" },
+    { title: "Total Workers", value: stats.totalWorkers, icon: Users, color: "text-blue-700", bg: "bg-blue-100", surface: "stat-workers" },
+    { title: "Present Today", value: stats.presentToday, icon: UserCheck, color: "text-emerald-700", bg: "bg-emerald-100", surface: "stat-present" },
+    { title: "Absent Today", value: stats.absentToday, icon: UserX, color: "text-rose-700", bg: "bg-rose-100", surface: "stat-absent" },
+    { title: "Attendance Rate", value: `${stats.attendanceRate}%`, icon: Activity, color: "text-amber-700", bg: "bg-amber-100", surface: "stat-rate" },
   ];
 
   return (
@@ -94,8 +94,8 @@ export default function DashboardPage() {
       {/* Stats Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {statCards.map((stat, index) => (
-          <div key={index} className="card p-5 flex flex-col items-start gap-4 hover:-translate-y-0.5">
-            <div className={`p-3 rounded-xl ring-1 ring-inset ring-black/[.03] ${stat.bg}`}>
+          <div key={index} className={`dashboard-stat card p-5 flex flex-col items-start gap-4 hover:-translate-y-0.5 ${stat.surface}`}>
+            <div className={`p-3 rounded-2xl ring-1 ring-inset ring-black/[.04] shadow-sm ${stat.bg}`}>
               <stat.icon className={`w-6 h-6 ${stat.color}`} />
             </div>
             <div>
@@ -112,9 +112,9 @@ export default function DashboardPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
         {/* Today's Attendance List */}
-        <div className="lg:col-span-2 card">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-lg font-bold text-slate-900">Today's Attendance</h3>
+        <div className="attendance-panel lg:col-span-2 card">
+          <div className="flex justify-between items-center mb-6 pb-4 border-b border-slate-200/70">
+            <div><p className="text-[10px] font-bold uppercase tracking-[.15em] text-indigo-500 mb-1">Live register</p><h3 className="text-lg font-bold text-slate-900">Today&apos;s Attendance</h3></div>
             <button className="text-sm text-[#263b73] font-semibold hover:text-[#1d2e5b]">View All</button>
           </div>
           
@@ -134,22 +134,24 @@ export default function DashboardPage() {
             ) : (
               <>
                 {todayAttendanceList.map((worker, i) => (
-                  <div key={i} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 p-3.5 rounded-xl border border-slate-100 hover:bg-slate-50/80 hover:border-slate-200 transition-colors">
+                  <div key={i} className={`attendance-worker flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 p-3.5 rounded-xl border transition-colors ${worker.status === 'PRESENT' ? 'is-present' : 'is-absent'}`}>
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 font-medium shrink-0">
+                      <div className="attendance-avatar w-10 h-10 rounded-full flex items-center justify-center font-bold shrink-0">
                         {worker.name.charAt(0)}
                       </div>
                       <div className="flex flex-col">
                         <span className="font-medium text-slate-900">{worker.name}</span>
                         {worker.status === 'PRESENT' && (
-                          <span className="text-xs text-slate-500 font-medium">
-                            In: {formatDisplayTime(worker.timeIn)} &nbsp;|&nbsp; Out: {formatDisplayTime(worker.timeOut)}
+                          <span className="mt-1 flex flex-wrap items-center gap-1.5 text-[11px] text-slate-500 font-semibold">
+                            <span className="time-chip">In {formatDisplayTime(worker.timeIn)}</span>
+                            <span className="time-chip">Out {formatDisplayTime(worker.timeOut)}</span>
+                            {worker.timeIn && !worker.timeOut && <span className="working-chip"><i /> Working</span>}
                           </span>
                         )}
                       </div>
                     </div>
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium self-end sm:self-auto ${
-                      worker.status === 'PRESENT' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                    <span className={`px-3 py-1.5 rounded-full text-[11px] font-bold tracking-wide self-end sm:self-auto ${
+                      worker.status === 'PRESENT' ? 'bg-emerald-100 text-emerald-700 ring-1 ring-emerald-200/70' : 'bg-rose-100 text-rose-700 ring-1 ring-rose-200/70'
                     }`}>
                       {worker.status}
                     </span>
@@ -161,7 +163,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Recent Activity */}
-        <div className="card">
+        <div className="activity-panel card">
           <h3 className="text-lg font-bold text-slate-900 mb-6">Recent Activity</h3>
           <div className="space-y-6 relative before:absolute before:inset-0 before:ml-2.5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-200 before:to-transparent">
             {isLoading ? (

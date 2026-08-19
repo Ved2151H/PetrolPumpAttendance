@@ -26,11 +26,6 @@ export default function AttendancePage() {
   
   const isReadOnly = currentDate < sevenDaysAgo;
 
-  useEffect(() => {
-    setIsEditing(false);
-    fetchData();
-  }, [currentDate]);
-
   async function fetchData() {
     setIsLoading(true);
     setMessage(null);
@@ -75,7 +70,12 @@ export default function AttendancePage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }
+
+  useEffect(() => {
+    setIsEditing(false);
+    fetchData();
+  }, [currentDate]);
 
   const toggleStatus = (workerId: string, status: AttStatus) => {
     setAttendance(prev => {

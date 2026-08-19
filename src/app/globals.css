@@ -52,6 +52,11 @@ body {
   z-index: -1;
 }
 
+/* Replace flat white planes with softly tinted, layered working surfaces. */
+.dashboard-shell .bg-white { background-color: #f8faff; }
+.dashboard-shell .bg-slate-50 { background-color: #f1f4fa; }
+.dashboard-shell .bg-slate-100 { background-color: #e8edf6; }
+
 button, a, input, textarea, select { -webkit-tap-highlight-color: transparent; }
 button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 3px solid rgba(58, 91, 161, .28); outline-offset: 2px; }
 
@@ -75,6 +80,31 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   box-shadow: 0 12px 30px -25px rgba(16, 24, 40, .48), 0 2px 8px -6px rgba(16, 24, 40, .18);
 }
 .card:hover { box-shadow: 0 18px 34px -26px rgba(16, 24, 40, .55), 0 4px 10px -7px rgba(16, 24, 40, .2); }
+
+.dashboard-stat { position: relative; isolation: isolate; min-height: 162px; overflow: hidden; }
+.dashboard-stat::after { content: ""; position: absolute; width: 7rem; height: 7rem; border-radius: 999px; right: -2.4rem; bottom: -2.8rem; opacity: .48; z-index: -1; }
+.stat-workers { background: linear-gradient(145deg, #f5f8ff, #e7efff); border-color: #d7e3ff; }
+.stat-workers::after { background: #9ab9ff; }
+.stat-present { background: linear-gradient(145deg, #f2fcf7, #e1f7ec); border-color: #c9ebd9; }
+.stat-present::after { background: #92dcba; }
+.stat-absent { background: linear-gradient(145deg, #fff6f7, #ffe8eb); border-color: #f4d2d8; }
+.stat-absent::after { background: #f3a2af; }
+.stat-rate { background: linear-gradient(145deg, #fffaf0, #fff0c9); border-color: #f6dda1; }
+.stat-rate::after { background: #f6c65d; }
+
+.attendance-panel { background: linear-gradient(145deg, rgba(250,252,255,.96), rgba(236,242,253,.93)); border-color: #dce5f3; }
+.activity-panel { background: linear-gradient(160deg, #f8faff, #eef2fb); border-color: #dce3f1; }
+.attendance-worker { background: rgba(255,255,255,.66); }
+.attendance-worker.is-present { border-color: #d4eadf; }
+.attendance-worker.is-absent { border-color: #f0dfe1; }
+.attendance-worker:hover { background: rgba(255,255,255,.92); transform: translateX(2px); }
+.attendance-avatar { background: linear-gradient(145deg, #dce7ff, #c6d7ff); color: #2d4d91; box-shadow: inset 0 1px 0 rgba(255,255,255,.7), 0 6px 12px -9px #36569a; }
+.is-present .attendance-avatar { background: linear-gradient(145deg, #d9f4e6, #c3ead6); color: #167a56; box-shadow: inset 0 1px 0 rgba(255,255,255,.7), 0 6px 12px -9px #167a56; }
+.is-absent .attendance-avatar { background: linear-gradient(145deg, #ffe5e8, #f8ced5); color: #b63b51; box-shadow: inset 0 1px 0 rgba(255,255,255,.7), 0 6px 12px -9px #b63b51; }
+.time-chip { padding: .2rem .42rem; border-radius: .4rem; background: #eef2f8; color: #60708d; }
+.working-chip { display: inline-flex; align-items: center; gap: .3rem; padding: .2rem .48rem; border-radius: 999px; color: #167a56; background: #dcf7e9; }
+.working-chip i { width: .38rem; height: .38rem; border-radius: 99px; background: #25a770; animation: working-pulse 1.7s ease-in-out infinite; }
+@keyframes working-pulse { 50% { opacity: .35; transform: scale(.7); } }
 
 /* Status-led card tinting keeps the colorful mobile language consistent on desktop. */
 .card:has(.bg-blue-50), .card:has(.bg-green-50), .card:has(.bg-red-50), .card:has(.bg-amber-50) { overflow: hidden; }
@@ -108,6 +138,8 @@ input[type="date"], input[type="time"] { color-scheme: light; }
   .dashboard-shell { background-size: auto, auto, 22px 22px, 22px 22px, auto; }
   .dashboard-shell main::before { top: 6.5rem; right: -12rem; width: 24rem; height: 24rem; }
   .card { @apply rounded-xl p-4; box-shadow: 0 12px 26px -21px rgba(34, 57, 111, .38), 0 2px 7px -6px rgba(16, 24, 40, .18); }
+  .dashboard-stat { min-height: 142px; }
+  .attendance-worker:hover { transform: none; }
   main h1 { font-size: 1.65rem; }
   main > div > h1, main > div > div > h1 { color: #1e3366; }
   .btn-primary { box-shadow: 0 10px 20px -11px rgba(29, 46, 91, .78), inset 0 1px 0 rgba(255,255,255,.18); }
