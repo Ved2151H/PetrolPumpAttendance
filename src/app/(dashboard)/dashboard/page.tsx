@@ -73,7 +73,7 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6">
       <header className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-900">{greeting}, Shubham sir</h1>
+        <h1 className="text-2xl font-bold text-slate-900">{greeting}</h1>
         <p className="text-slate-500">{new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
       </header>
 

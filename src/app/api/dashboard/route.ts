@@ -23,9 +23,10 @@ export async function GET() {
       }
     })
 
-    const presentToday = todayAttendance.filter(a => a.status === 'PRESENT').length
-    const absentToday = todayAttendance.filter(a => a.status === 'ABSENT').length
-    const attendanceRate = totalWorkers > 0 ? Math.round((presentToday / totalWorkers) * 100) : 0
+    const uniqueToday = Array.from(new Map(todayAttendance.map(a => [a.workerId, a])).values());
+    const presentToday = uniqueToday.filter(a => a.status === 'PRESENT').length;
+    const absentToday = uniqueToday.filter(a => a.status === 'ABSENT').length;
+    const attendanceRate = totalWorkers > 0 ? Math.min(100, Math.round((presentToday / totalWorkers) * 100)) : 0
 
     // Get weekly stats (last 7 days)
     const sevenDaysAgo = new Date(today)
@@ -51,8 +52,9 @@ export async function GET() {
                aDate.getMonth() === d.getMonth() && 
                aDate.getDate() === d.getDate()
       })
-      const present = dayAttendances.filter(a => a.status === 'PRESENT').length
-      const absent = dayAttendances.filter(a => a.status === 'ABSENT').length
+      const uniqueDayAttendances = Array.from(new Map(dayAttendances.map(a => [a.workerId, a])).values());
+      const present = uniqueDayAttendances.filter(a => a.status === 'PRESENT').length
+      const absent = uniqueDayAttendances.filter(a => a.status === 'ABSENT').length
       weeklyStats.push({ date: dateStr, present, absent })
     }
 

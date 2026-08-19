@@ -51,14 +51,6 @@ export default function Sidebar() {
         })}
       </nav>
       
-      <div className="p-4 border-t border-slate-50">
-        <div className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500">
-          <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center">
-            S
-          </div>
-          <div className="text-sm font-medium">Shubham sir</div>
-        </div>
-      </div>
     </div>
   );
 }

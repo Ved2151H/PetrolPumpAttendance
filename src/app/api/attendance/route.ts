@@ -26,7 +26,9 @@ export async function GET(request: Request) {
       }
     })
 
-    return NextResponse.json({ success: true, data: attendances })
+    const uniqueAttendances = Array.from(new Map(attendances.map(a => [a.workerId, a])).values());
+
+    return NextResponse.json({ success: true, data: uniqueAttendances })
   } catch (error) {
     console.error('Failed to fetch attendance:', error)
     return NextResponse.json({ success: false, error: { message: 'Failed to fetch attendance' } }, { status: 500 })
@@ -54,7 +56,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, error: { message: 'Cannot edit attendance older than 7 days' } }, { status: 400 })
     }
 
-    targetDate.setHours(0, 0, 0, 0) // Normalize to midnight
+    // Normalize to strict UTC midnight to prevent timezone duplicates
+    const normalizedDate = new Date(Date.UTC(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate()));
 
     // Use transaction to ensure data integrity
     const savedRecords = await prisma.$transaction(
@@ -63,7 +66,7 @@ export async function POST(request: Request) {
           where: {
             workerId_date: {
               workerId: record.workerId,
-              date: targetDate
+              date: normalizedDate
             }
           },
           update: {
@@ -71,7 +74,7 @@ export async function POST(request: Request) {
           },
           create: {
             workerId: record.workerId,
-            date: targetDate,
+            date: normalizedDate,
             status: record.status
           }
         })
@@ -81,7 +84,7 @@ export async function POST(request: Request) {
     await prisma.auditLog.create({
       data: {
         action: 'ATTENDANCE_MARKED',
-        details: `Attendance marked for ${records.length} workers on ${targetDate.toISOString().split('T')[0]}`
+        details: `Attendance marked for ${records.length} workers on ${normalizedDate.toISOString().split('T')[0]}`
       }
     })
 
