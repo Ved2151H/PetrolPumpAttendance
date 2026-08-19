@@ -218,13 +218,26 @@ export default function AttendancePage() {
             </button>
           )}
           {isEditing && (
-            <button 
-              onClick={markAllPresent}
-              disabled={isLoading || workers.length === 0}
-              className="text-sm px-4 py-2 bg-green-50 text-green-700 font-medium rounded-lg hover:bg-green-100 transition-colors disabled:opacity-50"
-            >
-              Mark All Present
-            </button>
+            <div className="flex items-center gap-2">
+              <button 
+                onClick={() => {
+                  setAttendance(JSON.parse(JSON.stringify(originalAttendance)));
+                  setIsEditing(false);
+                  setMessage(null);
+                }}
+                disabled={isLoading}
+                className="text-sm px-4 py-2 bg-slate-100 text-slate-600 font-medium rounded-lg hover:bg-slate-200 transition-colors disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={markAllPresent}
+                disabled={isLoading || workers.length === 0}
+                className="text-sm px-4 py-2 bg-green-50 text-green-700 font-medium rounded-lg hover:bg-green-100 transition-colors disabled:opacity-50"
+              >
+                Mark All Present
+              </button>
+            </div>
           )}
         </div>
 
