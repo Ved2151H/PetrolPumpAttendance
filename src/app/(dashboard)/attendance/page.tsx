@@ -108,9 +108,9 @@ export default function AttendancePage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
-        <h1 className="text-2xl font-bold text-gray-900">Attendance</h1>
-        <div className="flex items-center gap-4 bg-white px-4 py-2 rounded-xl border border-gray-100 shadow-sm relative">
-          <label htmlFor="attendance-date" className="text-sm font-medium text-gray-500">Attendance Date</label>
+        <h1 className="text-2xl font-bold text-slate-900">Attendance</h1>
+        <div className="flex items-center gap-4 bg-white px-4 py-2 rounded-xl border border-slate-100 shadow-sm relative">
+          <label htmlFor="attendance-date" className="text-sm font-medium text-slate-500">Attendance Date</label>
           <input 
             id="attendance-date"
             type="date" 
@@ -127,7 +127,7 @@ export default function AttendancePage() {
               }
             }}
             max={format(new Date(), "yyyy-MM-dd")}
-            className="font-medium text-gray-900 bg-transparent border-none focus:ring-0 outline-none cursor-pointer"
+            className="font-medium text-slate-900 bg-transparent border-none focus:ring-0 outline-none cursor-pointer"
           />
         </div>
       </div>
@@ -145,11 +145,11 @@ export default function AttendancePage() {
       )}
 
       <div className="card">
-        <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-50">
+        <div className="flex justify-between items-center mb-6 pb-4 border-b border-slate-50">
           <div className="flex items-center gap-3">
-            <h2 className="text-lg font-bold text-gray-900">Active Workers</h2>
+            <h2 className="text-lg font-bold text-slate-900">Active Workers</h2>
             {isEditing && (
-              <span className="px-2.5 py-1 text-xs font-bold bg-blue-100 text-blue-700 rounded-md">
+              <span className="px-2.5 py-1 text-xs font-bold bg-indigo-100 text-indigo-700 rounded-md">
                 Edit Mode
               </span>
             )}
@@ -157,7 +157,7 @@ export default function AttendancePage() {
           {!isReadOnly && !isEditing && (
             <button 
               onClick={() => setIsEditing(true)}
-              className="text-sm px-4 py-2 bg-blue-50 text-blue-700 font-medium rounded-lg hover:bg-blue-100 transition-colors"
+              className="text-sm px-4 py-2 bg-indigo-50 text-indigo-700 font-medium rounded-lg hover:bg-indigo-100 transition-colors"
             >
               Edit
             </button>
@@ -175,18 +175,18 @@ export default function AttendancePage() {
 
         <div className="space-y-3">
           {isLoading ? (
-            <div className="text-center py-8 text-gray-500 text-sm">Loading workers...</div>
+            <div className="text-center py-8 text-slate-500 text-sm">Loading workers...</div>
           ) : workers.length === 0 ? (
-            <div className="text-center py-8 text-gray-500 text-sm">No active workers found.</div>
+            <div className="text-center py-8 text-slate-500 text-sm">No active workers found.</div>
           ) : (
             workers.map(worker => (
-              <div key={worker.id} className="flex flex-col md:flex-row md:items-center justify-between p-4 rounded-xl border border-gray-100 hover:border-green-100 transition-colors gap-4">
+              <div key={worker.id} className="flex flex-col md:flex-row md:items-center justify-between p-4 rounded-xl border border-slate-100 hover:border-indigo-100 transition-colors gap-4">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 font-bold text-lg">
+                  <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 font-bold text-lg">
                     {worker.name.charAt(0)}
                   </div>
                   <div>
-                    <h3 className="font-bold text-gray-900">{worker.name}</h3>
+                    <h3 className="font-bold text-slate-900">{worker.name}</h3>
                   </div>
                 </div>
                 
@@ -196,9 +196,9 @@ export default function AttendancePage() {
                     disabled={isReadOnly || !isEditing}
                     className={`flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-xl border transition-all ${
                       attendance[worker.id] === "PRESENT" 
-                        ? "bg-green-600 border-green-600 text-white" 
-                        : `bg-white border-gray-200 text-gray-500 ${(!isReadOnly && isEditing) ? 'hover:border-green-600 hover:text-green-600' : ''}`
-                    } ${(isReadOnly || !isEditing) && attendance[worker.id] !== "PRESENT" ? 'opacity-50 cursor-not-allowed bg-gray-50' : ''}
+                        ? "bg-green-600 border-green-600 text-white shadow-sm" 
+                        : `bg-white border-slate-200 text-slate-500 ${(!isReadOnly && isEditing) ? 'hover:border-green-600 hover:text-green-600 hover:bg-green-50' : ''}`
+                    } ${(isReadOnly || !isEditing) && attendance[worker.id] !== "PRESENT" ? 'opacity-50 cursor-not-allowed bg-slate-50' : ''}
                     ${isReadOnly || !isEditing ? 'cursor-default' : ''}`}
                   >
                     <CheckCircle2 className="w-5 h-5" />
@@ -209,9 +209,9 @@ export default function AttendancePage() {
                     disabled={isReadOnly || !isEditing}
                     className={`flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-xl border transition-all ${
                       attendance[worker.id] === "ABSENT" 
-                        ? "bg-red-500 border-red-500 text-white" 
-                        : `bg-white border-gray-200 text-gray-500 ${(!isReadOnly && isEditing) ? 'hover:border-red-500 hover:text-red-500' : ''}`
-                    } ${(isReadOnly || !isEditing) && attendance[worker.id] !== "ABSENT" ? 'opacity-50 cursor-not-allowed bg-gray-50' : ''}
+                        ? "bg-red-500 border-red-500 text-white shadow-sm" 
+                        : `bg-white border-slate-200 text-slate-500 ${(!isReadOnly && isEditing) ? 'hover:border-red-500 hover:text-red-500 hover:bg-red-50' : ''}`
+                    } ${(isReadOnly || !isEditing) && attendance[worker.id] !== "ABSENT" ? 'opacity-50 cursor-not-allowed bg-slate-50' : ''}
                     ${isReadOnly || !isEditing ? 'cursor-default' : ''}`}
                   >
                     <XCircle className="w-5 h-5" />
@@ -224,14 +224,14 @@ export default function AttendancePage() {
         </div>
         
         {!isReadOnly && isEditing && (
-          <div className="mt-8 flex justify-end gap-4 pt-6 border-t border-gray-50">
+          <div className="mt-8 flex justify-end gap-4 pt-6 border-t border-slate-50">
             <button 
               onClick={() => {
                 setAttendance({ ...originalAttendance });
                 setIsEditing(false);
               }}
               disabled={isSaving || isLoading}
-              className="px-6 py-2 rounded-xl font-medium border border-gray-200 text-gray-700 bg-white hover:bg-gray-50 transition-colors disabled:opacity-70"
+              className="px-6 py-2 rounded-xl font-medium border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 transition-colors disabled:opacity-70"
             >
               Cancel
             </button>

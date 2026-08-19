@@ -74,23 +74,23 @@ export default function ReportsPage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
-        <h1 className="text-2xl font-bold text-gray-900">Reports</h1>
+        <h1 className="text-2xl font-bold text-slate-900">Reports</h1>
       </div>
 
       <div className="card max-w-2xl">
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-700">
+          <div className="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center text-teal-700">
             <FileSpreadsheet className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-gray-900">Export Attendance</h2>
-            <p className="text-sm text-gray-500">Download Excel reports for any date range</p>
+            <h2 className="text-lg font-bold text-slate-900">Export Attendance</h2>
+            <p className="text-sm text-slate-500">Download Excel reports for any date range</p>
           </div>
         </div>
 
         <div className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Select Date Range</label>
+            <label className="block text-sm font-medium text-slate-700 mb-2">Select Date Range</label>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {["Daily", "Weekly", "Monthly", "Custom"].map((range) => (
                 <button
@@ -104,8 +104,8 @@ export default function ReportsPage() {
                   }}
                   className={`py-2 px-4 rounded-lg text-sm font-medium transition-colors border ${
                     dateRange === range && !isCustomModalOpen
-                      ? "bg-green-50 border-green-200 text-green-700" 
-                      : "bg-white border-gray-200 text-gray-600 hover:bg-gray-50"
+                      ? "bg-teal-50 border-teal-200 text-teal-700" 
+                      : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
                   }`}
                 >
                   {range}
@@ -118,7 +118,7 @@ export default function ReportsPage() {
             <button 
               onClick={handleDownload}
               disabled={isGenerating}
-              className="w-full btn-primary flex items-center justify-center gap-2 disabled:opacity-70"
+              className="w-full btn-primary !bg-teal-600 hover:!bg-teal-700 flex items-center justify-center gap-2 disabled:opacity-70 shadow-md shadow-teal-200"
             >
               <Download className="w-5 h-5" />
               {isGenerating ? "Generating Report..." : `Download ${dateRange} Report`}
@@ -130,8 +130,8 @@ export default function ReportsPage() {
       {isCustomModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden">
-            <div className="p-6 border-b border-gray-100">
-              <h2 className="text-xl font-bold text-gray-900">Custom Date Range</h2>
+            <div className="p-6 border-b border-slate-100">
+              <h2 className="text-xl font-bold text-slate-900">Custom Date Range</h2>
             </div>
             
             <div className="p-6 space-y-4">
@@ -142,41 +142,41 @@ export default function ReportsPage() {
               )}
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">From Date</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">From Date</label>
                 <input 
                   type="date" 
                   value={customStart}
                   onChange={(e) => setCustomStart(e.target.value)}
-                  className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">To Date</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">To Date</label>
                 <input 
                   type="date" 
                   value={customEnd}
                   onChange={(e) => setCustomEnd(e.target.value)}
-                  className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
                 />
               </div>
             </div>
             
-            <div className="p-6 border-t border-gray-100 bg-gray-50 flex justify-end gap-3">
+            <div className="p-6 border-t border-slate-100 bg-slate-50 flex justify-end gap-3">
               <button 
                 onClick={() => {
                   setIsCustomModalOpen(false);
                   setDateRange("Daily"); // Revert if cancelled
                 }}
                 disabled={isGenerating}
-                className="px-4 py-2 rounded-lg text-sm font-medium border border-gray-200 text-gray-700 bg-white hover:bg-gray-100 transition-colors disabled:opacity-70"
+                className="px-4 py-2 rounded-lg text-sm font-medium border border-slate-200 text-slate-700 bg-white hover:bg-slate-100 transition-colors disabled:opacity-70"
               >
                 Cancel
               </button>
               <button 
                 onClick={handleDownload}
                 disabled={isGenerating}
-                className="px-4 py-2 rounded-lg text-sm font-medium bg-green-600 text-white hover:bg-green-700 transition-colors disabled:opacity-70 flex items-center gap-2"
+                className="px-4 py-2 rounded-lg text-sm font-medium bg-teal-600 text-white hover:bg-teal-700 transition-colors disabled:opacity-70 flex items-center gap-2 shadow-sm"
               >
                 {isGenerating && <Download className="w-4 h-4 animate-bounce" />}
                 {isGenerating ? "Generating..." : "Generate Excel"}

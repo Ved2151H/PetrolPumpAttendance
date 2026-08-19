@@ -167,20 +167,20 @@ export default function SettingsPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <form onSubmit={handleProfileSave} className="card space-y-6">
-          <div className="flex items-center gap-3 border-b border-gray-50 pb-4">
-            <User className="w-5 h-5 text-gray-400" />
-            <h2 className="text-lg font-bold text-gray-900">Admin Profile</h2>
+          <div className="flex items-center gap-3 border-b border-slate-50 pb-4">
+            <User className="w-5 h-5 text-slate-400" />
+            <h2 className="text-lg font-bold text-slate-900">Admin Profile</h2>
           </div>
           
           {profileMessage && (
-            <div className={`p-3 rounded-lg text-sm font-medium ${profileMessage.type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
+            <div className={`p-3 rounded-lg text-sm font-medium ${profileMessage.type === 'success' ? 'bg-indigo-50 text-indigo-700' : 'bg-red-50 text-red-700'}`}>
               {profileMessage.text}
             </div>
           )}
 
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Name</label>
               <input 
                 type="text" 
                 required
@@ -191,7 +191,7 @@ export default function SettingsPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
               <input 
                 type="email" 
                 required
@@ -212,20 +212,20 @@ export default function SettingsPage() {
         </form>
 
         <form onSubmit={handlePumpSave} className="card space-y-6">
-          <div className="flex items-center gap-3 border-b border-gray-50 pb-4">
-            <MapPin className="w-5 h-5 text-gray-400" />
-            <h2 className="text-lg font-bold text-gray-900">Petrol Pump Info</h2>
+          <div className="flex items-center gap-3 border-b border-slate-50 pb-4">
+            <MapPin className="w-5 h-5 text-slate-400" />
+            <h2 className="text-lg font-bold text-slate-900">Petrol Pump Info</h2>
           </div>
           
           {pumpMessage && (
-            <div className={`p-3 rounded-lg text-sm font-medium ${pumpMessage.type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
+            <div className={`p-3 rounded-lg text-sm font-medium ${pumpMessage.type === 'success' ? 'bg-indigo-50 text-indigo-700' : 'bg-red-50 text-red-700'}`}>
               {pumpMessage.text}
             </div>
           )}
 
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Pump Name</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Pump Name</label>
               <input 
                 type="text" 
                 required
@@ -236,7 +236,7 @@ export default function SettingsPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Address</label>
               <textarea 
                 required
                 value={pumpInfo.address}
@@ -256,41 +256,63 @@ export default function SettingsPage() {
           </div>
         </form>
 
+        {/* Notes Section for Admin */}
+        <div className="card space-y-6 md:col-span-2 bg-purple-50/30 border-purple-100">
+          <div className="flex items-center gap-3 border-b border-purple-100 pb-4">
+            <div className="bg-purple-100 p-2 rounded-lg">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-purple-600"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M8 13h2"/><path d="M8 17h2"/><path d="M14 13h2"/><path d="M14 17h2"/></svg>
+            </div>
+            <div>
+              <h2 className="text-lg font-bold text-slate-900">Admin Notes</h2>
+              <p className="text-sm text-slate-500">Manage important dates, reminders, and pump maintenance logs.</p>
+            </div>
+          </div>
+          <div className="space-y-4 max-w-md">
+            <button 
+              onClick={() => router.push('/settings/notes')}
+              className="w-full btn-secondary border-purple-200 text-purple-700 hover:bg-purple-50 hover:border-purple-300 text-left flex justify-between items-center group"
+            >
+              Manage Notes
+              <span className="text-purple-400 group-hover:text-purple-600 group-hover:translate-x-1 transition-transform">&rarr;</span>
+            </button>
+          </div>
+        </div>
+
         <div className="card space-y-6 md:col-span-2 md:hidden">
-          <div className="flex items-center gap-3 border-b border-gray-50 pb-4">
-            <Trash2 className="w-5 h-5 text-gray-400" />
-            <h2 className="text-lg font-bold text-gray-900">Trash</h2>
+          <div className="flex items-center gap-3 border-b border-slate-50 pb-4">
+            <Trash2 className="w-5 h-5 text-slate-400" />
+            <h2 className="text-lg font-bold text-slate-900">Trash</h2>
           </div>
           <div className="space-y-4 max-w-md">
             <button 
               onClick={() => router.push('/trash')}
-              className="w-full btn-secondary text-left flex justify-between items-center"
+              className="w-full btn-secondary text-left flex justify-between items-center group"
             >
               View Removed Workers
-              <span className="text-gray-400">&rarr;</span>
+              <span className="text-slate-400 group-hover:text-slate-600 group-hover:translate-x-1 transition-transform">&rarr;</span>
             </button>
           </div>
         </div>
 
         <div className="card space-y-6 md:col-span-2">
-          <div className="flex items-center gap-3 border-b border-gray-50 pb-4">
-            <Lock className="w-5 h-5 text-gray-400" />
-            <h2 className="text-lg font-bold text-gray-900">Security</h2>
+          <div className="flex items-center gap-3 border-b border-slate-50 pb-4">
+            <Lock className="w-5 h-5 text-slate-400" />
+            <h2 className="text-lg font-bold text-slate-900">Security</h2>
           </div>
           <div className="space-y-4 max-w-md">
             <button 
               onClick={() => setIsPasswordModalOpen(true)}
-              className="w-full btn-secondary text-left flex justify-between items-center"
+              className="w-full btn-secondary text-left flex justify-between items-center group"
             >
               Change Password
-              <span className="text-gray-400">&rarr;</span>
+              <span className="text-slate-400 group-hover:text-slate-600 group-hover:translate-x-1 transition-transform">&rarr;</span>
             </button>
             <button 
               onClick={handleLogout}
-              className="w-full btn-secondary text-left flex justify-between items-center text-red-600 hover:bg-red-50 hover:border-red-100"
+              className="w-full btn-secondary text-left flex justify-between items-center text-red-600 hover:bg-red-50 hover:border-red-200 group"
             >
               <span className="flex items-center gap-2">
-                <LogOut className="w-5 h-5" />
+                <LogOut className="w-5 h-5 group-hover:scale-110 transition-transform" />
                 Logout
               </span>
             </button>

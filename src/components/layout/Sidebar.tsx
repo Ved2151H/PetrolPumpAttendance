@@ -24,9 +24,9 @@ export default function Sidebar() {
   ];
 
   return (
-    <div className="hidden md:flex flex-col w-64 bg-white border-r border-gray-100 min-h-screen fixed left-0 top-0">
-      <div className="p-6 border-b border-gray-50">
-        <h1 className="text-xl font-bold text-green-700 tracking-tight">Petrol Pump Admin</h1>
+    <div className="hidden md:flex flex-col w-64 bg-white border-r border-slate-100 min-h-screen fixed left-0 top-0">
+      <div className="p-6 border-b border-slate-50">
+        <h1 className="text-xl font-bold text-indigo-700 tracking-tight">Petrol Pump Admin</h1>
       </div>
       
       <nav className="flex-1 py-6 px-4 space-y-2">
@@ -39,8 +39,8 @@ export default function Sidebar() {
               href={link.href}
               className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${
                 isActive 
-                  ? "bg-green-50 text-green-700 font-bold" 
-                  : "text-gray-600 hover:bg-green-50 hover:text-green-700 font-medium"
+                  ? "bg-indigo-50 text-indigo-700 font-bold" 
+                  : "text-slate-600 hover:bg-slate-50 hover:text-indigo-700 font-medium"
               }`}
             >
               <Icon className="w-5 h-5" />
@@ -50,9 +50,9 @@ export default function Sidebar() {
         })}
       </nav>
       
-      <div className="p-4 border-t border-gray-50">
-        <div className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-500">
-          <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
+      <div className="p-4 border-t border-slate-50">
+        <div className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500">
+          <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center">
             S
           </div>
           <div className="text-sm font-medium">Shubham sir</div>

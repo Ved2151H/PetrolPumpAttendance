@@ -143,7 +143,7 @@ export default function WorkersPage() {
   return (
     <div className="space-y-6 relative">
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
-        <h1 className="text-2xl font-bold text-gray-900">Workers</h1>
+        <h1 className="text-2xl font-bold text-slate-900">Workers</h1>
         <button 
           onClick={() => {
             setFormData({ name: '', phone: '', joiningDate: new Date().toISOString().split('T')[0] });
@@ -163,15 +163,15 @@ export default function WorkersPage() {
       )}
 
       <div className="card p-0 overflow-hidden">
-        <div className="p-4 border-b border-gray-100 flex flex-col sm:flex-row gap-4 justify-between sm:items-center">
+        <div className="p-4 border-b border-slate-100 flex flex-col sm:flex-row gap-4 justify-between sm:items-center">
           <div className="relative flex-1 max-w-md">
-            <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
             <input 
               type="text" 
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search workers..." 
-              className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-green-600 focus:border-transparent outline-none transition-all text-base text-gray-900"
+              className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-600 focus:border-transparent outline-none transition-all text-base text-slate-900"
             />
           </div>
         </div>
@@ -179,51 +179,51 @@ export default function WorkersPage() {
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
-              <tr className="bg-gray-50 border-b border-gray-100 text-gray-500 text-sm">
+              <tr className="bg-slate-50 border-b border-slate-100 text-slate-500 text-sm">
                 <th className="font-medium p-4 pl-6">Worker Name</th>
                 <th className="font-medium p-4">Phone Number</th>
                 <th className="font-medium p-4">Joining Date</th>
                 <th className="font-medium p-4 text-right pr-6">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-slate-50">
               {isLoading ? (
                 <tr>
-                  <td colSpan={4} className="p-8 text-center text-gray-500">Loading workers...</td>
+                  <td colSpan={4} className="p-8 text-center text-slate-500">Loading workers...</td>
                 </tr>
               ) : filteredWorkers.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="p-8 text-center text-gray-500">No workers found.</td>
+                  <td colSpan={4} className="p-8 text-center text-slate-500">No workers found.</td>
                 </tr>
               ) : (
                 filteredWorkers.map((worker) => (
                   <tr 
                     key={worker.id} 
-                    className="hover:bg-gray-50/50 transition-colors cursor-pointer group"
+                    className="hover:bg-slate-50/50 transition-colors cursor-pointer group"
                     onClick={() => router.push(`/workers/${worker.id}`)}
                   >
                     <td className="p-4 pl-6">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 font-bold text-sm">
+                        <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 font-bold text-sm">
                           {worker.name.charAt(0)}
                         </div>
-                        <span className="font-medium text-gray-900">{worker.name}</span>
+                        <span className="font-medium text-slate-900">{worker.name}</span>
                       </div>
                     </td>
-                    <td className="p-4 text-gray-500 text-sm">{worker.phone || '-'}</td>
-                    <td className="p-4 text-gray-500 text-sm">{new Date(worker.joiningDate).toLocaleDateString()}</td>
+                    <td className="p-4 text-slate-500 text-sm">{worker.phone || '-'}</td>
+                    <td className="p-4 text-slate-500 text-sm">{new Date(worker.joiningDate).toLocaleDateString()}</td>
                     <td className="p-4 text-right pr-6">
                       <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button 
                           onClick={(e) => openEditModal(worker, e)}
-                          className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                          className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
                           title="Edit Worker"
                         >
                           <Edit2 className="w-4 h-4" />
                         </button>
                         <button 
                           onClick={(e) => openRemoveModal(worker, e)}
-                          className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                           title="Remove Worker"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -243,13 +243,13 @@ export default function WorkersPage() {
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-bold text-gray-900">{editingWorker ? 'Edit Worker' : 'Add Worker'}</h2>
+              <h2 className="text-xl font-bold text-slate-900">{editingWorker ? 'Edit Worker' : 'Add Worker'}</h2>
               <button 
                 onClick={() => {
                   setIsAddModalOpen(false);
                   setEditingWorker(null);
                 }}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-slate-400 hover:text-slate-600"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -263,7 +263,7 @@ export default function WorkersPage() {
 
             <form onSubmit={editingWorker ? handleEditWorker : handleAddWorker} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Name *</label>
                 <input 
                   type="text" 
                   required
@@ -274,7 +274,7 @@ export default function WorkersPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Phone Number</label>
                 <input 
                   type="tel" 
                   value={formData.phone}
@@ -284,7 +284,7 @@ export default function WorkersPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Joining Date *</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Joining Date *</label>
                 <input 
                   type="date" 
                   required
@@ -301,7 +301,7 @@ export default function WorkersPage() {
                     setIsAddModalOpen(false);
                     setEditingWorker(null);
                   }}
-                  className="flex-1 py-2 px-4 border border-gray-200 text-gray-600 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+                  className="flex-1 py-2 px-4 border border-slate-200 text-slate-600 rounded-lg font-medium hover:bg-slate-50 transition-colors"
                 >
                   Cancel
                 </button>
@@ -325,8 +325,8 @@ export default function WorkersPage() {
             <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center text-red-600 mx-auto mb-4">
               <Trash2 className="w-8 h-8" />
             </div>
-            <h2 className="text-xl font-bold text-gray-900 mb-2">Remove {removingWorker.name}?</h2>
-            <p className="text-gray-500 mb-6">
+            <h2 className="text-xl font-bold text-slate-900 mb-2">Remove {removingWorker.name}?</h2>
+            <p className="text-slate-500 mb-6">
               Removing this worker will remove them from the current worker list, but their attendance history will be preserved.
             </p>
             
@@ -339,7 +339,7 @@ export default function WorkersPage() {
             <div className="flex gap-3">
               <button 
                 onClick={() => setRemovingWorker(null)}
-                className="flex-1 py-2 px-4 border border-gray-200 text-gray-600 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+                className="flex-1 py-2 px-4 border border-slate-200 text-slate-600 rounded-lg font-medium hover:bg-slate-50 transition-colors"
               >
                 Cancel
               </button>
