@@ -27,7 +27,7 @@ export default function Sidebar() {
   return (
     <div className="hidden md:flex flex-col w-64 bg-white border-r border-slate-100 min-h-screen fixed left-0 top-0">
       <div className="p-6 border-b border-slate-50">
-        <h1 className="text-xl font-bold text-indigo-700 tracking-tight">Petrol Pump Admin</h1>
+        <h1 className="text-xl font-bold text-indigo-700 tracking-tight">Namrata construction Private limited</h1>
       </div>
       
       <nav className="flex-1 py-6 px-4 space-y-2">
