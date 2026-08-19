@@ -7,9 +7,15 @@ import { subDays } from "date-fns";
 export default function ReportsPage() {
   const [dateRange, setDateRange] = useState("Daily");
   const [isGenerating, setIsGenerating] = useState(false);
+  const [customStart, setCustomStart] = useState("");
+  const [customEnd, setCustomEnd] = useState("");
+  const [validationError, setValidationError] = useState("");
+  const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
 
   const handleDownload = async () => {
+    setValidationError("");
     setIsGenerating(true);
+    
     try {
       let startD = new Date();
       let endD = new Date();
@@ -18,6 +24,21 @@ export default function ReportsPage() {
         startD = subDays(endD, 7);
       } else if (dateRange === "Monthly") {
         startD = subDays(endD, 30);
+      } else if (dateRange === "Custom") {
+        if (!customStart || !customEnd) {
+          setValidationError("Both From Date and To Date are required.");
+          setIsGenerating(false);
+          return;
+        }
+        
+        startD = new Date(customStart);
+        endD = new Date(customEnd);
+        
+        if (startD > endD) {
+          setValidationError("From Date cannot be after To Date.");
+          setIsGenerating(false);
+          return;
+        }
       }
       
       const startIso = startD.toISOString();
@@ -38,6 +59,10 @@ export default function ReportsPage() {
       a.click();
       window.URL.revokeObjectURL(url);
       a.remove();
+      
+      if (dateRange === "Custom") {
+        setIsCustomModalOpen(false);
+      }
     } catch (error) {
       console.error(error);
       alert("Failed to download report");
@@ -70,9 +95,15 @@ export default function ReportsPage() {
               {["Daily", "Weekly", "Monthly", "Custom"].map((range) => (
                 <button
                   key={range}
-                  onClick={() => setDateRange(range)}
+                  onClick={() => {
+                    setDateRange(range);
+                    if (range === "Custom") {
+                      setIsCustomModalOpen(true);
+                      setValidationError("");
+                    }
+                  }}
                   className={`py-2 px-4 rounded-lg text-sm font-medium transition-colors border ${
-                    dateRange === range 
+                    dateRange === range && !isCustomModalOpen
                       ? "bg-green-50 border-green-200 text-green-700" 
                       : "bg-white border-gray-200 text-gray-600 hover:bg-gray-50"
                   }`}
@@ -83,16 +114,77 @@ export default function ReportsPage() {
             </div>
           </div>
 
-          <button 
-            onClick={handleDownload}
-            disabled={isGenerating}
-            className="w-full btn-primary flex items-center justify-center gap-2 disabled:opacity-70"
-          >
-            <Download className="w-5 h-5" />
-            {isGenerating ? "Generating Report..." : `Download ${dateRange} Report`}
-          </button>
+          {dateRange !== "Custom" && (
+            <button 
+              onClick={handleDownload}
+              disabled={isGenerating}
+              className="w-full btn-primary flex items-center justify-center gap-2 disabled:opacity-70"
+            >
+              <Download className="w-5 h-5" />
+              {isGenerating ? "Generating Report..." : `Download ${dateRange} Report`}
+            </button>
+          )}
         </div>
       </div>
+
+      {isCustomModalOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden">
+            <div className="p-6 border-b border-gray-100">
+              <h2 className="text-xl font-bold text-gray-900">Custom Date Range</h2>
+            </div>
+            
+            <div className="p-6 space-y-4">
+              {validationError && (
+                <div className="p-3 rounded-lg text-sm font-medium bg-red-50 text-red-700">
+                  {validationError}
+                </div>
+              )}
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">From Date</label>
+                <input 
+                  type="date" 
+                  value={customStart}
+                  onChange={(e) => setCustomStart(e.target.value)}
+                  className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-500"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">To Date</label>
+                <input 
+                  type="date" 
+                  value={customEnd}
+                  onChange={(e) => setCustomEnd(e.target.value)}
+                  className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-500"
+                />
+              </div>
+            </div>
+            
+            <div className="p-6 border-t border-gray-100 bg-gray-50 flex justify-end gap-3">
+              <button 
+                onClick={() => {
+                  setIsCustomModalOpen(false);
+                  setDateRange("Daily"); // Revert if cancelled
+                }}
+                disabled={isGenerating}
+                className="px-4 py-2 rounded-lg text-sm font-medium border border-gray-200 text-gray-700 bg-white hover:bg-gray-100 transition-colors disabled:opacity-70"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={handleDownload}
+                disabled={isGenerating}
+                className="px-4 py-2 rounded-lg text-sm font-medium bg-green-600 text-white hover:bg-green-700 transition-colors disabled:opacity-70 flex items-center gap-2"
+              >
+                {isGenerating && <Download className="w-4 h-4 animate-bounce" />}
+                {isGenerating ? "Generating..." : "Generate Excel"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
