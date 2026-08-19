@@ -67,31 +67,30 @@ export async function POST(request: Request) {
       }
     }
 
-    // Use transaction to ensure data integrity
-    const savedRecords = await prisma.$transaction(
-      records.map(record => 
-        prisma.attendance.upsert({
-          where: {
-            workerId_date: {
-              workerId: record.workerId,
-              date: normalizedDate
-            }
-          },
-          update: {
-            status: record.status,
-            timeIn: record.timeIn || null,
-            timeOut: record.timeOut || null,
-          },
-          create: {
+    const savedRecords = [];
+    for (const record of records) {
+      const saved = await prisma.attendance.upsert({
+        where: {
+          workerId_date: {
             workerId: record.workerId,
-            date: normalizedDate,
-            status: record.status,
-            timeIn: record.timeIn || null,
-            timeOut: record.timeOut || null,
+            date: normalizedDate
           }
-        })
-      )
-    )
+        },
+        update: {
+          status: record.status,
+          timeIn: record.timeIn || null,
+          timeOut: record.timeOut || null,
+        },
+        create: {
+          workerId: record.workerId,
+          date: normalizedDate,
+          status: record.status,
+          timeIn: record.timeIn || null,
+          timeOut: record.timeOut || null,
+        }
+      });
+      savedRecords.push(saved);
+    }
 
     await prisma.auditLog.create({
       data: {
