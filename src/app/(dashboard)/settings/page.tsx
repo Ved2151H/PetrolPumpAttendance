@@ -256,24 +256,24 @@ export default function SettingsPage() {
           </div>
         </form>
 
-        {/* Notes Section for Admin */}
-        <div className="card space-y-6 md:col-span-2 bg-purple-50/30 border-purple-100">
-          <div className="flex items-center gap-3 border-b border-purple-100 pb-4">
-            <div className="bg-purple-100 p-2 rounded-lg">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-purple-600"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M8 13h2"/><path d="M8 17h2"/><path d="M14 13h2"/><path d="M14 17h2"/></svg>
+        {/* Reports Section for Admin */}
+        <div className="card space-y-6 md:col-span-2 bg-teal-50/30 border-teal-100">
+          <div className="flex items-center gap-3 border-b border-teal-100 pb-4">
+            <div className="bg-teal-100 p-2 rounded-lg">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-teal-600"><line x1="12" y1="20" x2="12" y2="10"></line><line x1="18" y1="20" x2="18" y2="4"></line><line x1="6" y1="20" x2="6" y2="16"></line></svg>
             </div>
             <div>
-              <h2 className="text-lg font-bold text-slate-900">Admin Notes</h2>
-              <p className="text-sm text-slate-500">Manage important dates, reminders, and pump maintenance logs.</p>
+              <h2 className="text-lg font-bold text-slate-900">Reports</h2>
+              <p className="text-sm text-slate-500">Download Excel attendance reports for any date range.</p>
             </div>
           </div>
           <div className="space-y-4 max-w-md">
             <button 
-              onClick={() => router.push('/settings/notes')}
-              className="w-full btn-secondary border-purple-200 text-purple-700 hover:bg-purple-50 hover:border-purple-300 text-left flex justify-between items-center group"
+              onClick={() => router.push('/reports')}
+              className="w-full btn-secondary border-teal-200 text-teal-700 hover:bg-teal-50 hover:border-teal-300 text-left flex justify-between items-center group"
             >
-              Manage Notes
-              <span className="text-purple-400 group-hover:text-purple-600 group-hover:translate-x-1 transition-transform">&rarr;</span>
+              Generate Reports
+              <span className="text-teal-400 group-hover:text-teal-600 group-hover:translate-x-1 transition-transform">&rarr;</span>
             </button>
           </div>
         </div>

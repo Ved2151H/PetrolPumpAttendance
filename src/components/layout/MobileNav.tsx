@@ -7,7 +7,7 @@ import {
   Users, 
   ClipboardCheck, 
   Menu,
-  BarChart3
+  FileText
 } from "lucide-react";
 
 export default function MobileNav() {
@@ -17,7 +17,7 @@ export default function MobileNav() {
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
     { name: "Attendance", href: "/attendance", icon: ClipboardCheck },
     { name: "Workers", href: "/workers", icon: Users },
-    { name: "Reports", href: "/reports", icon: BarChart3 },
+    { name: "Notes", href: "/settings/notes", icon: FileText },
     { name: "More", href: "/settings", icon: Menu },
   ];
 

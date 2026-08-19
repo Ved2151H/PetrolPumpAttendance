@@ -8,7 +8,8 @@ import {
   ClipboardCheck, 
   BarChart3, 
   Settings,
-  Trash2
+  Trash2,
+  FileText
 } from "lucide-react";
 
 export default function Sidebar() {
@@ -18,7 +19,7 @@ export default function Sidebar() {
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
     { name: "Attendance", href: "/attendance", icon: ClipboardCheck },
     { name: "Workers", href: "/workers", icon: Users },
-    { name: "Reports", href: "/reports", icon: BarChart3 },
+    { name: "Notes", href: "/settings/notes", icon: FileText }, 
     { name: "Trash", href: "/trash", icon: Trash2 },
     { name: "Settings", href: "/settings", icon: Settings },
   ];
