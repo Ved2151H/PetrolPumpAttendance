@@ -1,105 +1,92 @@
-# Petrol Pump Management System
+# Namrata Construction Worker Management System
 
-This repository contains a full-stack Petrol Pump Management System, consisting of a **Web Dashboard** (Next.js) for administrative tasks and a **Mobile Application** (Expo / React Native) for staff or end-users. 
+A robust, modern full-stack web application designed for comprehensive worker attendance tracking, daily operational notes, and dynamic reporting for Namrata Construction Private Limited.
 
-This document serves as a guide for any developer looking to understand the workflow and make modifications to either part of the project.
+## 🚀 Key Features
+
+### ⏱️ Advanced Attendance Tracking
+- Mark workers as Present or Absent daily.
+- Log precise **Time In** and **Time Out** for each shift (supports overnight shifts).
+- Smart validation ensures clean data, while gracefully supporting late check-outs and missing times.
+- View real-time daily active worker statistics from the Dashboard.
+
+### 📸 Rich Operational Notes
+- Create rich text notes with inline photo integration.
+- Admin can instantly take photos using device cameras or upload from galleries **directly inline** while writing notes.
+- Notes seamlessly support `Text -> Photo -> Text` flows without losing cursor context.
+- Stores uploads efficiently via local API endpoints.
+
+### 📊 Excel Reports Generation
+- Powerful, on-the-fly `.xlsx` export engine.
+- Generate beautifully formatted daily, weekly, monthly, or custom-date-range attendance reports.
+- Automatically calculates and tallies **Working Hours** per shift and **Total Working Days / Hours** per worker.
+- Preserves complete historical accuracy, even for workers who have been removed.
+
+### 👷 Worker Management & Trash System
+- Manage all active workers with detailed joining dates.
+- Soft-delete functionality: Deleted workers are sent to a "Trash" bin, preserving their historical attendance data and reports indefinitely.
+- Restore workers easily from the Trash if needed.
+
+### 🔒 Security & Admin Tools
+- Fully protected by JWT-based secure authentication (`jose`, `bcrypt`).
+- Integrated Settings panel to manage company profiles and admin passwords.
 
 ---
 
-## 🌐 Section 1: Web Application (Admin Dashboard)
+## 🛠️ Tech Stack
 
-The web application is located in the root directory and serves as both the backend API and the administrative frontend.
-
-### Tech Stack
 - **Framework:** Next.js (App Router)
-- **Database ORM:** Prisma
-- **Database:** PostgreSQL
-- **Styling:** Tailwind CSS v4
-- **Authentication:** Custom JWT-based (`jose`, `bcrypt`)
-- **UI & Charts:** React Hook Form, Recharts, Lucide React
-
-### Web Project Structure
-- `src/app/`: Next.js App Router frontend pages and API routes (`/api/*`).
-- `prisma/schema.prisma`: Database schema definition.
-- `public/`: Static assets.
-
-### Developer Workflow (Web)
-
-1. **Install Dependencies**
-   ```bash
-   npm install
-   ```
-
-2. **Environment Configuration**
-   Create a `.env` file in the root directory. You will need a PostgreSQL connection string:
-   ```env
-   DATABASE_URL="postgresql://username:password@localhost:5432/petroll_pump?schema=public"
-   JWT_SECRET="your-secret-key"
-   ```
-
-3. **Database Setup**
-   Run the following commands to push the schema to your database and generate the Prisma Client:
-   ```bash
-   npx prisma migrate dev
-   npx prisma generate
-   ```
-   *(If a seed script is provided, you can run `npx prisma db seed` to populate initial data).*
-
-4. **Run the Development Server**
-   ```bash
-   npm run dev
-   ```
-   Open [http://localhost:3000](http://localhost:3000) to view the web dashboard.
-
-### How to Make Modifications (Web)
-- **To add a new database table:** Open `prisma/schema.prisma`, define your new model, and run `npx prisma migrate dev --name <migration_name>`.
-- **To add a new API endpoint:** Create a `route.ts` file inside the `src/app/api/<your-route>/` directory.
-- **To create a new page:** Create a `page.tsx` file inside `src/app/<your-page-name>/`.
+- **Database ORM:** Prisma Client 
+- **Database:** PostgreSQL (Optimized for Neon Serverless)
+- **Styling:** Tailwind CSS
+- **Icons & UI:** Lucide React
+- **Exporting:** SheetJS (`xlsx`)
 
 ---
 
-## 📱 Section 2: Mobile Application
+## 💻 Developer Workflow
 
-The mobile application is built using Expo and is located inside the `mobile/` directory. It communicates with the Web Application's API.
+### 1. Install Dependencies
+```bash
+npm install
+```
 
-### Tech Stack
-- **Framework:** React Native with Expo
-- **Navigation:** React Navigation (Native Stack, Bottom Tabs)
-- **Styling:** NativeWind (Tailwind CSS for React Native)
-- **Data Fetching:** TanStack React Query & Axios
-- **Storage:** Expo Secure Store
+### 2. Environment Configuration
+Create a `.env` file in the root directory. You will need a PostgreSQL connection string and a JWT secret:
 
-### Developer Workflow (Mobile)
+```env
+DATABASE_URL="postgresql://username:password@localhost:5432/namrata_construction?schema=public"
+JWT_SECRET="petrol-pump-secure-key-9988!"
+```
 
-1. **Navigate to the Mobile Directory**
-   ```bash
-   cd mobile
-   ```
+### 3. Database Setup
+Push the schema to your database and securely generate the Prisma Client:
+```bash
+npx prisma db push
+npx prisma generate
+```
 
-2. **Install Dependencies**
-   ```bash
-   npm install
-   ```
+*(Optional) Seed the database with initial Admin credentials if necessary.*
 
-3. **Configure API Connection**
-   Since the mobile app runs on an emulator or physical device, it cannot use `localhost` to connect to the local Next.js server. 
-   - Find your computer's local IP address (e.g., `192.168.x.x`).
-   - Update the API base URL in your Axios/fetch configuration to `http://<YOUR_IP_ADDRESS>:3000`.
+### 4. Run the Development Server
+```bash
+npm run dev
+```
+Open [http://localhost:3000](http://localhost:3000) to view the web dashboard.
 
-4. **Run the Development Server**
-   ```bash
-   npm start
-   ```
-   - Press `a` to open on Android Emulator.
-   - Press `i` to open on iOS Simulator.
-   - Or scan the QR code with the Expo Go app on a physical device.
+---
 
-### How to Make Modifications (Mobile)
-- **To add a new Screen:** Create a new component for your screen and register it in your React Navigation stack/tabs configuration.
-- **To fetch new data:** Create a custom hook using TanStack React Query (`useQuery` / `useMutation`) that calls your API using Axios.
-- **To style components:** Use standard Tailwind CSS classes via the `className` prop, provided by NativeWind.
+## 🏗️ Architecture & Directories
 
+- `src/app/(dashboard)/`: Protected UI routes (Attendance, Notes, Reports, Settings, Trash).
+- `src/app/api/`: RESTful backend endpoints powering Next.js Server Components and Client queries.
+- `prisma/schema.prisma`: The single source of truth for PostgreSQL relational database modeling.
+- `public/uploads/`: Local storage destination for photos taken via the Notes application.
 
-env second variable 
-Key : JWT_SECRET
- Value : petrol-pump-secure-key-9988!
+---
+
+## 📝 Important Notes for Contributors
+
+- **Time Tracking:** Database stores all `timeIn` and `timeOut` times in standardized 24-hour `HH:mm` format string fields, decoupled from timezone-shifting `DateTime` objects, making it incredibly resilient.
+- **Transactions:** High-volume sequential updates (like bulk marking attendance) intentionally bypass `prisma.$transaction()` strict time-locks to gracefully support connection-pool limits on serverless databases (like Neon).
+- **Prisma Schema:** Always run `npx prisma generate` followed by a Next.js server restart whenever updating the database schema to ensure the cached environment picks up updated types.
