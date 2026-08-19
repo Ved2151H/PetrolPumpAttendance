@@ -32,7 +32,7 @@ export default function WorkersPage() {
     fetchWorkers();
   }, []);
 
-  const fetchWorkers = async () => {
+  async function fetchWorkers() {
     setIsLoading(true);
     try {
       const res = await fetch('/api/workers');
@@ -141,9 +141,9 @@ export default function WorkersPage() {
   };
 
   return (
-    <div className="space-y-6 relative">
+    <div className="space-y-7 relative">
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
-        <h1 className="text-2xl font-bold text-slate-900">Workers</h1>
+        <div><p className="text-[11px] font-bold uppercase tracking-[.16em] text-amber-600 mb-2">Team directory</p><h1 className="text-3xl font-bold text-slate-900">Workers</h1></div>
         <button 
           onClick={() => {
             setFormData({ name: '', phone: '', joiningDate: new Date().toISOString().split('T')[0] });
@@ -163,7 +163,7 @@ export default function WorkersPage() {
       )}
 
       <div className="card p-0 overflow-hidden">
-        <div className="p-4 border-b border-slate-100 flex flex-col sm:flex-row gap-4 justify-between sm:items-center">
+        <div className="p-4 sm:p-5 border-b border-slate-100 flex flex-col sm:flex-row gap-4 justify-between sm:items-center bg-slate-50/45">
           <div className="relative flex-1 max-w-md">
             <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
             <input 
@@ -171,7 +171,7 @@ export default function WorkersPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search workers..." 
-              className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-600 focus:border-transparent outline-none transition-all text-base text-slate-900"
+              className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-white focus:bg-white focus:ring-2 focus:ring-indigo-600 focus:border-transparent outline-none transition-all text-base text-slate-900"
             />
           </div>
         </div>

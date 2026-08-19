@@ -31,7 +31,7 @@ export default function AttendancePage() {
     fetchData();
   }, [currentDate]);
 
-  const fetchData = async () => {
+  async function fetchData() {
     setIsLoading(true);
     setMessage(null);
     try {
@@ -152,11 +152,11 @@ export default function AttendancePage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-7">
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
-        <h1 className="text-2xl font-bold text-slate-900">Attendance</h1>
-        <div className="flex items-center gap-4 bg-white px-4 py-2 rounded-xl border border-slate-100 shadow-sm relative">
-          <label htmlFor="attendance-date" className="text-sm font-medium text-slate-500">Attendance Date</label>
+        <div><p className="text-[11px] font-bold uppercase tracking-[.16em] text-amber-600 mb-2">Daily register</p><h1 className="text-3xl font-bold text-slate-900">Attendance</h1></div>
+        <div className="flex items-center gap-3 bg-white px-4 py-3 rounded-xl border border-slate-200 shadow-sm relative">
+          <label htmlFor="attendance-date" className="text-xs font-bold uppercase tracking-wide text-slate-500">Date</label>
           <input 
             id="attendance-date"
             type="date" 
@@ -202,7 +202,7 @@ export default function AttendancePage() {
           {!isReadOnly && !isEditing && (
             <button 
               onClick={() => setIsEditing(true)}
-              className="text-sm px-4 py-2 bg-indigo-50 text-indigo-700 font-medium rounded-lg hover:bg-indigo-100 transition-colors"
+                className="text-sm px-4 py-2 bg-indigo-50 text-indigo-700 font-semibold rounded-lg hover:bg-indigo-100 transition-colors"
             >
               Edit
             </button>
@@ -240,7 +240,7 @@ export default function AttendancePage() {
             workers.map(worker => {
               const rec = attendance[worker.id] || { status: 'ABSENT', timeIn: null, timeOut: null };
               return (
-                <div key={worker.id} className="flex flex-col md:flex-row md:items-center justify-between p-4 rounded-xl border border-slate-100 hover:border-indigo-100 transition-colors gap-4">
+                <div key={worker.id} className="flex flex-col md:flex-row md:items-center justify-between p-4 rounded-xl border border-slate-100 hover:border-indigo-200 hover:bg-slate-50/50 transition-colors gap-4">
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 font-bold text-lg">
                       {worker.name.charAt(0)}

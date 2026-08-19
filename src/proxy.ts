@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { getSession } from './lib/auth'
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const isLoginPage = request.nextUrl.pathname === '/login'
   const isProtected = 
     request.nextUrl.pathname.startsWith('/dashboard') || 

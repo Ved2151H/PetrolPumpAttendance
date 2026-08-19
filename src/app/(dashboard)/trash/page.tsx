@@ -23,7 +23,7 @@ export default function TrashPage() {
     fetchTrashedWorkers();
   }, []);
 
-  const fetchTrashedWorkers = async () => {
+  async function fetchTrashedWorkers() {
     try {
       setLoading(true);
       const res = await fetch('/api/workers/trash');
@@ -70,10 +70,11 @@ export default function TrashPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-7">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Trash</h1>
+          <p className="text-[11px] font-bold uppercase tracking-[.16em] text-amber-600 mb-2">Worker archive</p>
+          <h1 className="text-3xl font-bold text-slate-900">Trash</h1>
           <p className="text-slate-500 mt-1">Manage removed workers</p>
         </div>
       </div>
@@ -94,7 +95,7 @@ export default function TrashPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {workers.map((worker) => (
-            <div key={worker.id} className="card hover:shadow-md transition-shadow">
+            <div key={worker.id} className="card border-slate-200 hover:-translate-y-0.5 transition-all">
               <div className="flex justify-between items-start mb-4">
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 bg-slate-100 text-slate-600 rounded-full flex items-center justify-center font-bold text-lg">

@@ -22,7 +22,7 @@ export default function MobileNav() {
   ];
 
   return (
-    <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 pb-safe z-50">
+    <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-xl border-t border-slate-200/80 pb-safe z-50 shadow-[0_-8px_24px_-18px_rgba(15,23,42,.45)]">
       <nav className="flex justify-around items-center h-16">
         {links.map((link) => {
           const Icon = link.icon;
@@ -32,7 +32,7 @@ export default function MobileNav() {
               key={link.name} 
               href={link.href}
               className={`flex flex-col items-center justify-center w-full h-full transition-colors ${
-                isActive ? "text-indigo-700 font-bold" : "text-slate-500 hover:text-indigo-700 font-medium"
+                isActive ? "text-[#263b73] font-bold" : "text-slate-500 hover:text-[#263b73] font-medium"
               }`}
             >
               <Icon className="w-6 h-6 mb-1" />

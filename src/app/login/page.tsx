@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Lock, Mail, AlertCircle, Eye, EyeOff } from "lucide-react";
+import { Lock, Mail, AlertCircle, Eye, EyeOff, Building2 } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -39,18 +39,20 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+    <div className="min-h-screen relative overflow-hidden flex flex-col items-center justify-center p-4 bg-[#17233f]">
+      <div className="absolute inset-0 opacity-90" style={{ background: "radial-gradient(circle at 82% 10%, rgba(229,174,77,.32), transparent 24rem), radial-gradient(circle at 0% 100%, rgba(58,91,161,.55), transparent 30rem)" }} />
+      <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl shadow-black/25 border border-white/30 p-6 sm:p-9">
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-green-100 text-green-700 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Lock className="w-8 h-8" />
+          <div className="w-14 h-14 bg-[#263b73] text-amber-300 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg shadow-indigo-950/20">
+            <Building2 className="w-7 h-7" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Admin Login</h1>
-          <p className="text-gray-500 mt-2">Sign in to manage attendance</p>
+          <p className="text-[10px] font-bold uppercase tracking-[.18em] text-amber-600 mb-2">Namrata Construction Pvt. Ltd.</p>
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Welcome back</h1>
+          <p className="text-slate-500 mt-2">Sign in to manage your attendance workspace.</p>
         </div>
 
         {error && (
-          <div className="mb-6 p-4 bg-red-50 text-red-700 rounded-xl flex items-center gap-3 text-sm font-medium">
+          <div className="mb-6 p-4 bg-red-50 text-red-700 rounded-xl border border-red-100 flex items-center gap-3 text-sm font-medium">
             <AlertCircle className="w-5 h-5 shrink-0" />
             {error}
           </div>
@@ -58,9 +60,9 @@ export default function LoginPage() {
 
         <form onSubmit={handleLogin} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+            <label className="block text-sm font-semibold text-slate-700 mb-2">Email Address</label>
             <div className="relative">
-              <Mail className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+              <Mail className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
               <input 
                 type="email" 
                 value={email}
@@ -73,9 +75,9 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
+            <label className="block text-sm font-semibold text-slate-700 mb-2">Password</label>
             <div className="relative">
-              <Lock className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+              <Lock className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
               <input 
                 type={showPassword ? "text" : "password"} 
                 value={password}
@@ -87,7 +89,7 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#263b73] focus:outline-none"
               >
                 {showPassword ? (
                   <EyeOff className="w-5 h-5" />
@@ -103,7 +105,7 @@ export default function LoginPage() {
             disabled={loading}
             className="w-full btn-primary disabled:opacity-70"
           >
-            {loading ? "Signing in..." : "Login"}
+            {loading ? "Signing in..." : "Sign in securely"}
           </button>
         </form>
       </div>

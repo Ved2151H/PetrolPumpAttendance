@@ -18,7 +18,7 @@ interface NoteCardProps {
 
 export default function NoteCard({ note, onEdit, onDelete }: NoteCardProps) {
   return (
-    <div className="bg-white rounded-2xl shadow-sm border-l-4 border-l-purple-600 border-y border-r border-y-slate-100 border-r-slate-100 p-5 hover:shadow-md transition-shadow flex flex-col h-full relative group">
+    <div className="bg-white rounded-2xl shadow-sm border-l-4 border-l-purple-600 border-y border-r border-y-slate-200 border-r-slate-200 p-5 hover:shadow-md hover:-translate-y-0.5 transition-all flex flex-col h-full relative group">
       <div className="flex justify-between items-start mb-3">
         <div className="flex items-center gap-2 text-purple-700 font-medium text-sm bg-purple-50 px-3 py-1 rounded-full">
           <Calendar className="w-4 h-4" />

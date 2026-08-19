@@ -9,7 +9,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Namrata construction Private limited",
+  title: "Namrata Construction Pvt. Ltd.",
   description: "Admin attendance management system",
 };
 

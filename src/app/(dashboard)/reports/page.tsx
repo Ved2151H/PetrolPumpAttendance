@@ -72,12 +72,12 @@ export default function ReportsPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-7">
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
-        <h1 className="text-2xl font-bold text-slate-900">Reports</h1>
+        <div><p className="text-[11px] font-bold uppercase tracking-[.16em] text-amber-600 mb-2">Export centre</p><h1 className="text-3xl font-bold text-slate-900">Reports</h1></div>
       </div>
 
-      <div className="card max-w-2xl">
+      <div className="card max-w-2xl border-teal-100/80">
         <div className="flex items-center gap-3 mb-6">
           <div className="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center text-teal-700">
             <FileSpreadsheet className="w-5 h-5" />

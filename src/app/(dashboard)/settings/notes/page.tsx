@@ -92,12 +92,13 @@ export default function NotesPage() {
           <ChevronLeft className="w-6 h-6" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Admin Notes</h1>
+          <p className="text-[11px] font-bold uppercase tracking-[.16em] text-amber-600 mb-1">Field logbook</p>
+          <h1 className="text-3xl font-bold text-slate-900">Admin Notes</h1>
           <p className="text-slate-500 text-sm mt-1">Manage notes and important information</p>
         </div>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+      <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
         <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
           <div className="relative">
             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />

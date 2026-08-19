@@ -83,17 +83,20 @@ export default function DashboardPage() {
   ];
 
   return (
-    <div className="space-y-6">
-      <header className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-900">{greeting}</h1>
-        <p className="text-slate-500">{new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+    <div className="space-y-7">
+      <header className="mb-8 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="text-[11px] font-bold uppercase tracking-[.16em] text-amber-600 mb-2">Operations overview</p>
+          <h1 className="text-3xl font-bold text-slate-900">{greeting}</h1>
+        </div>
+        <p className="text-sm text-slate-500 font-medium">{new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
       </header>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {statCards.map((stat, index) => (
-          <div key={index} className="card p-5 flex flex-col items-start gap-4">
-            <div className={`p-3 rounded-xl ${stat.bg}`}>
+          <div key={index} className="card p-5 flex flex-col items-start gap-4 hover:-translate-y-0.5">
+            <div className={`p-3 rounded-xl ring-1 ring-inset ring-black/[.03] ${stat.bg}`}>
               <stat.icon className={`w-6 h-6 ${stat.color}`} />
             </div>
             <div>
@@ -101,7 +104,7 @@ export default function DashboardPage() {
               {isLoading ? (
                 <div className="h-8 w-16 bg-slate-100 rounded animate-pulse mt-1"></div>
               ) : (
-                <h3 className="text-2xl font-bold text-slate-900 mt-1">{stat.value}</h3>
+                <h3 className="text-3xl font-bold tracking-tight text-slate-900 mt-1">{stat.value}</h3>
               )}
             </div>
           </div>
@@ -113,7 +116,7 @@ export default function DashboardPage() {
         <div className="lg:col-span-2 card">
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-lg font-bold text-slate-900">Today's Attendance</h3>
-            <button className="text-sm text-indigo-700 font-medium hover:text-indigo-800">View All</button>
+            <button className="text-sm text-[#263b73] font-semibold hover:text-[#1d2e5b]">View All</button>
           </div>
           
           <div className="space-y-4">
@@ -132,7 +135,7 @@ export default function DashboardPage() {
             ) : (
               <>
                 {todayAttendanceList.map((worker, i) => (
-                  <div key={i} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 p-3 rounded-lg border border-slate-100 hover:bg-slate-50 transition-colors">
+                  <div key={i} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 p-3.5 rounded-xl border border-slate-100 hover:bg-slate-50/80 hover:border-slate-200 transition-colors">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 font-medium shrink-0">
                         {worker.name.charAt(0)}

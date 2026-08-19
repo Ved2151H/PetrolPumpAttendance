@@ -1,44 +1,71 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #4338ca; /* indigo-700 */
-  --color-primary-hover: #3730a3; /* indigo-800 */
-  
-  --color-success: #16a34a; /* green-600 */
-  --color-danger: #dc2626; /* red-600 */
-  --color-warning: #d97706; /* amber-600 */
-  --color-info: #0284c7; /* sky-600 */
-  --color-notes: #7e22ce; /* purple-700 */
-  --color-attendance: #2563eb; /* blue-600 */
-  --color-reports: #0d9488; /* teal-600 */
-  --color-settings: #334155; /* slate-700 */
-  --color-neutral: #6b7280; /* gray-500 */
-  
-  --color-background: #f8fafc; /* slate-50 */
-  --color-surface: #ffffff; /* white */
+  --color-primary: #263b73;
+  --color-primary-hover: #1d2e5b;
+  --color-success: #167a56;
+  --color-danger: #c34444;
+  --color-warning: #b7791f;
+  --color-info: #356da6;
+  --color-notes: #71519d;
+  --color-attendance: #356da6;
+  --color-reports: #167a74;
+  --color-settings: #344054;
+  --color-neutral: #667085;
+  --color-background: #f5f6f8;
+  --color-surface: #ffffff;
 }
 
-/* Base styles for a clean business application */
+:root { color-scheme: light; }
+* { border-color: #e7e9ee; }
+html { background: #f5f6f8; }
+
 body {
-  background-color: var(--color-background);
-  color: #0f172a; /* slate-900 */
-  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  min-height: 100vh;
+  background: radial-gradient(circle at 96% -5%, rgba(218, 163, 75, .13), transparent 26rem), radial-gradient(circle at 38% 0%, rgba(70, 104, 171, .06), transparent 32rem), #f5f6f8;
+  color: #172033;
+  font-family: Arial, Helvetica, sans-serif;
+  letter-spacing: .005em;
 }
 
-/* Touch-friendly base classes */
+button, a, input, textarea, select { -webkit-tap-highlight-color: transparent; }
+button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 3px solid rgba(58, 91, 161, .28); outline-offset: 2px; }
+
 .btn-primary {
-  @apply inline-flex justify-center items-center px-6 py-3 bg-indigo-600 text-white font-medium rounded-xl hover:bg-indigo-700 hover:shadow-md transition-all active:scale-[0.98];
+  @apply inline-flex justify-center items-center px-5 py-3 text-white font-semibold rounded-xl transition-all active:scale-[0.98] disabled:cursor-not-allowed;
+  background: linear-gradient(135deg, #314d91, #263b73);
+  box-shadow: 0 8px 18px -10px rgba(29, 46, 91, .72), inset 0 1px 0 rgba(255,255,255,.18);
 }
+.btn-primary:hover { background: linear-gradient(135deg, #3d5da5, #1d2e5b); box-shadow: 0 13px 24px -12px rgba(29, 46, 91, .75); transform: translateY(-1px); }
 
 .btn-secondary {
-  @apply inline-flex justify-center items-center px-6 py-3 bg-white text-slate-700 font-medium rounded-xl border border-slate-200 hover:bg-slate-50 hover:shadow-sm transition-all active:scale-[0.98];
+  @apply inline-flex justify-center items-center px-5 py-3 bg-white text-slate-700 font-semibold rounded-xl border transition-all active:scale-[0.98] disabled:cursor-not-allowed;
+  border-color: #dfe3eb;
+  box-shadow: 0 2px 5px -4px rgba(16, 24, 40, .4);
 }
+.btn-secondary:hover { background: #f8fafc; border-color: #cbd3df; transform: translateY(-1px); }
 
 .card {
-  @apply bg-white rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] border border-slate-100 p-6 transition-all hover:shadow-[0_4px_20px_-4px_rgba(6,81,237,0.15)];
+  @apply bg-white rounded-2xl border p-6 transition-all;
+  border-color: #e6e9ef;
+  box-shadow: 0 12px 30px -25px rgba(16, 24, 40, .48), 0 2px 8px -6px rgba(16, 24, 40, .18);
 }
+.card:hover { box-shadow: 0 18px 34px -26px rgba(16, 24, 40, .55), 0 4px 10px -7px rgba(16, 24, 40, .2); }
 
-/* Form inputs for touch devices */
 .input-field {
-  @apply w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all outline-none text-base text-slate-900 shadow-sm;
+  @apply w-full px-4 py-3 rounded-xl border bg-white transition-all outline-none text-base text-slate-900;
+  border-color: #dfe3eb;
+  box-shadow: inset 0 1px 2px rgba(16, 24, 40, .025);
+}
+.input-field::placeholder { color: #98a2b3; }
+.input-field:focus { border-color: #5873b2; box-shadow: 0 0 0 4px rgba(88, 115, 178, .12); }
+
+main h1 { letter-spacing: -.035em; }
+table th { letter-spacing: .045em; text-transform: uppercase; font-size: .69rem; font-weight: 700; }
+table tr { transition: background-color .18s ease; }
+input[type="date"], input[type="time"] { color-scheme: light; }
+
+@media (max-width: 767px) {
+  .card { @apply rounded-xl p-4; }
+  main h1 { font-size: 1.65rem; }
 }

@@ -153,8 +153,8 @@ export default function NoteModal({ isOpen, onClose, onSave, initialData }: Note
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl p-6 w-full max-w-lg shadow-xl flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 bg-slate-950/55 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-3xl p-6 w-full max-w-lg shadow-2xl flex flex-col max-h-[90vh] border border-white/50">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-bold text-slate-900">
             {initialData ? "Edit Note" : "Create Note"}

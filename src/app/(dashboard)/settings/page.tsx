@@ -28,7 +28,7 @@ export default function SettingsPage() {
     fetchPumpInfo();
   }, []);
 
-  const fetchProfile = async () => {
+  async function fetchProfile() {
     try {
       const res = await fetch('/api/auth/me');
       if (!res.ok) {
@@ -46,7 +46,7 @@ export default function SettingsPage() {
     }
   };
 
-  const fetchPumpInfo = async () => {
+  async function fetchPumpInfo() {
     try {
       const res = await fetch('/api/settings/pump');
       if (!res.ok) return;
@@ -162,8 +162,8 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="space-y-6 relative">
-      <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
+    <div className="space-y-7 relative">
+      <div><p className="text-[11px] font-bold uppercase tracking-[.16em] text-amber-600 mb-2">Workspace controls</p><h1 className="text-3xl font-bold text-gray-900">Settings</h1></div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <form onSubmit={handleProfileSave} className="card space-y-6">
