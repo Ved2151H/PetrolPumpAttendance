@@ -17,24 +17,23 @@ export default function Sidebar() {
   const pathname = usePathname();
   
   const links = [
-    { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-    { name: "Attendance", href: "/attendance", icon: ClipboardCheck },
-    { name: "Workers", href: "/workers", icon: Users },
-    { name: "Notes", href: "/settings/notes", icon: FileText }, 
-    { name: "Trash", href: "/trash", icon: Trash2 },
-    { name: "Settings", href: "/settings", icon: Settings },
+    { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard, active: "bg-indigo-500/25 ring-indigo-300/25" },
+    { name: "Attendance", href: "/attendance", icon: ClipboardCheck, active: "bg-sky-500/25 ring-sky-300/25" },
+    { name: "Workers", href: "/workers", icon: Users, active: "bg-emerald-500/25 ring-emerald-300/25" },
+    { name: "Notes", href: "/settings/notes", icon: FileText, active: "bg-violet-500/25 ring-violet-300/25" }, 
+    { name: "Trash", href: "/trash", icon: Trash2, active: "bg-rose-500/25 ring-rose-300/25" },
+    { name: "Settings", href: "/settings", icon: Settings, active: "bg-amber-500/25 ring-amber-300/25" },
   ];
 
   return (
     <div className="hidden md:flex flex-col w-72 bg-[#17233f] text-white min-h-screen fixed left-0 top-0 shadow-[12px_0_32px_-24px_rgba(15,23,42,.65)]">
-      <div className="px-6 py-7 border-b border-white/10">
-        <div className="flex items-center gap-3">
-          <div className="grid h-10 w-10 place-items-center rounded-xl bg-amber-400 text-[#17233f] shadow-lg shadow-black/10">
-            <Building2 className="w-5 h-5" />
+      <div className="px-6 py-8 border-b border-white/10">
+        <div className="flex items-start gap-3.5">
+          <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-amber-400 text-[#17233f] shadow-lg shadow-black/10">
+            <Building2 className="w-6 h-6" />
           </div>
           <div>
-            <h1 className="text-[15px] font-bold tracking-tight leading-tight">Namrata Construction</h1>
-            <p className="text-[10px] tracking-[.18em] uppercase text-blue-100/65 mt-1">Private Limited</p>
+            <h1 className="text-xl font-extrabold tracking-[-.04em] leading-[1.05]">Namrata Construction Private Limited</h1>
           </div>
         </div>
       </div>
@@ -50,7 +49,7 @@ export default function Sidebar() {
               href={link.href}
               className={`flex items-center gap-3 px-3.5 py-3 rounded-xl transition-all ${
                 isActive 
-                  ? "bg-white/12 text-white font-semibold shadow-sm ring-1 ring-white/10"
+                  ? `${link.active} text-white font-semibold shadow-sm ring-1`
                   : "text-blue-100/70 hover:bg-white/8 hover:text-white font-medium"
               }`}
             >
@@ -61,7 +60,6 @@ export default function Sidebar() {
         })}
       </nav>
       <div className="mx-5 mb-6 rounded-xl border border-white/10 bg-white/5 px-4 py-3">
-        <p className="text-xs font-semibold text-white/90">Attendance workspace</p>
         <p className="mt-1 text-[11px] leading-relaxed text-blue-100/55">Manage your team with confidence.</p>
       </div>
     </div>

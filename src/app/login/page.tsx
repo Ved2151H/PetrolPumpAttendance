@@ -46,7 +46,7 @@ export default function LoginPage() {
           <div className="w-14 h-14 bg-[#263b73] text-amber-300 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg shadow-indigo-950/20">
             <Building2 className="w-7 h-7" />
           </div>
-          <p className="text-[10px] font-bold uppercase tracking-[.18em] text-amber-600 mb-2">Namrata Construction Pvt. Ltd.</p>
+          <p className="text-[10px] font-bold uppercase tracking-[.14em] text-amber-600 mb-2">Namrata Construction Private Limited</p>
           <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Welcome back</h1>
           <p className="text-slate-500 mt-2">Sign in to manage your attendance workspace.</p>
         </div>

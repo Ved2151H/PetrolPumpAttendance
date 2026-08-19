@@ -86,7 +86,6 @@ export default function DashboardPage() {
     <div className="space-y-7">
       <header className="mb-8 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-[11px] font-bold uppercase tracking-[.16em] text-amber-600 mb-2">Operations overview</p>
           <h1 className="text-3xl font-bold text-slate-900">{greeting}</h1>
         </div>
         <p className="text-sm text-slate-500 font-medium">{new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>

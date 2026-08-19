@@ -1,28 +1,41 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { getSession } from './lib/auth'
+import { decrypt } from './lib/auth'
 
 export async function proxy(request: NextRequest) {
-  const isLoginPage = request.nextUrl.pathname === '/login'
+  const path = request.nextUrl.pathname
+  const isLoginPage = path === '/login' || path === '/api/auth/login'
+  const isApiRoute = path.startsWith('/api')
   const isProtected = 
-    request.nextUrl.pathname.startsWith('/dashboard') || 
-    request.nextUrl.pathname.startsWith('/attendance') || 
-    request.nextUrl.pathname.startsWith('/workers') || 
-    request.nextUrl.pathname.startsWith('/reports') || 
-    request.nextUrl.pathname.startsWith('/settings')
+    path.startsWith('/dashboard') || 
+    path.startsWith('/attendance') || 
+    path.startsWith('/workers') || 
+    path.startsWith('/reports') || 
+    path.startsWith('/settings') ||
+    (isApiRoute && !path.startsWith('/api/auth/login') && !path.startsWith('/api/auth/logout'))
 
-  // We are currently simulating the check in the middleware. 
-  // In a real Edge environment with jose, we check the cookie.
   const sessionCookie = request.cookies.get('session')?.value
+  let isValidSession = false;
+
+  if (sessionCookie) {
+    try {
+      const payload = await decrypt(sessionCookie)
+      if (payload && payload.adminId) {
+        isValidSession = true
+      }
+    } catch (err) {
+      isValidSession = false
+    }
+  }
   
-  // NOTE: Full jwt verification is tricky in Edge sometimes, 
-  // but `jose` supports Edge runtime. For now we just check if it exists.
-  
-  if (isProtected && !sessionCookie) {
+  if (isProtected && !isValidSession) {
+    if (isApiRoute) {
+      return NextResponse.json({ success: false, error: { message: 'Unauthorized' } }, { status: 401 })
+    }
     return NextResponse.redirect(new URL('/login', request.url))
   }
 
-  if (isLoginPage && sessionCookie) {
+  if (isLoginPage && isValidSession) {
     return NextResponse.redirect(new URL('/dashboard', request.url))
   }
 
@@ -30,5 +43,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/attendance/:path*', '/workers/:path*', '/reports/:path*', '/settings/:path*', '/login'],
+  matcher: ['/dashboard/:path*', '/attendance/:path*', '/workers/:path*', '/reports/:path*', '/settings/:path*', '/login', '/api/:path*'],
 }
