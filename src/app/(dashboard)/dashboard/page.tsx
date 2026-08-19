@@ -52,7 +52,9 @@ export default function DashboardPage() {
           // Transform response into the UI shape
           const list = data.map((record: any) => ({
             name: record.worker?.name || 'Unknown',
-            status: record.status
+            status: record.status,
+            timeIn: record.timeIn || null,
+            timeOut: record.timeOut || null
           }));
           setTodayAttendanceList(list);
         }
@@ -62,6 +64,16 @@ export default function DashboardPage() {
     };
     fetchTodayAttendance();
   }, []);
+
+  const formatDisplayTime = (time24: string | null) => {
+    if (!time24) return '-';
+    const [h, m] = time24.split(':');
+    let hours = parseInt(h, 10);
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    return `${hours.toString().padStart(2, '0')}:${m} ${ampm}`;
+  };
 
   const statCards = [
     { title: "Total Workers", value: stats.totalWorkers, icon: Users, color: "text-blue-600", bg: "bg-blue-50" },
@@ -120,14 +132,21 @@ export default function DashboardPage() {
             ) : (
               <>
                 {todayAttendanceList.map((worker, i) => (
-                  <div key={i} className="flex justify-between items-center p-3 rounded-lg border border-slate-100 hover:bg-slate-50 transition-colors">
+                  <div key={i} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 p-3 rounded-lg border border-slate-100 hover:bg-slate-50 transition-colors">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 font-medium">
+                      <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 font-medium shrink-0">
                         {worker.name.charAt(0)}
                       </div>
-                      <span className="font-medium text-slate-900">{worker.name}</span>
+                      <div className="flex flex-col">
+                        <span className="font-medium text-slate-900">{worker.name}</span>
+                        {worker.status === 'PRESENT' && (
+                          <span className="text-xs text-slate-500 font-medium">
+                            In: {formatDisplayTime(worker.timeIn)} &nbsp;|&nbsp; Out: {formatDisplayTime(worker.timeOut)}
+                          </span>
+                        )}
+                      </div>
                     </div>
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium self-end sm:self-auto ${
                       worker.status === 'PRESENT' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
                     }`}>
                       {worker.status}

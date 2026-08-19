@@ -59,6 +59,19 @@ export async function POST(request: Request) {
     // Normalize to strict UTC midnight to prevent timezone duplicates
     const normalizedDate = new Date(Date.UTC(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate()));
 
+    // Validate times before transaction
+    for (const record of records) {
+      if (record.status === 'ABSENT') {
+        record.timeIn = null;
+        record.timeOut = null;
+      }
+      if (record.timeIn && record.timeOut) {
+        if (record.timeOut <= record.timeIn) {
+          return NextResponse.json({ success: false, error: { message: 'Time Out must be later than Time In.' } }, { status: 400 });
+        }
+      }
+    }
+
     // Use transaction to ensure data integrity
     const savedRecords = await prisma.$transaction(
       records.map(record => 
@@ -70,12 +83,16 @@ export async function POST(request: Request) {
             }
           },
           update: {
-            status: record.status
+            status: record.status,
+            timeIn: record.timeIn || null,
+            timeOut: record.timeOut || null,
           },
           create: {
             workerId: record.workerId,
             date: normalizedDate,
-            status: record.status
+            status: record.status,
+            timeIn: record.timeIn || null,
+            timeOut: record.timeOut || null,
           }
         })
       )

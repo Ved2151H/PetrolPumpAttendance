@@ -1,19 +1,20 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { format, subDays, addDays } from "date-fns";
-import { ChevronLeft, ChevronRight, CheckCircle2, XCircle, Circle } from "lucide-react";
+import { format } from "date-fns";
+import { CheckCircle2, XCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-type Worker = { id: string; name: string; status: 'ACTIVE' | 'INACTIVE' };
-type AttendanceRecord = { workerId: string; status: 'PRESENT' | 'ABSENT' };
+type Worker = { id: string; name: string; status: 'ACTIVE' | 'INACTIVE'; joiningDate: string };
+type AttStatus = 'PRESENT' | 'ABSENT';
+type AttRecord = { status: AttStatus; timeIn: string | null; timeOut: string | null };
 
 export default function AttendancePage() {
   const router = useRouter();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [workers, setWorkers] = useState<Worker[]>([]);
-  const [attendance, setAttendance] = useState<Record<string, 'PRESENT' | 'ABSENT'>>({});
-  const [originalAttendance, setOriginalAttendance] = useState<Record<string, 'PRESENT' | 'ABSENT'>>({});
+  const [attendance, setAttendance] = useState<Record<string, AttRecord>>({});
+  const [originalAttendance, setOriginalAttendance] = useState<Record<string, AttRecord>>({});
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -26,7 +27,7 @@ export default function AttendancePage() {
   const isReadOnly = currentDate < sevenDaysAgo;
 
   useEffect(() => {
-    setIsEditing(false); // Reset edit mode on date change
+    setIsEditing(false);
     fetchData();
   }, [currentDate]);
 
@@ -34,7 +35,6 @@ export default function AttendancePage() {
     setIsLoading(true);
     setMessage(null);
     try {
-      // Fetch active workers
       const workersRes = await fetch('/api/workers');
       if (!workersRes.ok) {
         if (workersRes.status === 401) router.push('/login');
@@ -42,21 +42,33 @@ export default function AttendancePage() {
       }
       const workersJson = await workersRes.json();
       const workersData: Worker[] = workersJson.data;
-      setWorkers(workersData);
+      
+      const validWorkers = workersData.filter(w => new Date(w.joiningDate) <= new Date(currentDate.setHours(23,59,59,999)));
+      setWorkers(validWorkers);
 
-      // Fetch attendance for selected date
       const dateStr = currentDate.toISOString();
       const attRes = await fetch(`/api/attendance?date=${encodeURIComponent(dateStr)}`);
       if (!attRes.ok) throw new Error('Failed to fetch attendance');
       const attJson = await attRes.json();
       const attData = attJson.data;
 
-      const newAtt: Record<string, 'PRESENT' | 'ABSENT'> = {};
+      const newAtt: Record<string, AttRecord> = {};
       attData.forEach((record: any) => {
-        newAtt[record.workerId] = record.status;
+        newAtt[record.workerId] = {
+          status: record.status,
+          timeIn: record.timeIn || null,
+          timeOut: record.timeOut || null
+        };
       });
+      
+      validWorkers.forEach(w => {
+        if (!newAtt[w.id]) {
+          newAtt[w.id] = { status: 'ABSENT', timeIn: null, timeOut: null };
+        }
+      });
+
       setAttendance(newAtt);
-      setOriginalAttendance({ ...newAtt });
+      setOriginalAttendance(JSON.parse(JSON.stringify(newAtt)));
     } catch (err: any) {
       console.error(err);
       setMessage({ type: 'error', text: err.message });
@@ -65,23 +77,56 @@ export default function AttendancePage() {
     }
   };
 
-  const toggleStatus = (workerId: string, status: 'PRESENT' | 'ABSENT') => {
-    setAttendance(prev => ({ ...prev, [workerId]: status }));
+  const toggleStatus = (workerId: string, status: AttStatus) => {
+    setAttendance(prev => {
+      const current = prev[workerId] || { timeIn: null, timeOut: null };
+      if (status === 'ABSENT') {
+        return { ...prev, [workerId]: { status, timeIn: null, timeOut: null } };
+      }
+      return { ...prev, [workerId]: { status, timeIn: current.timeIn, timeOut: current.timeOut } };
+    });
+  };
+
+  const updateTime = (workerId: string, field: 'timeIn' | 'timeOut', value: string) => {
+    setAttendance(prev => {
+      const current = prev[workerId] || { status: 'ABSENT', timeIn: null, timeOut: null };
+      return { ...prev, [workerId]: { ...current, [field]: value || null } };
+    });
   };
 
   const markAllPresent = () => {
-    const newAtt: Record<string, 'PRESENT' | 'ABSENT'> = {};
+    const newAtt: Record<string, AttRecord> = {};
     workers.forEach(w => {
-      newAtt[w.id] = "PRESENT";
+      newAtt[w.id] = { 
+        status: "PRESENT", 
+        timeIn: attendance[w.id]?.timeIn || null, 
+        timeOut: attendance[w.id]?.timeOut || null 
+      };
     });
     setAttendance(newAtt);
   };
 
   const saveAttendance = async () => {
+    for (const [workerId, record] of Object.entries(attendance)) {
+      if (record.status === 'PRESENT' && record.timeIn && record.timeOut) {
+        if (record.timeOut <= record.timeIn) {
+          const workerName = workers.find(w => w.id === workerId)?.name || 'Unknown';
+          setMessage({ type: 'error', text: `Time Out must be later than Time In for ${workerName}.` });
+          return;
+        }
+      }
+    }
+
     setIsSaving(true);
     setMessage(null);
     try {
-      const records = Object.entries(attendance).map(([workerId, status]) => ({ workerId, status }));
+      const records = Object.entries(attendance).map(([workerId, data]) => ({
+        workerId,
+        status: data.status,
+        timeIn: data.status === 'PRESENT' ? data.timeIn : null,
+        timeOut: data.status === 'PRESENT' ? data.timeOut : null
+      }));
+      
       const res = await fetch('/api/attendance', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -91,9 +136,10 @@ export default function AttendancePage() {
         })
       });
 
-      if (!res.ok) throw new Error('Failed to save attendance');
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error?.message || 'Failed to save attendance');
       
-      setOriginalAttendance({ ...attendance });
+      setOriginalAttendance(JSON.parse(JSON.stringify(attendance)));
       setIsEditing(false);
       setMessage({ type: 'success', text: 'Attendance saved successfully.' });
       setTimeout(() => setMessage(null), 3000);
@@ -103,6 +149,16 @@ export default function AttendancePage() {
     } finally {
       setIsSaving(false);
     }
+  };
+
+  const formatDisplayTime = (time24: string | null) => {
+    if (!time24) return '-';
+    const [h, m] = time24.split(':');
+    let hours = parseInt(h, 10);
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+    return `${hours.toString().padStart(2, '0')}:${m} ${ampm}`;
   };
 
   return (
@@ -118,7 +174,6 @@ export default function AttendancePage() {
             onChange={(e) => {
               if (e.target.value) {
                 const selected = new Date(e.target.value);
-                // Prevent future dates
                 if (selected <= new Date()) {
                   setCurrentDate(selected);
                 } else {
@@ -177,49 +232,84 @@ export default function AttendancePage() {
           {isLoading ? (
             <div className="text-center py-8 text-slate-500 text-sm">Loading workers...</div>
           ) : workers.length === 0 ? (
-            <div className="text-center py-8 text-slate-500 text-sm">No active workers found.</div>
+            <div className="text-center py-8 text-slate-500 text-sm">No active workers found for this date.</div>
           ) : (
-            workers.map(worker => (
-              <div key={worker.id} className="flex flex-col md:flex-row md:items-center justify-between p-4 rounded-xl border border-slate-100 hover:border-indigo-100 transition-colors gap-4">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 font-bold text-lg">
-                    {worker.name.charAt(0)}
+            workers.map(worker => {
+              const rec = attendance[worker.id] || { status: 'ABSENT', timeIn: null, timeOut: null };
+              return (
+                <div key={worker.id} className="flex flex-col md:flex-row md:items-center justify-between p-4 rounded-xl border border-slate-100 hover:border-indigo-100 transition-colors gap-4">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 font-bold text-lg">
+                      {worker.name.charAt(0)}
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-slate-900">{worker.name}</h3>
+                      {(!isEditing || rec.status !== 'PRESENT') && rec.status === 'PRESENT' && (
+                        <p className="text-xs text-slate-500 mt-1 font-medium">
+                          In: {formatDisplayTime(rec.timeIn)} &nbsp;&bull;&nbsp; Out: {formatDisplayTime(rec.timeOut)}
+                        </p>
+                      )}
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-bold text-slate-900">{worker.name}</h3>
+                  
+                  <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
+                    {/* Time Inputs (Only visible when editing and PRESENT) */}
+                    {isEditing && rec.status === 'PRESENT' && (
+                      <div className="flex items-center gap-3 w-full md:w-auto bg-slate-50 px-3 py-2 rounded-xl border border-slate-200">
+                        <div className="flex flex-col">
+                          <label className="text-[10px] uppercase font-bold text-slate-500 pl-1">Time In</label>
+                          <input 
+                            type="time" 
+                            value={rec.timeIn || ''}
+                            onChange={(e) => updateTime(worker.id, 'timeIn', e.target.value)}
+                            className="bg-white border border-slate-200 rounded-lg text-sm px-2 py-1 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                          />
+                        </div>
+                        <div className="flex flex-col">
+                          <label className="text-[10px] uppercase font-bold text-slate-500 pl-1">Time Out</label>
+                          <input 
+                            type="time" 
+                            value={rec.timeOut || ''}
+                            onChange={(e) => updateTime(worker.id, 'timeOut', e.target.value)}
+                            className="bg-white border border-slate-200 rounded-lg text-sm px-2 py-1 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Status Buttons */}
+                    <div className="flex items-center gap-2 w-full md:w-auto">
+                      <button 
+                        onClick={() => toggleStatus(worker.id, "PRESENT")}
+                        disabled={isReadOnly || !isEditing}
+                        className={`flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-xl border transition-all ${
+                          rec.status === "PRESENT" 
+                            ? "bg-green-600 border-green-600 text-white shadow-sm" 
+                            : `bg-white border-slate-200 text-slate-500 ${(!isReadOnly && isEditing) ? 'hover:border-green-600 hover:text-green-600 hover:bg-green-50' : ''}`
+                        } ${(isReadOnly || !isEditing) && rec.status !== "PRESENT" ? 'opacity-50 cursor-not-allowed bg-slate-50' : ''}
+                        ${isReadOnly || !isEditing ? 'cursor-default' : ''}`}
+                      >
+                        <CheckCircle2 className="w-5 h-5" />
+                        <span className="font-medium">Present</span>
+                      </button>
+                      <button 
+                        onClick={() => toggleStatus(worker.id, "ABSENT")}
+                        disabled={isReadOnly || !isEditing}
+                        className={`flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-xl border transition-all ${
+                          rec.status === "ABSENT" 
+                            ? "bg-red-500 border-red-500 text-white shadow-sm" 
+                            : `bg-white border-slate-200 text-slate-500 ${(!isReadOnly && isEditing) ? 'hover:border-red-500 hover:text-red-500 hover:bg-red-50' : ''}`
+                        } ${(isReadOnly || !isEditing) && rec.status !== "ABSENT" ? 'opacity-50 cursor-not-allowed bg-slate-50' : ''}
+                        ${isReadOnly || !isEditing ? 'cursor-default' : ''}`}
+                      >
+                        <XCircle className="w-5 h-5" />
+                        <span className="font-medium">Absent</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
-                
-                <div className="flex items-center gap-2 w-full md:w-auto">
-                  <button 
-                    onClick={() => toggleStatus(worker.id, "PRESENT")}
-                    disabled={isReadOnly || !isEditing}
-                    className={`flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-xl border transition-all ${
-                      attendance[worker.id] === "PRESENT" 
-                        ? "bg-green-600 border-green-600 text-white shadow-sm" 
-                        : `bg-white border-slate-200 text-slate-500 ${(!isReadOnly && isEditing) ? 'hover:border-green-600 hover:text-green-600 hover:bg-green-50' : ''}`
-                    } ${(isReadOnly || !isEditing) && attendance[worker.id] !== "PRESENT" ? 'opacity-50 cursor-not-allowed bg-slate-50' : ''}
-                    ${isReadOnly || !isEditing ? 'cursor-default' : ''}`}
-                  >
-                    <CheckCircle2 className="w-5 h-5" />
-                    <span className="font-medium">Present</span>
-                  </button>
-                  <button 
-                    onClick={() => toggleStatus(worker.id, "ABSENT")}
-                    disabled={isReadOnly || !isEditing}
-                    className={`flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-xl border transition-all ${
-                      attendance[worker.id] === "ABSENT" 
-                        ? "bg-red-500 border-red-500 text-white shadow-sm" 
-                        : `bg-white border-slate-200 text-slate-500 ${(!isReadOnly && isEditing) ? 'hover:border-red-500 hover:text-red-500 hover:bg-red-50' : ''}`
-                    } ${(isReadOnly || !isEditing) && attendance[worker.id] !== "ABSENT" ? 'opacity-50 cursor-not-allowed bg-slate-50' : ''}
-                    ${isReadOnly || !isEditing ? 'cursor-default' : ''}`}
-                  >
-                    <XCircle className="w-5 h-5" />
-                    <span className="font-medium">Absent</span>
-                  </button>
-                </div>
-              </div>
-            ))
+              );
+            })
           )}
         </div>
         
@@ -227,8 +317,9 @@ export default function AttendancePage() {
           <div className="mt-8 flex justify-end gap-4 pt-6 border-t border-slate-50">
             <button 
               onClick={() => {
-                setAttendance({ ...originalAttendance });
+                setAttendance(JSON.parse(JSON.stringify(originalAttendance)));
                 setIsEditing(false);
+                setMessage(null);
               }}
               disabled={isSaving || isLoading}
               className="px-6 py-2 rounded-xl font-medium border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 transition-colors disabled:opacity-70"

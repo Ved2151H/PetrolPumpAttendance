@@ -49,24 +49,29 @@ export async function GET(request: Request) {
     })
 
     // Prepare Detailed Sheet Data
-    // Group attendances by date
-    const dateMap = new Map<string, any>()
-    
-    // First setup empty records for all dates
-    attendances.forEach(att => {
-      const dateKey = att.date.toISOString().split('T')[0]
-      if (!dateMap.has(dateKey)) {
-        dateMap.set(dateKey, { Date: dateKey })
-      }
-      
-      const record = dateMap.get(dateKey)
-      const worker = workers.find(w => w.id === att.workerId)
-      if (worker) {
-        record[worker.name] = att.status
-      }
-    })
+    const formatDisplayTime = (time24: string | null) => {
+      if (!time24) return '-';
+      const [h, m] = time24.split(':');
+      let hours = parseInt(h, 10);
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12;
+      hours = hours ? hours : 12;
+      return `${hours.toString().padStart(2, '0')}:${m} ${ampm}`;
+    };
 
-    const detailedData = Array.from(dateMap.values())
+    const detailedData: any[] = [];
+    attendances.forEach(att => {
+      const worker = workers.find(w => w.id === att.workerId);
+      if (worker) {
+        detailedData.push({
+          'Worker Name': worker.name,
+          'Date': att.date.toISOString().split('T')[0],
+          'Status': att.status === 'PRESENT' ? 'Present' : 'Absent',
+          'Time In': formatDisplayTime(att.timeIn),
+          'Time Out': formatDisplayTime(att.timeOut)
+        });
+      }
+    });
 
     // Create workbook
     const wb = XLSX.utils.book_new()

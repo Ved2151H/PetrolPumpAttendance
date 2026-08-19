@@ -38,6 +38,8 @@ model Attendance {
   workerId  String
   date      DateTime         // Store as Date without time component or standard midnight UTC
   status    AttendanceStatus
+  timeIn    String?
+  timeOut   String?
   createdAt DateTime         @default(now())
   updatedAt DateTime         @updatedAt
   worker    Worker           @relation(fields: [workerId], references: [id])
