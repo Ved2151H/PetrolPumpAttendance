@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url)
     const dateParam = searchParams.get('date')
 
-    let whereClause: any = { adminId: session.adminId }
+    let whereClause: any = { adminId: session.adminId, deletedAt: null }
 
     if (dateParam) {
       const parsedDate = parseISO(dateParam)

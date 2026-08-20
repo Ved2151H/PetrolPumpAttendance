@@ -54,8 +54,9 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
       return NextResponse.json({ success: false, error: { message: 'Note not found or unauthorized' } }, { status: 404 })
     }
 
-    await prisma.note.delete({
-      where: { id }
+    await prisma.note.update({
+      where: { id },
+      data: { deletedAt: new Date() }
     })
 
     return NextResponse.json({ success: true, data: null })
