@@ -190,8 +190,8 @@ export default function AttendancePage() {
       )}
 
       <div className="card">
-        <div className="flex justify-between items-center mb-6 pb-4 border-b border-slate-50">
-          <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row sm:justify-between items-start sm:items-center gap-4 mb-6 pb-4 border-b border-slate-50">
+          <div className="flex flex-wrap items-center gap-3">
             <h2 className="text-lg font-bold text-slate-900">Active Workers</h2>
             {isEditing && (
               <span className="px-2.5 py-1 text-xs font-bold bg-indigo-100 text-indigo-700 rounded-md">
@@ -208,7 +208,7 @@ export default function AttendancePage() {
             </button>
           )}
           {isEditing && (
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
               <button 
                 onClick={() => {
                   setAttendance(JSON.parse(JSON.stringify(originalAttendance)));
@@ -216,14 +216,14 @@ export default function AttendancePage() {
                   setMessage(null);
                 }}
                 disabled={isLoading}
-                className="text-sm px-4 py-2 bg-slate-100 text-slate-600 font-medium rounded-lg hover:bg-slate-200 transition-colors disabled:opacity-50"
+                className="flex-1 sm:flex-none text-sm px-4 py-2 bg-slate-100 text-slate-600 font-medium rounded-lg hover:bg-slate-200 transition-colors disabled:opacity-50 whitespace-nowrap text-center"
               >
                 Cancel
               </button>
               <button 
                 onClick={markAllPresent}
                 disabled={isLoading || workers.length === 0}
-                className="text-sm px-4 py-2 bg-green-50 text-green-700 font-medium rounded-lg hover:bg-green-100 transition-colors disabled:opacity-50"
+                className="flex-1 sm:flex-none text-sm px-4 py-2 bg-green-50 text-green-700 font-medium rounded-lg hover:bg-green-100 transition-colors disabled:opacity-50 whitespace-nowrap text-center"
               >
                 Mark All Present
               </button>

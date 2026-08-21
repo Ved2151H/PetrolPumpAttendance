@@ -4,7 +4,7 @@ import prisma from '@/lib/prisma'
 export async function GET() {
   try {
     const trashedWorkers = await prisma.worker.findMany({
-      where: { deletedAt: { not: null } },
+      where: { deletedAt: { not: null }, isArchived: false },
       orderBy: { deletedAt: 'desc' }
     })
     return NextResponse.json({ success: true, data: trashedWorkers })

@@ -77,6 +77,23 @@ export default function TrashPage() {
     }
   };
 
+  const handlePermanentDeleteWorker = async (workerId: string) => {
+    if (!confirm("Are you sure you want to permanently delete this worker? This will hide them from Trash but won't affect their historical attendance or reports.")) return;
+    setActionId(workerId);
+    try {
+      const res = await fetch(`/api/workers/${workerId}/permanent-delete`, { method: 'POST' });
+      if (!res.ok) throw new Error("Failed to permanently delete worker");
+      const data = await res.json();
+      if (data.success) {
+        setWorkers(workers.filter(w => w.id !== workerId));
+      }
+    } catch (err: any) {
+      alert(err.message);
+    } finally {
+      setActionId(null);
+    }
+  };
+
   const handleRestoreNote = async (noteId: string) => {
     if (!confirm("Are you sure you want to restore this note?")) return;
     setActionId(noteId);
@@ -191,14 +208,24 @@ export default function TrashPage() {
                     )}
                   </div>
                 </div>
-                <button
-                  onClick={() => handleRestoreWorker(worker.id)}
-                  disabled={actionId === worker.id}
-                  className="w-full btn-secondary py-2 text-sm flex justify-center items-center gap-2 hover:text-indigo-700 hover:border-indigo-200 hover:bg-indigo-50"
-                >
-                  <RefreshCw className={`w-4 h-4 ${actionId === worker.id ? 'animate-spin' : ''}`} />
-                  {actionId === worker.id ? "Restoring..." : "Restore Worker"}
-                </button>
+                <div className="flex flex-col sm:flex-row gap-2 mt-4">
+                  <button
+                    onClick={() => handleRestoreWorker(worker.id)}
+                    disabled={actionId === worker.id}
+                    className="w-full sm:flex-1 btn-secondary py-2 text-sm flex justify-center items-center gap-2 hover:text-indigo-700 hover:border-indigo-200 hover:bg-indigo-50"
+                  >
+                    <RefreshCw className={`w-4 h-4 ${actionId === worker.id ? 'animate-spin' : ''}`} />
+                    {actionId === worker.id ? "Restoring..." : "Restore"}
+                  </button>
+                  <button
+                    onClick={() => handlePermanentDeleteWorker(worker.id)}
+                    disabled={actionId === worker.id}
+                    className="w-full sm:flex-1 btn-secondary py-2 text-sm flex justify-center items-center gap-2 hover:text-red-700 hover:border-red-200 hover:bg-red-50 text-red-600"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    Delete Permanently
+                  </button>
+                </div>
               </div>
             ))}
           </div>

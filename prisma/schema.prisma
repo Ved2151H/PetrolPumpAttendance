@@ -23,6 +23,7 @@ model Worker {
   phone       String?
   joiningDate DateTime      @default(now())
   deletedAt   DateTime?
+  isArchived  Boolean       @default(false)
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
   attendances Attendance[]

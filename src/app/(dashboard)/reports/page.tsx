@@ -12,7 +12,7 @@ export default function ReportsPage() {
   const [validationError, setValidationError] = useState("");
   const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
 
-  const handleDownload = async () => {
+  const handleDownload = async (status: 'current' | 'ex') => {
     setValidationError("");
     setIsGenerating(true);
     
@@ -44,7 +44,7 @@ export default function ReportsPage() {
       const startIso = startD.toISOString();
       const endIso = endD.toISOString();
 
-      const response = await fetch(`/api/reports?startDate=${encodeURIComponent(startIso)}&endDate=${encodeURIComponent(endIso)}`);
+      const response = await fetch(`/api/reports?startDate=${encodeURIComponent(startIso)}&endDate=${encodeURIComponent(endIso)}&workerStatus=${status}`);
       
       if (!response.ok) {
         throw new Error('Failed to generate report');
@@ -53,8 +53,9 @@ export default function ReportsPage() {
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
+      const prefix = status === 'current' ? 'Current_Workers' : 'Ex_Workers';
       a.href = url;
-      a.download = `Attendance_Report_${dateRange}_${new Date().toISOString().split('T')[0]}.xlsx`;
+      a.download = `Attendance_Report_${prefix}_${dateRange}_${new Date().toISOString().split('T')[0]}.xlsx`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
@@ -115,14 +116,24 @@ export default function ReportsPage() {
           </div>
 
           {dateRange !== "Custom" && (
-            <button 
-              onClick={handleDownload}
-              disabled={isGenerating}
-              className="w-full btn-primary !bg-teal-600 hover:!bg-teal-700 flex items-center justify-center gap-2 disabled:opacity-70 shadow-md shadow-teal-200"
-            >
-              <Download className="w-5 h-5" />
-              {isGenerating ? "Generating Report..." : `Download ${dateRange} Report`}
-            </button>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <button 
+                onClick={() => handleDownload('current')}
+                disabled={isGenerating}
+                className="w-full btn-primary !bg-teal-600 hover:!bg-teal-700 flex items-center justify-center gap-2 disabled:opacity-70 shadow-md shadow-teal-200"
+              >
+                <Download className="w-5 h-5" />
+                {isGenerating ? "Generating..." : `Download Current Workers`}
+              </button>
+              <button 
+                onClick={() => handleDownload('ex')}
+                disabled={isGenerating}
+                className="w-full btn-primary !bg-slate-600 hover:!bg-slate-700 flex items-center justify-center gap-2 disabled:opacity-70 shadow-md shadow-slate-200"
+              >
+                <Download className="w-5 h-5" />
+                {isGenerating ? "Generating..." : `Download Ex-Workers`}
+              </button>
+            </div>
           )}
         </div>
       </div>
@@ -162,25 +173,35 @@ export default function ReportsPage() {
               </div>
             </div>
             
-            <div className="p-6 border-t border-slate-100 bg-slate-50 flex justify-end gap-3">
+            <div className="p-6 border-t border-slate-100 bg-slate-50 flex flex-col sm:flex-row justify-end gap-3">
               <button 
                 onClick={() => {
                   setIsCustomModalOpen(false);
                   setDateRange("Daily"); // Revert if cancelled
                 }}
                 disabled={isGenerating}
-                className="px-4 py-2 rounded-lg text-sm font-medium border border-slate-200 text-slate-700 bg-white hover:bg-slate-100 transition-colors disabled:opacity-70"
+                className="w-full sm:w-auto px-4 py-2 rounded-lg text-sm font-medium border border-slate-200 text-slate-700 bg-white hover:bg-slate-100 transition-colors disabled:opacity-70"
               >
                 Cancel
               </button>
-              <button 
-                onClick={handleDownload}
-                disabled={isGenerating}
-                className="px-4 py-2 rounded-lg text-sm font-medium bg-teal-600 text-white hover:bg-teal-700 transition-colors disabled:opacity-70 flex items-center gap-2 shadow-sm"
-              >
-                {isGenerating && <Download className="w-4 h-4 animate-bounce" />}
-                {isGenerating ? "Generating..." : "Generate Excel"}
-              </button>
+              <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                <button 
+                  onClick={() => handleDownload('current')}
+                  disabled={isGenerating}
+                  className="w-full sm:w-auto px-4 py-2 rounded-lg text-sm font-medium bg-teal-600 text-white hover:bg-teal-700 transition-colors disabled:opacity-70 flex items-center justify-center gap-2 shadow-sm whitespace-nowrap"
+                >
+                  {isGenerating && <Download className="w-4 h-4 animate-bounce" />}
+                  {isGenerating ? "Wait..." : "Current Workers"}
+                </button>
+                <button 
+                  onClick={() => handleDownload('ex')}
+                  disabled={isGenerating}
+                  className="w-full sm:w-auto px-4 py-2 rounded-lg text-sm font-medium bg-slate-600 text-white hover:bg-slate-700 transition-colors disabled:opacity-70 flex items-center justify-center gap-2 shadow-sm whitespace-nowrap"
+                >
+                  {isGenerating && <Download className="w-4 h-4 animate-bounce" />}
+                  {isGenerating ? "Wait..." : "Ex-Workers"}
+                </button>
+              </div>
             </div>
           </div>
         </div>

@@ -8,6 +8,7 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url)
     const startDateStr = searchParams.get('startDate')
     const endDateStr = searchParams.get('endDate')
+    const workerStatus = searchParams.get('workerStatus')
 
     if (!startDateStr || !endDateStr) {
       return NextResponse.json({ success: false, error: { message: 'Start date and end date are required' } }, { status: 400 })
@@ -20,7 +21,15 @@ export async function GET(request: Request) {
     endDate.setHours(23, 59, 59, 999)
 
     // Fetch data
+    const workerWhere: any = {};
+    if (workerStatus === 'current') {
+      workerWhere.deletedAt = null;
+    } else if (workerStatus === 'ex') {
+      workerWhere.deletedAt = { not: null };
+    }
+
     const workers = await prisma.worker.findMany({
+      where: workerWhere,
       orderBy: { name: 'asc' }
     })
     
