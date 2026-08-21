@@ -10,9 +10,15 @@ export async function GET(request: Request) {
       return NextResponse.json({ success: false, error: { message: 'Date parameter is required' } }, { status: 400 })
     }
 
-    const date = new Date(dateStr)
-    const startOfDay = new Date(date.setHours(0, 0, 0, 0))
-    const endOfDay = new Date(date.setHours(23, 59, 59, 999))
+    const inputDate = new Date(dateStr)
+    // Adjust for IST (+5:30) to get the correct day regardless of Vercel server timezone
+    const istTime = new Date(inputDate.getTime() + (5.5 * 60 * 60 * 1000));
+    const year = istTime.getUTCFullYear();
+    const month = istTime.getUTCMonth();
+    const day = istTime.getUTCDate();
+
+    const startOfDay = new Date(Date.UTC(year, month, day, 0, 0, 0, 0));
+    const endOfDay = new Date(Date.UTC(year, month, day, 23, 59, 59, 999));
 
     const attendances = await prisma.attendance.findMany({
       where: {
@@ -41,7 +47,7 @@ export async function GET(request: Request) {
       return {
         id: `synthetic-${worker.id}`,
         workerId: worker.id,
-        date: date,
+        date: startOfDay,
         status: 'ABSENT',
         timeIn: null,
         timeOut: null,
@@ -67,7 +73,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, error: { message: 'Invalid payload' } }, { status: 400 })
     }
 
-    const targetDate = new Date(date)
+    const inputTargetDate = new Date(date)
     const currentDate = new Date()
     
     // Check if date is more than 7 days old
@@ -75,12 +81,15 @@ export async function POST(request: Request) {
     sevenDaysAgo.setDate(currentDate.getDate() - 7)
     sevenDaysAgo.setHours(0, 0, 0, 0)
     
-    if (targetDate < sevenDaysAgo) {
+    if (inputTargetDate < sevenDaysAgo) {
       return NextResponse.json({ success: false, error: { message: 'Cannot edit attendance older than 7 days' } }, { status: 400 })
     }
 
+    // Adjust for IST (+5:30) to get the correct day regardless of Vercel server timezone
+    const istTargetTime = new Date(inputTargetDate.getTime() + (5.5 * 60 * 60 * 1000));
+    
     // Normalize to strict UTC midnight to prevent timezone duplicates
-    const normalizedDate = new Date(Date.UTC(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate()));
+    const normalizedDate = new Date(Date.UTC(istTargetTime.getUTCFullYear(), istTargetTime.getUTCMonth(), istTargetTime.getUTCDate()));
 
     // Validate times before transaction
     for (const record of records) {
