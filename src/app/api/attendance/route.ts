@@ -26,9 +26,32 @@ export async function GET(request: Request) {
       }
     })
 
-    const uniqueAttendances = Array.from(new Map(attendances.map(a => [a.workerId, a])).values());
+    const activeWorkers = await prisma.worker.findMany({
+      where: { deletedAt: null }
+    })
 
-    return NextResponse.json({ success: true, data: uniqueAttendances })
+    const uniqueAttendances = Array.from(new Map(attendances.map(a => [a.workerId, a])).values());
+    const attendanceMap = new Map(uniqueAttendances.map(a => [a.workerId, a]));
+
+    const fullAttendanceList = activeWorkers.map(worker => {
+      if (attendanceMap.has(worker.id)) {
+        return attendanceMap.get(worker.id);
+      }
+      // Synthetic record for workers with no attendance entry
+      return {
+        id: `synthetic-${worker.id}`,
+        workerId: worker.id,
+        date: date,
+        status: 'ABSENT',
+        timeIn: null,
+        timeOut: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        worker: worker
+      };
+    });
+
+    return NextResponse.json({ success: true, data: fullAttendanceList })
   } catch (error) {
     console.error('Failed to fetch attendance:', error)
     return NextResponse.json({ success: false, error: { message: 'Failed to fetch attendance' } }, { status: 500 })

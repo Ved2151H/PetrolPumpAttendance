@@ -112,7 +112,7 @@ export default function DashboardPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
         {/* Today's Attendance List */}
-        <div className="attendance-panel lg:col-span-2 card">
+        <div className="attendance-panel card lg:col-span-3">
           <div className="flex justify-between items-center mb-6 pb-4 border-b border-slate-200/70">
             <div><p className="text-[10px] font-bold uppercase tracking-[.15em] text-indigo-500 mb-1">Live register</p><h3 className="text-lg font-bold text-slate-900">Today&apos;s Attendance</h3></div>
             <button className="text-sm text-[#263b73] font-semibold hover:text-[#1d2e5b]">View All</button>
@@ -162,39 +162,6 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Recent Activity */}
-        <div className="activity-panel card">
-          <h3 className="text-lg font-bold text-slate-900 mb-6">Recent Activity</h3>
-          <div className="space-y-6 relative before:absolute before:inset-0 before:ml-2.5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-200 before:to-transparent">
-            {isLoading ? (
-              <div className="h-32 bg-slate-50 rounded animate-pulse"></div>
-            ) : (
-              <>
-                <div className="relative flex items-center gap-4">
-                  <div className="w-5 h-5 rounded-full bg-indigo-500 border-4 border-white shrink-0 z-10"></div>
-                  <div className="flex flex-col">
-                    <p className="text-sm text-slate-900 font-medium">Attendance saved for today</p>
-                    <span className="text-xs text-slate-500">10 mins ago</span>
-                  </div>
-                </div>
-                <div className="relative flex items-center gap-4">
-                  <div className="w-5 h-5 rounded-full bg-slate-300 border-4 border-white shrink-0 z-10"></div>
-                  <div className="flex flex-col">
-                    <p className="text-sm text-slate-900 font-medium">Rahul Sharma marked absent</p>
-                    <span className="text-xs text-slate-500">15 mins ago</span>
-                  </div>
-                </div>
-                <div className="relative flex items-center gap-4">
-                  <div className="w-5 h-5 rounded-full bg-blue-500 border-4 border-white shrink-0 z-10"></div>
-                  <div className="flex flex-col">
-                    <p className="text-sm text-slate-900 font-medium">New worker added</p>
-                    <span className="text-xs text-slate-500">Yesterday</span>
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
       </div>
     </div>
   );

@@ -25,7 +25,7 @@ export async function GET() {
 
     const uniqueToday = Array.from(new Map(todayAttendance.map(a => [a.workerId, a])).values());
     const presentToday = uniqueToday.filter(a => a.status === 'PRESENT').length;
-    const absentToday = uniqueToday.filter(a => a.status === 'ABSENT').length;
+    const absentToday = totalWorkers - presentToday;
     const attendanceRate = totalWorkers > 0 ? Math.min(100, Math.round((presentToday / totalWorkers) * 100)) : 0
 
     // Get weekly stats (last 7 days)
@@ -54,7 +54,7 @@ export async function GET() {
       })
       const uniqueDayAttendances = Array.from(new Map(dayAttendances.map(a => [a.workerId, a])).values());
       const present = uniqueDayAttendances.filter(a => a.status === 'PRESENT').length
-      const absent = uniqueDayAttendances.filter(a => a.status === 'ABSENT').length
+      const absent = totalWorkers - present
       weeklyStats.push({ date: dateStr, present, absent })
     }
 
