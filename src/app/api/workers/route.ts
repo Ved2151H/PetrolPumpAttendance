@@ -1,10 +1,14 @@
+import { getFirmId } from '@/lib/firm';
 import { NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
 
 export async function GET() {
+  const firmId = await getFirmId();
+  if (!firmId) return NextResponse.json({ success: false, error: { message: 'Unauthorized - No firm selected' } }, { status: 401 });
+
   try {
     const workers = await prisma.worker.findMany({
-      where: { deletedAt: null },
+      where: { firmId,  deletedAt: null },
       orderBy: { createdAt: 'desc' }
     })
     return NextResponse.json({ success: true, data: workers })
@@ -15,6 +19,9 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const firmId = await getFirmId();
+  if (!firmId) return NextResponse.json({ success: false, error: { message: 'Unauthorized - No firm selected' } }, { status: 401 });
+
   try {
     const data = await request.json()
     
@@ -31,7 +38,7 @@ export async function POST(request: Request) {
     }
 
     const newWorker = await prisma.worker.create({
-      data: {
+      data: { firmId, 
         name: data.name,
         phone: data.phone || null,
         joiningDate: new Date(data.joiningDate),
@@ -41,7 +48,7 @@ export async function POST(request: Request) {
 
     // Create Audit Log
     await prisma.auditLog.create({
-      data: {
+      data: { firmId, 
         action: 'WORKER_CREATED',
         details: `Worker ${newWorker.name} created`
       }

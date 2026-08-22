@@ -115,7 +115,7 @@ export default function DashboardPage() {
         <div className="attendance-panel card lg:col-span-3">
           <div className="flex justify-between items-center mb-6 pb-4 border-b border-slate-200/70">
             <div><p className="text-[10px] font-bold uppercase tracking-[.15em] text-indigo-500 mb-1">Live register</p><h3 className="text-lg font-bold text-slate-900">Today&apos;s Attendance</h3></div>
-            <button className="text-sm text-[#263b73] font-semibold hover:text-[#1d2e5b]">View All</button>
+            <button className="text-sm text-primary font-semibold hover:text-primary-hover">View All</button>
           </div>
           
           <div className="space-y-4">

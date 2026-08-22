@@ -1,9 +1,13 @@
+import { getFirmId } from '@/lib/firm';
 ﻿export const dynamic = 'force-dynamic'
 import { NextResponse, NextRequest } from 'next/server'
 import { getSession } from '@/lib/auth'
 import prisma from '@/lib/prisma'
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const firmId = await getFirmId();
+  if (!firmId) return NextResponse.json({ success: false, error: { message: 'Unauthorized - No firm selected' } }, { status: 401 });
+
   try {
     const session = await getSession()
     if (!session || !session.adminId) {
@@ -15,7 +19,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     const { title, content, noteDate } = body
 
     const existingNote = await prisma.note.findUnique({
-      where: { id }
+      where: { firmId,  id }
     })
 
     if (!existingNote || false) {
@@ -23,8 +27,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     }
 
     const updatedNote = await prisma.note.update({
-      where: { id },
-      data: {
+      where: { firmId,  id },
+      data: { firmId, 
         title: title !== undefined ? title : existingNote.title,
         content: content !== undefined ? content : existingNote.content,
         noteDate: noteDate ? new Date(noteDate) : existingNote.noteDate,
@@ -39,6 +43,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 }
 
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const firmId = await getFirmId();
+  if (!firmId) return NextResponse.json({ success: false, error: { message: 'Unauthorized - No firm selected' } }, { status: 401 });
+
   try {
     const session = await getSession()
     if (!session || !session.adminId) {
@@ -48,7 +55,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
     const { id } = await params
 
     const existingNote = await prisma.note.findUnique({
-      where: { id }
+      where: { firmId,  id }
     })
 
     if (!existingNote || false) {
@@ -56,8 +63,8 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
     }
 
     await prisma.note.update({
-      where: { id },
-      data: { deletedAt: new Date() }
+      where: { firmId,  id },
+      data: { firmId,  deletedAt: new Date() }
     })
 
     return NextResponse.json({ success: true, data: null })

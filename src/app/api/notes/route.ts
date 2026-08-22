@@ -1,3 +1,4 @@
+import { getFirmId } from '@/lib/firm';
 ﻿export const dynamic = 'force-dynamic';
 import { NextResponse, NextRequest } from 'next/server';
 import { getSession } from '@/lib/auth';
@@ -5,6 +6,9 @@ import prisma from '@/lib/prisma';
 import { startOfDay, endOfDay, parseISO } from 'date-fns';
 
 export async function GET(req: NextRequest) {
+  const firmId = await getFirmId();
+  if (!firmId) return NextResponse.json({ success: false, error: { message: 'Unauthorized - No firm selected' } }, { status: 401 });
+
   try {
     const session = await getSession();
     if (!session || !session.adminId) {
@@ -14,7 +18,7 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const dateParam = searchParams.get('date');
 
-    let whereClause: any = { deletedAt: null };
+    let whereClause: any = { deletedAt: null, firmId };
 
     if (dateParam) {
       const parsedDate = parseISO(dateParam);
@@ -42,6 +46,9 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const firmId = await getFirmId();
+  if (!firmId) return NextResponse.json({ success: false, error: { message: 'Unauthorized - No firm selected' } }, { status: 401 });
+
   try {
     const session = await getSession();
     if (!session || !session.adminId) {
@@ -56,7 +63,7 @@ export async function POST(req: NextRequest) {
     }
 
     const newNote = await prisma.note.create({
-      data: {
+      data: { firmId, 
         title,
         content,
         noteDate: new Date(noteDate),

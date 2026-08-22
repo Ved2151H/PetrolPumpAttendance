@@ -144,3 +144,62 @@ input[type="date"], input[type="time"] { color-scheme: light; }
   main > div > h1, main > div > div > h1 { color: #1e3366; }
   .btn-primary { box-shadow: 0 10px 20px -11px rgba(29, 46, 91, .78), inset 0 1px 0 rgba(255,255,255,.18); }
 }
+
+/* Firm specific themes */
+.firm-patil {
+  --color-primary: #ea580c;
+  --color-primary-hover: #c2410c;
+  --color-info: #ea580c;
+  --color-attendance: #ea580c;
+}
+
+.firm-patil.dashboard-shell {
+  background:
+    radial-gradient(circle at 92% 4%, rgba(234, 88, 12, .15), transparent 24rem),
+    radial-gradient(circle at 24% 22%, rgba(249, 115, 22, .1), transparent 28rem),
+    linear-gradient(rgba(255,255,255,.42) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.42) 1px, transparent 1px),
+    #fcf8f2;
+}
+
+.firm-patil.dashboard-shell main::before {
+  background: radial-gradient(circle, rgba(234, 88, 12, .08), rgba(234, 88, 12, 0) 68%);
+}
+
+.firm-patil.dashboard-shell .bg-white { background-color: #fffbf7; }
+.firm-patil.dashboard-shell .bg-slate-50 { background-color: #fdf8f2; }
+.firm-patil.dashboard-shell .bg-slate-100 { background-color: #fbf0e3; }
+
+.firm-patil .btn-primary {
+  background: linear-gradient(135deg, #f97316, #ea580c) !important;
+  box-shadow: 0 8px 18px -10px rgba(234, 88, 12, .72), inset 0 1px 0 rgba(255,255,255,.18) !important;
+}
+.firm-patil .btn-primary:hover {
+  background: linear-gradient(135deg, #fb923c, #c2410c) !important;
+  box-shadow: 0 13px 24px -12px rgba(234, 88, 12, .75) !important;
+}
+
+.firm-patil .input-field:focus {
+  border-color: #ea580c !important;
+  box-shadow: 0 0 0 4px rgba(234, 88, 12, .12) !important;
+}
+
+.firm-patil .card:has(.bg-blue-50) {
+  background: linear-gradient(135deg, #ffffff, #fffdf9);
+}
+
+.firm-patil .attendance-panel {
+  background: linear-gradient(145deg, rgba(255,253,250,.96), rgba(254,243,199,.93)) ;
+  border-color: #fde68a ;
+}
+
+.firm-patil .activity-panel {
+  background: linear-gradient(160deg, #fffbf7, #fef3c7) ;
+  border-color: #fde68a ;
+}
+
+.firm-patil .attendance-avatar {
+  background: linear-gradient(145deg, #ffedd5, #fed7aa) ;
+  color: #c2410c ;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.7), 0 6px 12px -9px #c2410c ;
+}

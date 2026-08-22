@@ -1,7 +1,11 @@
+﻿import { getFirmId } from '@/lib/firm';
 import { NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
 
 export async function GET() {
+  const firmId = await getFirmId();
+  if (!firmId) return NextResponse.json({ success: false, error: { message: 'Unauthorized - No firm selected' } }, { status: 401 });
+
   try {
     const now = new Date()
     // Adjust for IST (+5:30) to get current Indian time
@@ -16,12 +20,13 @@ export async function GET() {
 
     // Get total active workers
     const totalWorkers = await prisma.worker.count({
-      where: { deletedAt: null }
+      where: { deletedAt: null, firmId }
     })
 
     // Get today's attendance
     const todayAttendance = await prisma.attendance.findMany({
       where: {
+        worker: { firmId },
         date: {
           gte: today,
           lte: endOfToday
@@ -39,6 +44,7 @@ export async function GET() {
     
     const weeklyAttendances = await prisma.attendance.findMany({
       where: {
+        worker: { firmId },
         date: {
           gte: sevenDaysAgo,
           lte: endOfToday

@@ -1,7 +1,11 @@
+﻿import { getFirmId } from '@/lib/firm';
 import { NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
 
 export async function GET(request: Request) {
+  const firmId = await getFirmId();
+  if (!firmId) return NextResponse.json({ success: false, error: { message: 'Unauthorized - No firm selected' } }, { status: 401 });
+
   try {
     const { searchParams } = new URL(request.url)
     const dateStr = searchParams.get('date')
@@ -11,7 +15,6 @@ export async function GET(request: Request) {
     }
 
     const inputDate = new Date(dateStr)
-    // Adjust for IST (+5:30) to get the correct day regardless of Vercel server timezone
     const istTime = new Date(inputDate.getTime() + (5.5 * 60 * 60 * 1000));
     const year = istTime.getUTCFullYear();
     const month = istTime.getUTCMonth();
@@ -22,6 +25,7 @@ export async function GET(request: Request) {
 
     const attendances = await prisma.attendance.findMany({
       where: {
+        worker: { firmId },
         date: {
           gte: startOfDay,
           lte: endOfDay
@@ -33,7 +37,7 @@ export async function GET(request: Request) {
     })
 
     const activeWorkers = await prisma.worker.findMany({
-      where: { deletedAt: null }
+      where: { deletedAt: null, firmId }
     })
 
     const uniqueAttendances = Array.from(new Map(attendances.map(a => [a.workerId, a])).values());
@@ -43,7 +47,6 @@ export async function GET(request: Request) {
       if (attendanceMap.has(worker.id)) {
         return attendanceMap.get(worker.id);
       }
-      // Synthetic record for workers with no attendance entry
       return {
         id: `synthetic-${worker.id}`,
         workerId: worker.id,
@@ -65,9 +68,12 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  const firmId = await getFirmId();
+  if (!firmId) return NextResponse.json({ success: false, error: { message: 'Unauthorized - No firm selected' } }, { status: 401 });
+
   try {
     const data = await request.json()
-    const { date, records } = data // records: { workerId: string, status: 'PRESENT' | 'ABSENT' }[]
+    const { date, records } = data 
 
     if (!date || !records || !Array.isArray(records)) {
       return NextResponse.json({ success: false, error: { message: 'Invalid payload' } }, { status: 400 })
@@ -76,7 +82,6 @@ export async function POST(request: Request) {
     const inputTargetDate = new Date(date)
     const currentDate = new Date()
     
-    // Check if date is more than 7 days old
     const sevenDaysAgo = new Date()
     sevenDaysAgo.setDate(currentDate.getDate() - 7)
     sevenDaysAgo.setHours(0, 0, 0, 0)
@@ -85,18 +90,23 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, error: { message: 'Cannot edit attendance older than 7 days' } }, { status: 400 })
     }
 
-    // Adjust for IST (+5:30) to get the correct day regardless of Vercel server timezone
     const istTargetTime = new Date(inputTargetDate.getTime() + (5.5 * 60 * 60 * 1000));
-    
-    // Normalize to strict UTC midnight to prevent timezone duplicates
     const normalizedDate = new Date(Date.UTC(istTargetTime.getUTCFullYear(), istTargetTime.getUTCMonth(), istTargetTime.getUTCDate()));
 
-    // Validate times before transaction
     for (const record of records) {
       if (record.status === 'ABSENT') {
         record.timeIn = null;
         record.timeOut = null;
       }
+    }
+
+    // Verify all workers belong to firm
+    const workerIds = records.map(r => r.workerId);
+    const validWorkers = await prisma.worker.count({
+      where: { id: { in: workerIds }, firmId }
+    });
+    if (validWorkers !== workerIds.length) {
+      return NextResponse.json({ success: false, error: { message: 'Unauthorized worker modification' } }, { status: 403 })
     }
 
     const savedRecords = [];
@@ -126,6 +136,7 @@ export async function POST(request: Request) {
 
     await prisma.auditLog.create({
       data: {
+        firmId,
         action: 'ATTENDANCE_MARKED',
         details: `Attendance marked for ${records.length} workers on ${normalizedDate.toISOString().split('T')[0]}`
       }

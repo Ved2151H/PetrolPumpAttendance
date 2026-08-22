@@ -2,9 +2,21 @@ import { NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
 import * as XLSX from 'xlsx'
 import { format } from 'date-fns'
+import { getFirmId } from '@/lib/firm'
 
 export async function GET(request: Request) {
   try {
+    const firmId = await getFirmId();
+    if (!firmId) {
+      return NextResponse.json({ success: false, error: { message: 'Unauthorized - No firm selected' } }, { status: 401 })
+    }
+
+    const firm = await prisma.firm.findUnique({ where: { id: firmId } })
+    let firmName = firm ? firm.name : 'Unknown Firm';
+    if (!firmName.endsWith('Private Limited')) {
+      firmName += ' Private Limited';
+    }
+
     const { searchParams } = new URL(request.url)
     const startDateStr = searchParams.get('startDate')
     const endDateStr = searchParams.get('endDate')
@@ -21,7 +33,7 @@ export async function GET(request: Request) {
     endDate.setHours(23, 59, 59, 999)
 
     // Fetch data
-    const workerWhere: any = {};
+    const workerWhere: any = { firmId };
     if (workerStatus === 'current') {
       workerWhere.deletedAt = null;
     } else if (workerStatus === 'ex') {
@@ -35,7 +47,8 @@ export async function GET(request: Request) {
     
     const attendances = await prisma.attendance.findMany({
       where: {
-        date: { gte: startDate, lte: endDate }
+        date: { gte: startDate, lte: endDate },
+        worker: { firmId }
       },
       orderBy: { date: 'asc' }
     })
@@ -118,6 +131,7 @@ export async function GET(request: Request) {
     }
 
     const aoa: any[][] = [];
+    aoa.push([firmName.toUpperCase()]);
     aoa.push(['ATTENDANCE REPORT']);
 
     const isSingleDay = startDate.toDateString() === endDate.toDateString();
@@ -136,8 +150,7 @@ export async function GET(request: Request) {
     aoa.push(['WORKER SUMMARY']);
     aoa.push(['Worker', 'Working Days', 'Total Working Hours']);
     
-    // Filter summary to only those who were eligible for at least one day in the report range
-    // meaning they have been evaluated in detailedRows, or they just exist. 
+    // Filter summary to only those who were evaluated in detailedRows, or they just exist. 
     // We'll show all active + deleted with attendance.
     const activeWorkers = workers.filter(w => !w.deletedAt || attendances.some(a => a.workerId === w.id));
     for (const w of activeWorkers) {
@@ -165,8 +178,9 @@ export async function GET(request: Request) {
 
     await prisma.auditLog.create({
       data: {
+        firmId,
         action: 'REPORT_GENERATED',
-        details: `Generated attendance report from ${startDateStr} to ${endDateStr}`
+        details: `Generated attendance report for ${firmName} from ${startDateStr} to ${endDateStr}`
       }
     });
 

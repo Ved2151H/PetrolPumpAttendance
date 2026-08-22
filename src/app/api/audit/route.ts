@@ -1,8 +1,12 @@
+import { getFirmId } from '@/lib/firm';
 import { NextResponse } from 'next/server'
 import { getSession } from '@/lib/auth'
 import prisma from '@/lib/prisma'
 
 export async function GET(request: Request) {
+  const firmId = await getFirmId();
+  if (!firmId) return NextResponse.json({ success: false, error: { message: 'Unauthorized - No firm selected' } }, { status: 401 });
+
   try {
     const session = await getSession()
     if (!session || !session.adminId) {

@@ -1,3 +1,4 @@
+import { getFirmId } from '@/lib/firm';
 ﻿export const dynamic = 'force-dynamic';
 import { NextResponse, NextRequest } from 'next/server';
 import { getSession } from '@/lib/auth';
@@ -5,6 +6,9 @@ import prisma from '@/lib/prisma';
 import { subDays } from 'date-fns';
 
 export async function GET(req: NextRequest) {
+  const firmId = await getFirmId();
+  if (!firmId) return NextResponse.json({ success: false, error: { message: 'Unauthorized - No firm selected' } }, { status: 401 });
+
   try {
     const session = await getSession();
     if (!session || !session.adminId) {
@@ -15,7 +19,7 @@ export async function GET(req: NextRequest) {
     const fifteenDaysAgo = subDays(new Date(), 15);
     
     await prisma.note.deleteMany({
-      where: {
+      where: { firmId, 
         deletedAt: {
           lte: fifteenDaysAgo
         }
@@ -24,7 +28,7 @@ export async function GET(req: NextRequest) {
 
     // Fetch remaining trashed notes
     const trashedNotes = await prisma.note.findMany({
-      where: { 
+      where: { firmId,  
         deletedAt: {
           not: null
         }
