@@ -49,7 +49,7 @@ export default async function DashboardLayout({
           {children}
         </main>
       </div>
-      <MobileNav />
+      <MobileNav firmId={firmId} />
     </div>
   );
 }
