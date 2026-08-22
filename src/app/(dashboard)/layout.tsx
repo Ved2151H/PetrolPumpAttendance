@@ -34,7 +34,7 @@ export default async function DashboardLayout({
           href="/"
           className={`md:hidden block px-5 py-7 border-b border-white/10 relative shadow-lg active:opacity-95 transition-all ${
             firmId === 'patil' 
-              ? "bg-gradient-to-br from-orange-600 via-orange-500 to-amber-500 shadow-orange-950/20" 
+              ? "bg-gradient-to-br from-[#ff8237] via-[#ff934f] to-[#ffaa72] shadow-orange-950/20" 
               : "bg-gradient-to-br from-[#21386f] via-[#304f94] to-[#536eb0] shadow-indigo-950/20"
           }`}
         >

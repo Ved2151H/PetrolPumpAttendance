@@ -25,7 +25,7 @@ export default function MobileNav({ firmId }: { firmId?: string | null }) {
   return (
     <div className={`md:hidden fixed bottom-0 left-0 right-0 border-t border-white/10 pb-safe z-50 transition-all duration-300 ${
       isPatil 
-        ? "bg-gradient-to-br from-orange-600 via-orange-500 to-amber-500 shadow-orange-950/20" 
+        ? "bg-gradient-to-br from-[#ff8237] via-[#ff934f] to-[#ffaa72] shadow-orange-950/20" 
         : "bg-[#17233f]/95 backdrop-blur-xl shadow-[0_-10px_28px_-15px_rgba(15,23,42,.7)]"
     }`}>
       <nav className="flex justify-around items-center h-[4.6rem] px-1">

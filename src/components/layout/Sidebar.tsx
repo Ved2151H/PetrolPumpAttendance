@@ -46,7 +46,7 @@ export default function Sidebar() {
     <div className="hidden md:flex flex-col w-72 bg-[#17233f] text-white min-h-screen fixed left-0 top-0 shadow-[12px_0_32px_-24px_rgba(15,23,42,.65)]">
       <Link href="/" className="px-6 py-8 border-b border-white/10 hover:bg-white/5 transition-colors block">
         <div className="flex items-start gap-3.5">
-          <div className={`grid h-12 w-12 shrink-0 place-items-center rounded-2xl shadow-lg shadow-black/10 ${firmId === 'patil' ? 'bg-orange-500 text-white' : 'bg-amber-400 text-[#17233f]'}`}>
+          <div className={`grid h-12 w-12 shrink-0 place-items-center rounded-2xl shadow-lg shadow-black/10 ${firmId === 'patil' ? 'bg-[#ff8237] text-white' : 'bg-amber-400 text-[#17233f]'}`}>
             {firmId === 'patil' ? <Droplet className="w-6 h-6" /> : <Building2 className="w-6 h-6" />}
           </div>
           <div>
