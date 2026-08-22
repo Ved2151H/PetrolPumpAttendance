@@ -1,6 +1,6 @@
 "use client";
 
-import { Calendar, Edit, Trash2 } from "lucide-react";
+import { Calendar, Edit, Trash2, User } from "lucide-react";
 import { format } from "date-fns";
 
 interface Note {
@@ -8,6 +8,9 @@ interface Note {
   title: string;
   content: string;
   noteDate: string;
+  admin?: {
+    name: string;
+  };
 }
 
 interface NoteCardProps {
@@ -20,9 +23,17 @@ export default function NoteCard({ note, onEdit, onDelete }: NoteCardProps) {
   return (
     <div className="bg-white rounded-2xl shadow-sm border-l-4 border-l-purple-600 border-y border-r border-y-slate-200 border-r-slate-200 p-5 hover:shadow-md hover:-translate-y-0.5 transition-all flex flex-col h-full relative group">
       <div className="flex justify-between items-start mb-3">
-        <div className="flex items-center gap-2 text-purple-700 font-medium text-sm bg-purple-50 px-3 py-1 rounded-full">
-          <Calendar className="w-4 h-4" />
-          <span>{format(new Date(note.noteDate), "dd MMM yyyy")}</span>
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 text-purple-700 font-medium text-xs bg-purple-50 px-2.5 py-1 rounded-full">
+            <Calendar className="w-3.5 h-3.5" />
+            <span>{format(new Date(note.noteDate), "dd MMM yyyy")}</span>
+          </div>
+          {note.admin && (
+            <div className="flex items-center gap-1.5 text-slate-600 font-medium text-xs bg-slate-100 px-2.5 py-1 rounded-full border border-slate-200" title="Added by">
+              <User className="w-3.5 h-3.5 text-slate-500" />
+              <span className="truncate max-w-[100px]">{note.admin.name}</span>
+            </div>
+          )}
         </div>
         
         <div className="flex gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
