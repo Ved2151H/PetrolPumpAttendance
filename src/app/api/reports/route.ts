@@ -13,6 +13,9 @@ export async function GET(request: Request) {
 
     const firm = await prisma.firm.findUnique({ where: { id: firmId } })
     let firmName = firm ? firm.name : 'Unknown Firm';
+    if (firmName.includes("Narmata")) {
+      firmName = firmName.replace("Narmata", "Namrata");
+    }
     if (!firmName.endsWith('Private Limited')) {
       firmName += ' Private Limited';
     }

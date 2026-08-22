@@ -44,7 +44,7 @@ export default function FirmSelector() {
           {loading === "narmata" ? <Loader2 className="w-7 h-7 animate-spin" /> : <Building2 className="w-7 h-7" />}
         </div>
         
-        <h2 className="text-xl font-bold text-slate-900 group-hover:text-white transition-colors mb-2">Narmata Construction Private Limited</h2>
+        <h2 className="text-xl font-bold text-slate-900 group-hover:text-white transition-colors mb-2">Namrata Construction Private Limited</h2>
         <p className="text-sm text-slate-500 group-hover:text-blue-100/70 transition-colors">Manage construction workers and site attendance.</p>
         
         <div className="mt-8 flex items-center text-amber-600 group-hover:text-amber-400 font-semibold text-sm">
