@@ -1,0 +1,11 @@
+{
+    "android": {
+        "release": {
+            "keystore": "release-key.keystore",
+            "storePassword": "password",
+            "alias": "namrata",
+            "password" : "password",
+            "keystoreType": ""
+        }
+    }
+}

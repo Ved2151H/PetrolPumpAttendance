@@ -1,22 +1,31 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { User, MapPin, Lock, LogOut, X, Trash2 } from "lucide-react";
+import {
+  Activity,
+  ArrowRight,
+  BarChart3,
+  CheckCircle2,
+  ChevronRight,
+  KeyRound,
+  Lock,
+  LogOut,
+  ShieldCheck,
+  Trash2,
+  User,
+  UsersRound,
+  X,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function SettingsPage() {
   const router = useRouter();
   
-  const [profile, setProfile] = useState({ name: "", email: "" });
-  const [pumpInfo, setPumpInfo] = useState({ name: "", address: "" });
+  const [profile, setProfile] = useState({ name: "", email: "", role: "", adminNumber: 0 });
   
   const [isProfileLoading, setIsProfileLoading] = useState(true);
   const [isProfileSaving, setIsProfileSaving] = useState(false);
   const [profileMessage, setProfileMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
-
-  const [isPumpLoading, setIsPumpLoading] = useState(true);
-  const [isPumpSaving, setIsPumpSaving] = useState(false);
-  const [pumpMessage, setPumpMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [passwordForm, setPasswordForm] = useState({ currentPassword: "", newPassword: "", confirmPassword: "" });
@@ -32,7 +41,12 @@ export default function SettingsPage() {
       }
       const data = await res.json();
       if (data.success) {
-        setProfile({ name: data.data.name, email: data.data.email });
+        setProfile({
+          name: data.data.name,
+          email: data.data.email,
+          role: data.data.role,
+          adminNumber: data.data.adminNumber
+        });
       }
     } catch (err) {
       console.error(err);
@@ -41,24 +55,8 @@ export default function SettingsPage() {
     }
   }
 
-  async function fetchPumpInfo() {
-    try {
-      const res = await fetch('/api/settings/pump');
-      if (!res.ok) return;
-      const data = await res.json();
-      if (data.success) {
-        setPumpInfo({ name: data.data.name, address: data.data.address });
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setIsPumpLoading(false);
-    }
-  }
-
   useEffect(() => {
     fetchProfile();
-    fetchPumpInfo();
   }, []);
 
   const handleProfileSave = async (e: React.FormEvent) => {
@@ -76,36 +74,12 @@ export default function SettingsPage() {
         throw new Error(data.error?.message || "Failed to update profile");
       }
       setProfileMessage({ type: 'success', text: 'Profile updated successfully' });
-      setProfile({ name: data.data.name, email: data.data.email });
+      setProfile(prev => ({ ...prev, name: data.data.name, email: data.data.email }));
       setTimeout(() => setProfileMessage(null), 3000);
     } catch (err: any) {
       setProfileMessage({ type: 'error', text: err.message });
     } finally {
       setIsProfileSaving(false);
-    }
-  };
-
-  const handlePumpSave = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsPumpSaving(true);
-    setPumpMessage(null);
-    try {
-      const res = await fetch('/api/settings/pump', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(pumpInfo)
-      });
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.error?.message || "Failed to update pump info");
-      }
-      setPumpMessage({ type: 'success', text: 'Pump info updated successfully' });
-      setPumpInfo({ name: data.data.name, address: data.data.address });
-      setTimeout(() => setPumpMessage(null), 3000);
-    } catch (err: any) {
-      setPumpMessage({ type: 'error', text: err.message });
-    } finally {
-      setIsPumpSaving(false);
     }
   };
 
@@ -161,26 +135,53 @@ export default function SettingsPage() {
     }
   };
 
-  return (
-    <div className="space-y-7 relative">
-      <div><p className="text-[11px] font-bold uppercase tracking-[.16em] text-amber-600 mb-2">Workspace controls</p><h1 className="text-3xl font-bold text-gray-900">Settings</h1></div>
+  const adminLabel = profile.role === 'SUPER_ADMIN' ? 'Super Admin' : 'Administrator';
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <form onSubmit={handleProfileSave} className="card space-y-6">
-          <div className="flex items-center gap-3 border-b border-slate-50 pb-4">
-            <User className="w-5 h-5 text-slate-400" />
-            <h2 className="text-lg font-bold text-slate-900">Admin Profile</h2>
+  return (
+    <div className="relative mx-auto max-w-6xl space-y-6 pb-4 sm:space-y-8">
+      <header className="relative overflow-hidden rounded-3xl border border-slate-200/80 bg-gradient-to-br from-white via-white to-indigo-50/70 px-5 py-6 shadow-[0_18px_45px_-35px_rgba(30,48,93,0.55)] sm:px-7 sm:py-7">
+        <div className="pointer-events-none absolute -right-12 -top-20 h-48 w-48 rounded-full bg-amber-200/30 blur-3xl" />
+        <div className="pointer-events-none absolute right-16 top-0 h-full w-px bg-gradient-to-b from-transparent via-indigo-100 to-transparent" />
+        <div className="relative flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="mb-2 text-[11px] font-bold uppercase tracking-[.18em] text-amber-600">Workspace controls</p>
+            <h1 className="text-3xl font-bold text-slate-900 sm:text-[2rem]">Settings</h1>
+            <p className="mt-2 max-w-xl text-sm leading-6 text-slate-500">Manage your profile, workspace access, reports, and account security from one place.</p>
           </div>
-          
+          <div className="inline-flex w-fit items-center gap-2 rounded-full border border-emerald-100 bg-emerald-50/80 px-3 py-2 text-xs font-semibold text-emerald-700 shadow-sm">
+            <span className="relative flex h-2 w-2"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" /><span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" /></span>
+            Account active
+          </div>
+        </div>
+      </header>
+
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+        <form onSubmit={handleProfileSave} className="card relative overflow-hidden space-y-6 lg:col-span-7 lg:p-7">
+          <div className="pointer-events-none absolute right-0 top-0 h-28 w-28 rounded-bl-[5rem] bg-indigo-50/80" />
+          <div className="relative flex items-start justify-between gap-3 border-b border-slate-100 pb-5">
+            <div className="flex items-center gap-3.5">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-100 to-blue-50 text-indigo-700 shadow-[inset_0_1px_0_rgba(255,255,255,.9)]">
+                <User className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-[11px] font-bold uppercase tracking-[.14em] text-slate-400">Your profile</p>
+                <h2 className="mt-0.5 text-lg font-bold text-slate-900">Admin {profile.adminNumber || ''}</h2>
+              </div>
+            </div>
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-indigo-100 bg-indigo-50 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-indigo-700">
+              <ShieldCheck className="h-3.5 w-3.5" /> {adminLabel}
+            </span>
+          </div>
+
           {profileMessage && (
             <div className={`p-3 rounded-lg text-sm font-medium ${profileMessage.type === 'success' ? 'bg-indigo-50 text-indigo-700' : 'bg-red-50 text-red-700'}`}>
               {profileMessage.text}
             </div>
           )}
 
-          <div className="space-y-4">
+            <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Name</label>
+              <label className="mb-1.5 block text-sm font-semibold text-slate-700">Name</label>
               <input 
                 type="text" 
                 required
@@ -191,7 +192,7 @@ export default function SettingsPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
+              <label className="mb-1.5 block text-sm font-semibold text-slate-700">Email</label>
               <input 
                 type="email" 
                 required
@@ -201,143 +202,129 @@ export default function SettingsPage() {
                 className="input-field" 
               />
             </div>
-            <button 
-              type="submit" 
-              disabled={isProfileSaving || isProfileLoading} 
-              className="btn-primary w-full md:w-auto disabled:opacity-70"
-            >
-              {isProfileSaving ? 'Saving...' : 'Save Profile'}
-            </button>
-          </div>
+              <div className="flex flex-col gap-3 border-t border-slate-100 pt-5 sm:flex-row sm:items-center sm:justify-between">
+                <p className="text-xs leading-5 text-slate-500">Your profile details are used across the workspace.</p>
+                <button
+                  type="submit"
+                  disabled={isProfileSaving || isProfileLoading}
+                  className="btn-primary w-full shrink-0 gap-2 sm:w-auto disabled:opacity-70"
+                >
+                  {isProfileSaving ? 'Saving...' : 'Save Profile'} {!isProfileSaving && <ArrowRight className="h-4 w-4" />}
+                </button>
+              </div>
+            </div>
         </form>
 
-        <form onSubmit={handlePumpSave} className="card space-y-6">
-          <div className="flex items-center gap-3 border-b border-slate-50 pb-4">
-            <MapPin className="w-5 h-5 text-slate-400" />
-            <h2 className="text-lg font-bold text-slate-900">Petrol Pump Info</h2>
-          </div>
-          
-          {pumpMessage && (
-            <div className={`p-3 rounded-lg text-sm font-medium ${pumpMessage.type === 'success' ? 'bg-indigo-50 text-indigo-700' : 'bg-red-50 text-red-700'}`}>
-              {pumpMessage.text}
+        {profile.role === 'SUPER_ADMIN' && (
+          <section className="card space-y-5 lg:col-span-5 lg:p-7">
+            <div className="flex items-start gap-3.5 border-b border-slate-100 pb-5">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-100 to-fuchsia-50 text-violet-700"><UsersRound className="h-5 w-5" /></div>
+              <div>
+                <p className="text-[11px] font-bold uppercase tracking-[.14em] text-slate-400">Workspace access</p>
+                <h2 className="mt-0.5 text-lg font-bold text-slate-900">Admin Management</h2>
+                <p className="mt-1 text-sm leading-5 text-slate-500">Control administrator access and review workspace activity.</p>
+              </div>
             </div>
-          )}
-
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Pump Name</label>
-              <input 
-                type="text" 
-                required
-                value={pumpInfo.name}
-                onChange={e => setPumpInfo({...pumpInfo, name: e.target.value})}
-                disabled={isPumpLoading}
-                className="input-field" 
-              />
+            <div className="space-y-2.5">
+              <button
+                onClick={() => router.push('/settings/admins')}
+                className="group flex w-full items-center gap-3 rounded-xl border border-slate-200 bg-slate-50/70 p-3.5 text-left transition-all hover:border-violet-200 hover:bg-violet-50/60 hover:shadow-sm"
+              >
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-slate-500 shadow-sm ring-1 ring-slate-100 group-hover:text-violet-700"><UsersRound className="h-4 w-4" /></span>
+                <span className="min-w-0 flex-1"><span className="block text-sm font-bold text-slate-800">Manage admins</span><span className="mt-0.5 block text-xs text-slate-500">Add and manage access</span></span>
+                <ChevronRight className="h-5 w-5 text-slate-400 transition-transform group-hover:translate-x-0.5 group-hover:text-violet-600" />
+              </button>
+              <button
+                onClick={() => router.push('/settings/audit')}
+                className="group flex w-full items-center gap-3 rounded-xl border border-slate-200 bg-slate-50/70 p-3.5 text-left transition-all hover:border-violet-200 hover:bg-violet-50/60 hover:shadow-sm"
+              >
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-slate-500 shadow-sm ring-1 ring-slate-100 group-hover:text-violet-700"><Activity className="h-4 w-4" /></span>
+                <span className="min-w-0 flex-1"><span className="block text-sm font-bold text-slate-800">Activity log</span><span className="mt-0.5 block text-xs text-slate-500">Review recent changes</span></span>
+                <ChevronRight className="h-5 w-5 text-slate-400 transition-transform group-hover:translate-x-0.5 group-hover:text-violet-600" />
+              </button>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Address</label>
-              <textarea 
-                required
-                value={pumpInfo.address}
-                onChange={e => setPumpInfo({...pumpInfo, address: e.target.value})}
-                disabled={isPumpLoading}
-                className="input-field resize-none" 
-                rows={3}
-              />
-            </div>
-            <button 
-              type="submit"
-              disabled={isPumpSaving || isPumpLoading} 
-              className="btn-secondary w-full md:w-auto disabled:opacity-70"
-            >
-              {isPumpSaving ? 'Updating...' : 'Update Info'}
-            </button>
-          </div>
-        </form>
+          </section>
+        )}
 
         {/* Reports Section for Admin */}
-        <div className="card space-y-6 md:col-span-2 bg-teal-50/30 border-teal-100">
-          <div className="flex items-center gap-3 border-b border-teal-100 pb-4">
-            <div className="bg-teal-100 p-2 rounded-lg">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-teal-600"><line x1="12" y1="20" x2="12" y2="10"></line><line x1="18" y1="20" x2="18" y2="4"></line><line x1="6" y1="20" x2="6" y2="16"></line></svg>
-            </div>
+        <section className="card relative overflow-hidden border-teal-100 bg-gradient-to-br from-white via-white to-teal-50/80 lg:col-span-6 lg:p-7">
+          <div className="pointer-events-none absolute -right-10 -bottom-12 h-40 w-40 rounded-full bg-teal-100/70" />
+          <div className="relative flex h-full flex-col">
+            <div className="flex items-start gap-3.5">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-teal-100 text-teal-700 shadow-[inset_0_1px_0_rgba(255,255,255,.7)]"><BarChart3 className="h-5 w-5" /></div>
             <div>
+              <p className="text-[11px] font-bold uppercase tracking-[.14em] text-teal-700/70">Export centre</p>
               <h2 className="text-lg font-bold text-slate-900">Reports</h2>
-              <p className="text-sm text-slate-500">Download Excel attendance reports for any date range.</p>
+              <p className="mt-1 text-sm leading-5 text-slate-500">Download Excel attendance reports for any date range.</p>
             </div>
           </div>
-          <div className="space-y-4 max-w-md">
-            <button 
+            <button
               onClick={() => router.push('/reports')}
-              className="w-full btn-secondary border-teal-200 text-teal-700 hover:bg-teal-50 hover:border-teal-300 text-left flex justify-between items-center group"
+              className="group relative mt-6 flex w-full items-center justify-between rounded-xl border border-teal-200 bg-white/90 px-4 py-3.5 text-left text-sm font-bold text-teal-700 shadow-sm transition-all hover:-translate-y-0.5 hover:border-teal-300 hover:bg-teal-50"
             >
-              Generate Reports
-              <span className="text-teal-400 group-hover:text-teal-600 group-hover:translate-x-1 transition-transform">&rarr;</span>
+              Generate reports
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </button>
           </div>
-        </div>
+        </section>
 
-        <div className="card space-y-6 md:col-span-2 md:hidden">
-          <div className="flex items-center gap-3 border-b border-slate-50 pb-4">
-            <Trash2 className="w-5 h-5 text-slate-400" />
-            <h2 className="text-lg font-bold text-slate-900">Trash</h2>
+        <section className="card space-y-5 md:hidden">
+          <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
+            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-500"><Trash2 className="h-5 w-5" /></span>
+            <div><h2 className="text-lg font-bold text-slate-900">Trash</h2><p className="text-sm text-slate-500">View removed workers</p></div>
           </div>
-          <div className="space-y-4 max-w-md">
-            <button 
-              onClick={() => router.push('/trash')}
-              className="w-full btn-secondary text-left flex justify-between items-center group"
-            >
-              View Removed Workers
-              <span className="text-slate-400 group-hover:text-slate-600 group-hover:translate-x-1 transition-transform">&rarr;</span>
-            </button>
-          </div>
-        </div>
+          <button onClick={() => router.push('/trash')} className="group flex w-full items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-left text-sm font-bold text-slate-700 transition-all hover:border-slate-300 hover:bg-white"><span>View removed workers</span><ChevronRight className="h-5 w-5 text-slate-400 transition-transform group-hover:translate-x-0.5" /></button>
+        </section>
 
-        <div className="card space-y-6 md:col-span-2">
-          <div className="flex items-center gap-3 border-b border-slate-50 pb-4">
-            <Lock className="w-5 h-5 text-slate-400" />
-            <h2 className="text-lg font-bold text-slate-900">Security</h2>
+        <section className="card relative overflow-hidden border-slate-200 bg-gradient-to-br from-white to-slate-50/80 lg:col-span-6 lg:p-7">
+          <div className="pointer-events-none absolute -right-8 top-5 h-28 w-28 rounded-full border-[18px] border-indigo-50/70" />
+          <div className="relative flex h-full flex-col">
+            <div className="flex items-start gap-3.5">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-indigo-100 text-indigo-700"><Lock className="h-5 w-5" /></div>
+              <div>
+                <p className="text-[11px] font-bold uppercase tracking-[.14em] text-slate-400">Account protection</p>
+                <h2 className="mt-0.5 text-lg font-bold text-slate-900">Security</h2>
+                <p className="mt-1 text-sm leading-5 text-slate-500">Keep your account protected and end this session securely.</p>
+              </div>
+            </div>
+            <div className="relative mt-6 grid gap-2.5 sm:grid-cols-2">
+              <button
+                onClick={() => setIsPasswordModalOpen(true)}
+                className="group flex min-h-24 flex-col items-start justify-between rounded-xl border border-slate-200 bg-white/80 p-3.5 text-left transition-all hover:-translate-y-0.5 hover:border-indigo-200 hover:shadow-sm"
+              >
+                <KeyRound className="h-4.5 w-4.5 text-indigo-600" />
+                <span className="flex w-full items-center justify-between gap-2"><span><span className="block text-sm font-bold text-slate-800">Change password</span><span className="mt-0.5 block text-xs font-medium text-slate-500">Update your sign-in</span></span><ChevronRight className="h-4 w-4 shrink-0 text-slate-400 transition-transform group-hover:translate-x-0.5 group-hover:text-indigo-600" /></span>
+              </button>
+              <button
+                onClick={handleLogout}
+                className="group flex min-h-24 flex-col items-start justify-between rounded-xl border border-red-100 bg-red-50/50 p-3.5 text-left transition-all hover:-translate-y-0.5 hover:border-red-200 hover:bg-red-50 hover:shadow-sm"
+              >
+                <LogOut className="h-4.5 w-4.5 text-red-600" />
+                <span className="flex w-full items-center justify-between gap-2"><span><span className="block text-sm font-bold text-red-700">Logout</span><span className="mt-0.5 block text-xs font-medium text-red-500">End this session</span></span><ChevronRight className="h-4 w-4 shrink-0 text-red-400 transition-transform group-hover:translate-x-0.5" /></span>
+              </button>
+            </div>
           </div>
-          <div className="space-y-4 max-w-md">
-            <button 
-              onClick={() => setIsPasswordModalOpen(true)}
-              className="w-full btn-secondary text-left flex justify-between items-center group"
-            >
-              Change Password
-              <span className="text-slate-400 group-hover:text-slate-600 group-hover:translate-x-1 transition-transform">&rarr;</span>
-            </button>
-            <button 
-              onClick={handleLogout}
-              className="w-full btn-secondary text-left flex justify-between items-center text-red-600 hover:bg-red-50 hover:border-red-200 group"
-            >
-              <span className="flex items-center gap-2">
-                <LogOut className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                Logout
-              </span>
-            </button>
-          </div>
-        </div>
+        </section>
       </div>
 
       {/* Change Password Modal */}
       {isPasswordModalOpen && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-bold text-gray-900">Change Password</h2>
-              <button 
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-3xl border border-white/70 bg-white p-5 shadow-2xl shadow-slate-950/20 sm:p-7">
+            <div className="mb-6 flex items-start justify-between gap-4">
+              <div className="flex items-center gap-3"><span className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-100 text-indigo-700"><KeyRound className="h-5 w-5" /></span><div><h2 className="text-xl font-bold text-slate-900">Change Password</h2><p className="mt-0.5 text-sm text-slate-500">Use a strong, unique password.</p></div></div>
+              <button
                 onClick={() => {
                   setIsPasswordModalOpen(false);
                   setPasswordForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
                   setPasswordMessage(null);
                 }}
-                className="text-gray-400 hover:text-gray-600"
+                className="rounded-lg p-1 text-gray-400 transition-colors hover:bg-slate-100 hover:text-gray-600"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
-            
+
             {passwordMessage && (
               <div className={`mb-4 p-3 rounded-lg text-sm font-medium ${passwordMessage.type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
                 {passwordMessage.text}

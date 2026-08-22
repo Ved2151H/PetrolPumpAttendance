@@ -1,14 +1,18 @@
 import { NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
-import bcrypt from 'bcrypt'
+import { compare } from 'bcrypt'
 import { setSession } from '@/lib/auth'
+import { createAuditLog } from '@/lib/audit'
 
 export async function POST(request: Request) {
   try {
     const { email, password } = await request.json()
 
     if (!email || !password) {
-      return NextResponse.json({ success: false, error: { message: 'Email and password are required' } }, { status: 400 })
+      return NextResponse.json(
+        { success: false, error: { message: 'Missing email or password' } },
+        { status: 400 }
+      )
     }
 
     const admin = await prisma.admin.findUnique({
@@ -16,27 +20,39 @@ export async function POST(request: Request) {
     })
 
     if (!admin) {
-      return NextResponse.json({ success: false, error: { message: 'Invalid credentials' } }, { status: 401 })
+      return NextResponse.json(
+        { success: false, error: { message: 'Invalid credentials' } },
+        { status: 401 }
+      )
     }
 
-    const isPasswordValid = await bcrypt.compare(password, admin.password)
+    const passwordMatch = await compare(password, admin.password)
 
-    if (!isPasswordValid) {
-      return NextResponse.json({ success: false, error: { message: 'Invalid credentials' } }, { status: 401 })
+    if (!passwordMatch) {
+      return NextResponse.json(
+        { success: false, error: { message: 'Invalid credentials' } },
+        { status: 401 }
+      )
     }
 
-    // Set JWT cookie session
-    const token = await setSession(admin.id)
+    await setSession(admin.id)
 
-    return NextResponse.json({ 
-      success: true, 
-      data: { 
-        user: { id: admin.id, name: admin.name, email: admin.email },
-        token
-      } 
+    // Fire and forget audit log
+    createAuditLog(admin.id, 'LOGIN', 'Admin logged in', 'Auth', admin.id).catch(console.error)
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        id: admin.id,
+        name: admin.name,
+        email: admin.email
+      }
     })
   } catch (error) {
     console.error('Login error:', error)
-    return NextResponse.json({ success: false, error: { message: 'Internal server error' } }, { status: 500 })
+    return NextResponse.json(
+      { success: false, error: { message: 'Internal server error' } },
+      { status: 500 }
+    )
   }
 }

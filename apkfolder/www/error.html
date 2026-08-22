@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Offline</title>
+    <style>
+        body, html {
+            margin: 0; padding: 0; height: 100%; width: 100%;
+            background-color: #f8fafc; font-family: system-ui, -apple-system, sans-serif;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .container {
+            text-align: center;
+            padding: 24px;
+            max-width: 400px;
+        }
+        .icon {
+            width: 80px; height: 80px; margin-bottom: 24px; color: #94a3b8;
+        }
+        h2 { color: #0f172a; margin: 0 0 12px 0; font-size: 24px; font-weight: 700; }
+        p { color: #64748b; margin: 0 0 32px 0; font-size: 16px; line-height: 1.5; }
+        button {
+            background-color: #d97706; color: white;
+            border: none; padding: 14px 32px; border-radius: 12px;
+            font-size: 16px; font-weight: 600; width: 100%;
+            cursor: pointer; box-shadow: 0 4px 6px -1px rgba(217, 119, 6, 0.2);
+        }
+        button:active { background-color: #b45309; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 1l22 22M16.72 11.06A10.94 10.94 0 0 1 19 12.55M5 12.55a10.94 10.94 0 0 1 5.17-2.39M10.71 5.05A16 16 0 0 1 22.58 9M1.42 9a15.91 15.91 0 0 1 4.7-2.88M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01"/>
+        </svg>
+        <h2>No Internet Connection</h2>
+        <p>Please turn on your mobile data or connect to Wi-Fi and try again.</p>
+        <button onclick="retry()">Retry</button>
+    </div>
+
+    <script>
+        const targetUrl = "https://petrol-pump-attendance.vercel.app";
+
+        function retry() {
+            if (navigator.onLine) {
+                window.location.replace(targetUrl);
+            }
+        }
+
+        window.addEventListener('online', function() {
+            window.location.replace(targetUrl);
+        });
+    </script>
+</body>
+</html>

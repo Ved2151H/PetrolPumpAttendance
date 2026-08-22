@@ -1,0 +1,9 @@
+﻿gradle-bin-811/
+gradle-bin/
+jdk-17/
+jdk-bin/
+platforms/
+node_modules/
+plugins/
+*.zip
+*.keystore

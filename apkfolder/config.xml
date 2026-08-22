@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="com.namrata.attendance" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>Namrata Attendance</name>
+    <description>
+        Android wrapper for Namrata Construction Worker Management System
+    </description>
+    <author email="dev@namrata.com" href="https://petrol-pump-attendance.vercel.app">
+        Namrata Construction
+    </author>
+    <content src="https://petrol-pump-attendance.vercel.app" />
+    <allow-navigation href="https://petrol-pump-attendance.vercel.app/*" />
+    <allow-intent href="http://*/*" />
+    <allow-intent href="https://*/*" />
+    <preference name="Orientation" value="default" />
+    <preference name="Fullscreen" value="true" />
+    <preference name="ErrorUrl" value="file:///android_asset/www/error.html" />
+</widget>

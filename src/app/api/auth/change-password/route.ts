@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { getSession, clearSession } from '@/lib/auth'
 import prisma from '@/lib/prisma'
 import bcrypt from 'bcrypt'
+import { createAuditLog } from '@/lib/audit'
 
 export async function POST(request: Request) {
   try {
@@ -40,6 +41,8 @@ export async function POST(request: Request) {
       where: { id: session.adminId },
       data: { password: hashedNewPassword }
     })
+
+    await createAuditLog(session.adminId, 'CHANGE_PASSWORD', 'Changed password', 'Admin', session.adminId)
 
     // Invalidate the session after a successful password change
     await clearSession()

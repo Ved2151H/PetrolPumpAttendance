@@ -7,14 +7,22 @@ datasource db {
   provider = "postgresql"
 }
 
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+}
+
 model Admin {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  password  String
-  name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  notes     Note[]
+  id          String     @id @default(cuid())
+  adminNumber Int        @default(autoincrement())
+  email       String     @unique
+  password    String
+  name        String
+  role        Role       @default(ADMIN)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  notes       Note[]
+  auditLogs   AuditLog[]
 }
 
 model Worker {
@@ -49,17 +57,16 @@ model Attendance {
 }
 
 model AuditLog {
-  id        String   @id @default(cuid())
-  action    String
-  details   String?
-  createdAt DateTime @default(now())
-}
-
-model PumpInfo {
-  id        String   @id @default(cuid())
-  name      String
-  address   String
-  updatedAt DateTime @updatedAt
+  id          String   @id @default(cuid())
+  adminId     String?
+  adminNumber Int?
+  adminName   String?
+  entityType  String?
+  entityId    String?
+  action      String
+  details     String?
+  createdAt   DateTime @default(now())
+  admin       Admin?   @relation(fields: [adminId], references: [id])
 }
 
 model Note {

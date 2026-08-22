@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import OfflineOverlay from "@/components/OfflineOverlay";
 import "./globals.css";
 
 export const viewport: Viewport = {
@@ -21,6 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="overflow-x-hidden">
       <body className="antialiased overflow-x-hidden w-full">
+        <OfflineOverlay />
         {children}
       </body>
     </html>
