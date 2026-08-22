@@ -1,9 +1,10 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="com.namrata.attendance" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>Namrata Attendance</name>
+    <name>Multi-firm business</name>
     <description>
-        Android wrapper for Namrata Construction Worker Management System
+        Android wrapper for Multi-firm business Management System
     </description>
+    <icon src="icon.png" />
     <author email="dev@namrata.com" href="https://petrol-pump-attendance.vercel.app">
         Namrata Construction
     </author>
