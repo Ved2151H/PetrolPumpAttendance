@@ -55,7 +55,14 @@ export default function NotesPage() {
       body: JSON.stringify(noteData),
     });
     
-    const data = await res.json();
+    let data;
+    const contentType = res.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      data = await res.json();
+    } else {
+      throw new Error(`Server returned ${res.status}: ${res.statusText}. File might be too large.`);
+    }
+
     if (!res.ok || !data.success) {
       throw new Error(data.error?.message || "Failed to save note");
     }

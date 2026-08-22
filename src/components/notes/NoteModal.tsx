@@ -71,6 +71,54 @@ export default function NoteModal({ isOpen, onClose, onSave, initialData }: Note
     }
   };
 
+  const compressImage = (file: File): Promise<File> => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target?.result as string;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const MAX_WIDTH = 800;
+          const MAX_HEIGHT = 800;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height *= MAX_WIDTH / width;
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width *= MAX_HEIGHT / height;
+              height = MAX_HEIGHT;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx?.drawImage(img, 0, 0, width, height);
+
+          canvas.toBlob((blob) => {
+            if (blob) {
+              resolve(new File([blob], file.name, {
+                type: 'image/jpeg',
+                lastModified: Date.now()
+              }));
+            } else {
+              resolve(file);
+            }
+          }, 'image/jpeg', 0.6); // 60% quality jpeg
+        };
+        img.onerror = () => resolve(file);
+      };
+      reader.onerror = () => resolve(file);
+    });
+  };
+
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -78,15 +126,24 @@ export default function NoteModal({ isOpen, onClose, onSave, initialData }: Note
     setIsUploading(true);
     setError(null);
     try {
+      const compressedFile = file.type.startsWith('image/') ? await compressImage(file) : file;
+      
       const uploadData = new FormData();
-      uploadData.append('file', file);
+      uploadData.append('file', compressedFile);
       
       const res = await fetch('/api/upload', {
         method: 'POST',
         body: uploadData,
       });
       
-      const data = await res.json();
+      let data;
+      const contentType = res.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        data = await res.json();
+      } else {
+        throw new Error(`Server returned ${res.status}: ${res.statusText}. File might be too large.`);
+      }
+      
       if (data.success) {
         insertImage(data.url);
       } else {
