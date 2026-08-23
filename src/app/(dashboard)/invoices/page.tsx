@@ -42,6 +42,7 @@ interface Invoice {
   firm?: {
     companyAddress?: string | null;
     companyEmail?: string | null;
+    supportContact?: string | null;
   } | null;
 }
 
@@ -225,14 +226,18 @@ export default function InvoicesPage() {
     
     // Temporarily apply full-screen scaling and style for clean captures
     const originalStyle = invoicePreviewRef.current.style.cssText;
-    invoicePreviewRef.current.style.cssText = "width: 800px; padding: 40px; background: white; color: black; font-family: sans-serif;";
+    invoicePreviewRef.current.style.cssText = "width: 800px; padding: 40px; background: white; color: black; font-family: sans-serif; position: relative; max-height: none; overflow: visible;";
     
     try {
       const canvas = await html2canvas(invoicePreviewRef.current, {
         scale: 2,
         useCORS: true,
         backgroundColor: "#ffffff",
-        logging: false
+        logging: false,
+        scrollX: 0,
+        scrollY: 0,
+        windowWidth: 800,
+        windowHeight: invoicePreviewRef.current.scrollHeight
       });
       invoicePreviewRef.current.style.cssText = originalStyle;
       return canvas;
@@ -247,6 +252,8 @@ export default function InvoicesPage() {
     const canvas = await generateCanvas();
     if (!canvas) return null;
 
+    const isMobile = typeof navigator !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
     return new Promise((resolve) => {
       canvas.toBlob((blob) => {
         if (!blob) {
@@ -256,14 +263,19 @@ export default function InvoicesPage() {
         const file = new File([blob], `Invoice_${invoice.invoiceNumber}.png`, { type: "image/png" });
         
         if (downloadOnly) {
-          const url = URL.createObjectURL(blob);
-          const link = document.createElement("a");
-          link.href = url;
-          link.download = `Invoice_${invoice.invoiceNumber}.png`;
-          link.click();
-          
-          // Fallback: open in new window/tab for WebViews
-          window.open(url, "_blank");
+          if (isMobile) {
+            const pngUrl = canvas.toDataURL("image/png");
+            window.open(pngUrl, "_blank");
+          } else {
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = `Invoice_${invoice.invoiceNumber}.png`;
+            link.click();
+            
+            // Fallback: open in new window/tab for WebViews
+            window.open(url, "_blank");
+          }
         }
         resolve(file);
       }, "image/png");
@@ -271,6 +283,12 @@ export default function InvoicesPage() {
   };
 
   const handleExportPDF = async (invoice: Invoice, downloadOnly = true): Promise<File | null> => {
+    const isMobile = typeof navigator !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if (isMobile && downloadOnly) {
+      window.print();
+      return null;
+    }
+
     const canvas = await generateCanvas();
     if (!canvas) return null;
 
@@ -773,8 +791,30 @@ export default function InvoicesPage() {
 
             {/* Printable Invoice Container */}
             <div className="flex-1 overflow-y-auto border border-slate-200 rounded-2xl bg-slate-50/50 p-4 scrollbar-thin">
+              {/* Print styles */}
+              <style dangerouslySetInnerHTML={{__html: `
+                @media print {
+                  body * {
+                    visibility: hidden !important;
+                  }
+                  #printable-invoice-area, #printable-invoice-area * {
+                    visibility: visible !important;
+                  }
+                  #printable-invoice-area {
+                    position: absolute !important;
+                    left: 0 !important;
+                    top: 0 !important;
+                    width: 100% !important;
+                    padding: 0 !important;
+                    margin: 0 !important;
+                    border: none !important;
+                    box-shadow: none !important;
+                  }
+                }
+              `}} />
               <div 
                 ref={invoicePreviewRef} 
+                id="printable-invoice-area"
                 className="bg-white p-6 shadow-sm border border-slate-100 rounded-xl"
               >
                 {/* Invoice Header */}
@@ -861,7 +901,7 @@ export default function InvoicesPage() {
                 <div className="flex justify-between items-end mt-12 pt-6 border-t border-slate-100 text-[10px] text-slate-400">
                   <div>
                     <p className="font-semibold text-slate-500">Thank you for your business!</p>
-                    <p className="mt-1">For any queries, contact support@namrataconstruction.com</p>
+                    <p className="mt-1">For any queries, contact {selectedInvoice.firm?.supportContact || "support@namrataconstruction.com"}</p>
                   </div>
                   <div className="text-center w-36">
                     <div className="h-8 border-b border-slate-200" />

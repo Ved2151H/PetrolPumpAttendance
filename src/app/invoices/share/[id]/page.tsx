@@ -25,6 +25,7 @@ interface Invoice {
   firm?: {
     companyAddress?: string | null;
     companyEmail?: string | null;
+    supportContact?: string | null;
   } | null;
 }
 
@@ -251,7 +252,7 @@ export default function PublicInvoicePage() {
             <div className="flex justify-between items-end mt-12 pt-6 border-t border-slate-100 text-[10px] text-slate-400">
               <div>
                 <p className="font-semibold text-slate-500">Thank you for your business!</p>
-                <p className="mt-1">For any queries, contact support@namrataconstruction.com</p>
+                <p className="mt-1">For any queries, contact {invoice.firm?.supportContact || "support@namrataconstruction.com"}</p>
               </div>
               <div className="text-center w-36">
                 <div className="h-8 border-b border-slate-200" />
