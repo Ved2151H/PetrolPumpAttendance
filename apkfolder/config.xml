@@ -8,11 +8,15 @@
     <author email="dev@namrata.com" href="https://petrol-pump-attendance.vercel.app">
         Namrata Construction
     </author>
-    <content src="index.html" />
+    <content src="https://petrol-pump-attendance.vercel.app" />
     <allow-navigation href="https://petrol-pump-attendance.vercel.app/*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
     <preference name="Orientation" value="default" />
     <preference name="Fullscreen" value="true" />
     <preference name="ErrorUrl" value="file:///android_asset/www/error.html" />
+    <preference name="AutoHideSplashScreen" value="true" />
+    <preference name="SplashScreenDelay" value="0" />
+    <preference name="FadeSplashScreen" value="false" />
+    <preference name="ShowSplashScreen" value="false" />
 </widget>

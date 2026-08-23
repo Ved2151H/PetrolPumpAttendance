@@ -3,47 +3,22 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <title>Loading...</title>
+    <title>Redirecting</title>
     <style>
         body, html {
             margin: 0; padding: 0; height: 100%; width: 100%;
-            background-color: #f8fafc; font-family: system-ui, -apple-system, sans-serif;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-        }
-        .spinner {
-            width: 48px; height: 48px; 
-            border: 4px solid #e2e8f0; 
-            border-top-color: #d97706;
-            border-radius: 50%; 
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin { 
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            background-color: #FAF8FF;
         }
     </style>
 </head>
 <body>
-    <div class="spinner"></div>
-
     <script>
         const targetUrl = "https://petrol-pump-attendance.vercel.app";
-
-        function checkConnectionAndRedirect() {
-            if (navigator.onLine) {
-                window.location.replace(targetUrl);
-            } else {
-                window.location.replace("error.html");
-            }
+        if (navigator.onLine) {
+            window.location.replace(targetUrl);
+        } else {
+            window.location.replace("error.html");
         }
-
-        // Run immediately
-        checkConnectionAndRedirect();
-
-        // Also check on network status changes
-        window.addEventListener('online', checkConnectionAndRedirect);
-        // Retry checking after a delay if stuck
-        setTimeout(checkConnectionAndRedirect, 2000);
     </script>
 </body>
 </html>

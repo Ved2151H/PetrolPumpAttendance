@@ -59,8 +59,8 @@ export async function PATCH(request: Request) {
     await createAuditLog(session.adminId, 'UPDATE_PROFILE', 'Updated profile/company settings', 'Admin', session.adminId)
 
     return NextResponse.json({ success: true, data: updatedAdmin })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Failed to update profile:', error)
-    return NextResponse.json({ success: false, error: { message: 'Internal server error' } }, { status: 500 })
+    return NextResponse.json({ success: false, error: { message: error?.message || 'Internal server error' } }, { status: 500 })
   }
 }

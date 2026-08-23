@@ -185,11 +185,11 @@ export default function PublicInvoicePage() {
                 <div className="text-xs text-slate-400 font-semibold mt-2.5 space-y-1">
                   <p className="flex items-center gap-1.5">
                     <MapPin className="w-3.5 h-3.5 text-slate-400" />
-                    {invoice.firm?.companyAddress || "Aurangabad, Maharashtra, India"}
+                    {invoice.firm?.companyAddress || ""}
                   </p>
                   <p className="flex items-center gap-1.5">
                     <Mail className="w-3.5 h-3.5 text-slate-400" />
-                    {invoice.firm?.companyEmail || "contact@namrataconstruction.com"}
+                    {invoice.firm?.companyEmail || ""}
                   </p>
                 </div>
               </div>
@@ -252,7 +252,7 @@ export default function PublicInvoicePage() {
             <div className="flex justify-between items-end mt-12 pt-6 border-t border-slate-100 text-[10px] text-slate-400">
               <div>
                 <p className="font-semibold text-slate-500">Thank you for your business!</p>
-                <p className="mt-1">For any queries, contact {invoice.firm?.supportContact || "support@namrataconstruction.com"}</p>
+                <p className="mt-1">For any queries, contact {invoice.firm?.supportContact || ""}</p>
               </div>
               <div className="text-center w-36">
                 <div className="h-8 border-b border-slate-200" />

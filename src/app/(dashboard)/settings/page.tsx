@@ -73,18 +73,47 @@ export default function SettingsPage() {
       const res = await fetch('/api/settings/profile', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(profile)
+        body: JSON.stringify({ name: profile.name, email: profile.email })
       });
       const data = await res.json();
       if (!res.ok || !data.success) {
         throw new Error(data.error?.message || "Failed to update profile");
       }
-      setProfileMessage({ type: 'success', text: 'Profile and company details updated successfully' });
-      setProfile(prev => ({ 
-        ...prev, 
-        name: data.data.name, 
-        email: data.data.email
-      }));
+      setProfileMessage({ type: 'success', text: 'Profile updated successfully' });
+      if (data.data) {
+        setProfile(prev => ({ 
+          ...prev, 
+          name: data.data.name, 
+          email: data.data.email
+        }));
+      }
+      setTimeout(() => setProfileMessage(null), 3000);
+    } catch (err: any) {
+      setProfileMessage({ type: 'error', text: err.message });
+    } finally {
+      setIsProfileSaving(false);
+    }
+  };
+
+  const handleCompanySave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsProfileSaving(true);
+    setProfileMessage(null);
+    try {
+      const res = await fetch('/api/settings/profile', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          companyAddress: profile.companyAddress, 
+          companyEmail: profile.companyEmail, 
+          supportContact: profile.supportContact 
+        })
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error?.message || "Failed to update company details");
+      }
+      setProfileMessage({ type: 'success', text: 'Company details updated successfully' });
       setTimeout(() => setProfileMessage(null), 3000);
     } catch (err: any) {
       setProfileMessage({ type: 'error', text: err.message });
@@ -264,7 +293,7 @@ export default function SettingsPage() {
               </div>
             </form>
           ) : activeTab === 'company' ? (
-            <form onSubmit={handleProfileSave} className="space-y-4">
+            <form onSubmit={handleCompanySave} className="space-y-4">
               <div>
                 <label className="mb-1.5 block text-sm font-semibold text-slate-700">Company Email Address</label>
                 <input 

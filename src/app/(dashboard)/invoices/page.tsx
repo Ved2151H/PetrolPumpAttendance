@@ -768,24 +768,12 @@ export default function InvoicesPage() {
             </div>
 
             {/* Modal Actions */}
-            <div className="grid grid-cols-3 gap-2.5 mb-5 shrink-0">
-              <button
-                onClick={() => handleExportPDF(selectedInvoice, true)}
-                className="flex items-center justify-center gap-2 py-2.5 px-3 border border-slate-200 text-xs font-bold text-slate-700 bg-white rounded-xl shadow-sm hover:bg-slate-50 transition-colors cursor-pointer"
-              >
-                <Download className="w-4 h-4 text-violet-600" /> Export PDF
-              </button>
-              <button
-                onClick={() => handleExportPNG(selectedInvoice, true)}
-                className="flex items-center justify-center gap-2 py-2.5 px-3 border border-slate-200 text-xs font-bold text-slate-700 bg-white rounded-xl shadow-sm hover:bg-slate-50 transition-colors cursor-pointer"
-              >
-                <Download className="w-4 h-4 text-violet-600" /> Export PNG
-              </button>
+            <div className="flex gap-2.5 mb-5 shrink-0">
               <button
                 onClick={() => handleShare(selectedInvoice)}
-                className="flex items-center justify-center gap-2 py-2.5 px-3 bg-violet-600 hover:bg-violet-700 text-xs font-bold text-white rounded-xl shadow-md transition-colors cursor-pointer"
+                className="flex flex-1 items-center justify-center gap-2 py-2.5 px-3 bg-violet-600 hover:bg-violet-700 text-xs font-bold text-white rounded-xl shadow-md transition-colors cursor-pointer"
               >
-                <Share2 className="w-4 h-4" /> Share Mobile
+                <Share2 className="w-4 h-4" /> Share
               </button>
             </div>
 
@@ -824,11 +812,11 @@ export default function InvoicesPage() {
                     <div className="text-[11px] text-slate-500 mt-2.5 space-y-1">
                       <p className="flex items-center gap-1.5">
                         <MapPin className="w-3.5 h-3.5 text-slate-400" /> 
-                        {selectedInvoice.firm?.companyAddress || "Plot No. 45, MIDC Industrial Area, Pune"}
+                        {selectedInvoice.firm?.companyAddress || ""}
                       </p>
                       <p className="flex items-center gap-1.5">
                         <Mail className="w-3.5 h-3.5 text-slate-400" /> 
-                        {selectedInvoice.firm?.companyEmail || "contact@namrataconstruction.com"}
+                        {selectedInvoice.firm?.companyEmail || ""}
                       </p>
                     </div>
                   </div>
@@ -901,7 +889,7 @@ export default function InvoicesPage() {
                 <div className="flex justify-between items-end mt-12 pt-6 border-t border-slate-100 text-[10px] text-slate-400">
                   <div>
                     <p className="font-semibold text-slate-500">Thank you for your business!</p>
-                    <p className="mt-1">For any queries, contact {selectedInvoice.firm?.supportContact || "support@namrataconstruction.com"}</p>
+                    <p className="mt-1">For any queries, contact {selectedInvoice.firm?.supportContact || ""}</p>
                   </div>
                   <div className="text-center w-36">
                     <div className="h-8 border-b border-slate-200" />
@@ -970,7 +958,7 @@ export default function InvoicesPage() {
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-slate-500 shadow-sm ring-1 ring-slate-100 group-hover:text-blue-700 group-hover:bg-blue-50"><FileText className="h-4.5 w-4.5" /></span>
                 <span className="min-w-0 flex-1">
                   <span className="block text-sm font-bold text-slate-800">Share via SMS</span>
-                  <span className="mt-0.5 block text-xs text-slate-500">Send text details via default messaging app</span>
+                  <span className="mt-0.5 block text-xs text-slate-500">Send invoice details via messaging app</span>
                 </span>
               </button>
             </div>
