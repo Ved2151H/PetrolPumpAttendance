@@ -486,7 +486,7 @@ export default function InvoicesPage() {
 
       {/* 9. Create Invoice Modal */}
       {isCreateOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 sm:p-4 backdrop-blur-sm overflow-y-auto">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/45 sm:p-4 backdrop-blur-sm overflow-y-auto">
           <div className="w-full max-w-3xl bg-white p-4 sm:p-7 shadow-2xl h-full sm:h-auto sm:max-h-[90vh] sm:rounded-3xl border border-white/70 flex flex-col rounded-none">
             <div className="mb-6 flex items-start justify-between gap-4 shrink-0">
               <div className="flex items-center gap-3">
@@ -665,7 +665,7 @@ export default function InvoicesPage() {
 
       {/* 10. Invoice Preview / Details Modal */}
       {selectedInvoice && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 sm:p-4 backdrop-blur-sm overflow-y-auto">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/45 sm:p-4 backdrop-blur-sm overflow-y-auto">
           <div className="w-full max-w-3xl bg-white p-4 sm:p-7 shadow-2xl h-full sm:h-auto sm:max-h-[95vh] sm:rounded-3xl border border-white/70 flex flex-col rounded-none">
             <div className="mb-4 flex items-center justify-between border-b border-slate-100 pb-4 shrink-0">
               <div className="flex items-center gap-3">
