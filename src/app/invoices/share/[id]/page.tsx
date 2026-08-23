@@ -176,8 +176,7 @@ export default function PublicInvoicePage() {
             {/* Invoice Header */}
             <div className="flex flex-col justify-between gap-4 border-b-2 border-slate-100 pb-5 sm:flex-row sm:items-start">
               <div>
-                <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">NAMRATA CONSTRUCTION</h2>
-                <p className="text-xs uppercase text-slate-400 font-bold tracking-wider mt-0.5">Private Limited</p>
+                <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">NAMRATA CONSTRUCTION PRIVATE LIMITED</h2>
                 <div className="text-xs text-slate-400 font-semibold mt-2.5 space-y-0.5">
                   <p>Email: contact@namrataconstruction.com</p>
                   <p>Site: Aurangabad, Maharashtra, India</p>
