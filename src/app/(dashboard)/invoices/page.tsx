@@ -331,7 +331,14 @@ export default function InvoicesPage() {
   const handleSMSShare = (invoice: Invoice) => {
     const text = getPrefilledShareText(invoice);
     const phone = invoice.customerPhone || '';
-    window.open(`sms:${phone}?body=${text}`, '_blank');
+    const isIOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const separator = isIOS ? '&' : '?';
+    try {
+      window.location.href = `sms:${phone}${separator}body=${text}`;
+    } catch (err) {
+      console.error("SMS sharing failed:", err);
+      alert("Unable to open SMS application directly. Please try WhatsApp.");
+    }
   };
 
   const handleSystemShare = async (invoice: Invoice) => {
@@ -912,43 +919,6 @@ export default function InvoicesPage() {
                   <span className="block text-sm font-bold text-slate-800">Share via SMS</span>
                   <span className="mt-0.5 block text-xs text-slate-500">Send text details via default messaging app</span>
                 </span>
-              </button>
-
-              {typeof navigator !== 'undefined' && 'share' in navigator && (
-                <button
-                  onClick={() => {
-                    handleSystemShare(shareInvoice);
-                    setShareInvoice(null);
-                  }}
-                  className="group flex w-full items-center gap-3.5 rounded-xl border border-slate-200 bg-slate-50/70 p-3.5 text-left transition-all hover:border-violet-200 hover:bg-violet-50/60 hover:shadow-sm"
-                >
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-slate-500 shadow-sm ring-1 ring-slate-100 group-hover:text-violet-700 group-hover:bg-violet-50"><Share2 className="h-4.5 w-4.5" /></span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block text-sm font-bold text-slate-800">System Share Sheet</span>
-                    <span className="mt-0.5 block text-xs text-slate-500">Share PDF / PNG files via system options</span>
-                  </span>
-                </button>
-              )}
-            </div>
-
-            <div className="border-t border-slate-100 pt-4 flex gap-3">
-              <button
-                onClick={() => {
-                  handleExportPDF(shareInvoice, true);
-                  setShareInvoice(null);
-                }}
-                className="flex-1 py-2 px-3 border border-slate-200 text-xs font-bold text-slate-700 rounded-xl hover:bg-slate-50 transition-colors flex items-center justify-center gap-1.5"
-              >
-                <Download className="w-3.5 h-3.5" /> PDF
-              </button>
-              <button
-                onClick={() => {
-                  handleExportPNG(shareInvoice, true);
-                  setShareInvoice(null);
-                }}
-                className="flex-1 py-2 px-3 border border-slate-200 text-xs font-bold text-slate-700 rounded-xl hover:bg-slate-50 transition-colors flex items-center justify-center gap-1.5"
-              >
-                <Download className="w-3.5 h-3.5" /> PNG
               </button>
             </div>
           </div>
