@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams } from "next/navigation";
-import { FileText, Loader2, ArrowLeft } from "lucide-react";
+import { FileText, Loader2, ArrowLeft, Download } from "lucide-react";
 
 interface InvoiceItem {
   materialName: string;
@@ -31,6 +31,7 @@ export default function PublicInvoicePage() {
   const [invoice, setInvoice] = useState<Invoice | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const invoicePreviewRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -49,6 +50,69 @@ export default function PublicInvoicePage() {
       })
       .finally(() => setLoading(false));
   }, [id]);
+
+  const generateCanvas = async (): Promise<HTMLCanvasElement | null> => {
+    if (!invoicePreviewRef.current) return null;
+    const html2canvas = (await import("html2canvas")).default;
+    const originalStyle = invoicePreviewRef.current.style.cssText;
+    invoicePreviewRef.current.style.cssText = "width: 800px; padding: 40px; background: white; color: black; font-family: sans-serif;";
+    
+    try {
+      const canvas = await html2canvas(invoicePreviewRef.current, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: "#ffffff",
+        logging: false
+      });
+      invoicePreviewRef.current.style.cssText = originalStyle;
+      return canvas;
+    } catch (err) {
+      invoicePreviewRef.current.style.cssText = originalStyle;
+      console.error("Canvas generation failed:", err);
+      return null;
+    }
+  };
+
+  const handleExportPDF = async () => {
+    if (!invoice) return;
+
+    // Mobile: open native system print which allows direct "Save as PDF"
+    const isMobile = typeof navigator !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if (isMobile) {
+      window.print();
+      return;
+    }
+
+    const canvas = await generateCanvas();
+    if (!canvas) return;
+
+    const { jsPDF } = await import("jspdf");
+    const imgData = canvas.toDataURL("image/png");
+    const pdf = new jsPDF("p", "mm", "a4");
+    
+    const imgWidth = 210;
+    const pageHeight = 297;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    
+    let heightLeft = imgHeight;
+    let position = 0;
+
+    pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+    heightLeft -= pageHeight;
+
+    while (heightLeft >= 0) {
+      position = heightLeft - imgHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+    }
+
+    const pdfBlob = pdf.output("blob");
+    const blobUrl = URL.createObjectURL(pdfBlob);
+    
+    // Save locally
+    pdf.save(`Invoice_${invoice.invoiceNumber}.pdf`);
+  };
 
   if (loading) {
     return (
@@ -75,10 +139,40 @@ export default function PublicInvoicePage() {
 
   return (
     <div className="min-h-screen bg-slate-50 py-12">
+      {/* Print styles */}
+      <style dangerouslySetInnerHTML={{__html: `
+        @media print {
+          .no-print {
+            display: none !important;
+          }
+          body {
+            background: white !important;
+            padding: 0 !important;
+            margin: 0 !important;
+          }
+          .print-container {
+            border: none !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            max-width: 100% !important;
+            width: 100% !important;
+          }
+        }
+      `}} />
+
       {/* Main Preview Container */}
       <div className="max-w-3xl mx-auto px-4 print-container">
+        <div className="flex justify-end mb-4 no-print">
+          <button
+            onClick={handleExportPDF}
+            className="flex items-center gap-1.5 py-2 px-4 bg-violet-600 hover:bg-violet-700 text-xs font-bold text-white rounded-xl shadow-md transition-colors cursor-pointer"
+          >
+            <Download className="w-3.5 h-3.5" /> Download PDF
+          </button>
+        </div>
         <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-4 sm:p-7 print-container">
-          <div className="bg-white p-2">
+          <div ref={invoicePreviewRef} className="bg-white p-2">
             {/* Invoice Header */}
             <div className="flex flex-col justify-between gap-4 border-b-2 border-slate-100 pb-5 sm:flex-row sm:items-start">
               <div>
