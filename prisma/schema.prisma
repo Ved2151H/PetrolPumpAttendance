@@ -13,14 +13,16 @@ enum Role {
 }
 
 model Firm {
-  id        String     @id @default(cuid())
-  name      String
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  workers   Worker[]
-  auditLogs AuditLog[]
-  notes     Note[]
-  invoices  Invoice[]
+  id             String     @id @default(cuid())
+  name           String
+  companyAddress String?
+  companyEmail   String?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  workers        Worker[]
+  auditLogs      AuditLog[]
+  notes          Note[]
+  invoices       Invoice[]
 }
 
 model Admin {

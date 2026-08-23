@@ -22,7 +22,7 @@ import { useRouter } from "next/navigation";
 export default function SettingsPage() {
   const router = useRouter();
   
-  const [profile, setProfile] = useState({ name: "", email: "", role: "", adminNumber: 0, currentFirmId: "" });
+  const [profile, setProfile] = useState({ name: "", email: "", role: "", adminNumber: 0, currentFirmId: "", companyAddress: "", companyEmail: "" });
   
   const [isProfileLoading, setIsProfileLoading] = useState(true);
   const [isProfileSaving, setIsProfileSaving] = useState(false);
@@ -47,7 +47,9 @@ export default function SettingsPage() {
           email: data.data.email,
           role: data.data.role,
           adminNumber: data.data.adminNumber,
-          currentFirmId: data.data.currentFirmId
+          currentFirmId: data.data.currentFirmId,
+          companyAddress: data.data.companyAddress || "",
+          companyEmail: data.data.companyEmail || ""
         });
       }
     } catch (err) {
@@ -75,8 +77,12 @@ export default function SettingsPage() {
       if (!res.ok || !data.success) {
         throw new Error(data.error?.message || "Failed to update profile");
       }
-      setProfileMessage({ type: 'success', text: 'Profile updated successfully' });
-      setProfile(prev => ({ ...prev, name: data.data.name, email: data.data.email }));
+      setProfileMessage({ type: 'success', text: 'Profile and company details updated successfully' });
+      setProfile(prev => ({ 
+        ...prev, 
+        name: data.data.name, 
+        email: data.data.email
+      }));
       setTimeout(() => setProfileMessage(null), 3000);
     } catch (err: any) {
       setProfileMessage({ type: 'error', text: err.message });
@@ -202,6 +208,28 @@ export default function SettingsPage() {
                 onChange={e => setProfile({...profile, email: e.target.value})}
                 disabled={isProfileLoading}
                 className="input-field" 
+              />
+            </div>
+            <div>
+              <label className="mb-1.5 block text-sm font-semibold text-slate-700">Company Email Address</label>
+              <input 
+                type="email" 
+                value={profile.companyEmail}
+                onChange={e => setProfile({...profile, companyEmail: e.target.value})}
+                disabled={isProfileLoading}
+                className="input-field" 
+                placeholder="e.g. contact@namrataconstruction.com"
+              />
+            </div>
+            <div>
+              <label className="mb-1.5 block text-sm font-semibold text-slate-700">Company Address</label>
+              <input 
+                type="text" 
+                value={profile.companyAddress}
+                onChange={e => setProfile({...profile, companyAddress: e.target.value})}
+                disabled={isProfileLoading}
+                className="input-field" 
+                placeholder="e.g. Aurangabad, Maharashtra, India"
               />
             </div>
               <div className="flex flex-col gap-3 border-t border-slate-100 pt-5 sm:flex-row sm:items-center sm:justify-between">

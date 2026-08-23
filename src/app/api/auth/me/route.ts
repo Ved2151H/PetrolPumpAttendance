@@ -12,11 +12,15 @@ export async function GET() {
 
     const firmId = await getFirmId();
     let firmName = null;
+    let companyAddress = null;
+    let companyEmail = null;
     
     if (firmId) {
       const firm = await prisma.firm.findUnique({ where: { id: firmId } });
       if (firm) {
         firmName = firm.name;
+        companyAddress = firm.companyAddress;
+        companyEmail = firm.companyEmail;
         if (firmName.includes("Narmata")) {
           firmName = firmName.replace("Narmata", "Namrata");
         }
@@ -35,7 +39,7 @@ export async function GET() {
       return NextResponse.json({ success: false, error: { message: 'User not found' } }, { status: 404 })
     }
 
-    return NextResponse.json({ success: true, data: { ...admin, currentFirmId: firmId, currentFirmName: firmName } })
+    return NextResponse.json({ success: true, data: { ...admin, currentFirmId: firmId, currentFirmName: firmName, companyAddress, companyEmail } })
   } catch (error) {
     console.error('Failed to fetch current user:', error)
     return NextResponse.json({ success: false, error: { message: 'Internal server error' } }, { status: 500 })

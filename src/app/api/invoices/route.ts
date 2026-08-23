@@ -41,7 +41,7 @@ export async function GET(req: NextRequest) {
     const invoices = await prisma.invoice.findMany({
       where: { firmId, deletedAt: null },
       orderBy: { date: 'desc' },
-      include: { items: true }
+      include: { items: true, firm: true }
     });
 
     const serialized = invoices.map(invoice => serializeInvoice(invoice));
@@ -130,7 +130,7 @@ export async function POST(req: NextRequest) {
               create: validatedItems
             }
           },
-          include: { items: true }
+          include: { items: true, firm: true }
         });
         break; // Successfully created invoice
       } catch (err: any) {

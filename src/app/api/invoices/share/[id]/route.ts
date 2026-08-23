@@ -26,7 +26,7 @@ export async function GET(
   try {
     const invoice = await prisma.invoice.findUnique({
       where: { id },
-      include: { items: true }
+      include: { items: true, firm: true }
     });
 
     if (!invoice || invoice.deletedAt) {

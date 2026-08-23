@@ -12,6 +12,7 @@ import {
   Calendar, 
   Phone, 
   MapPin, 
+  Mail,
   User, 
   ArrowLeft,
   Receipt,
@@ -38,6 +39,10 @@ interface Invoice {
   subtotal: number;
   totalAmount: number;
   items: InvoiceItem[];
+  firm?: {
+    companyAddress?: string | null;
+    companyEmail?: string | null;
+  } | null;
 }
 
 export default function InvoicesPage() {
@@ -776,7 +781,16 @@ export default function InvoicesPage() {
                 <div className="flex flex-col justify-between gap-4 border-b-2 border-slate-100 pb-5 sm:flex-row sm:items-start">
                   <div>
                     <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">NAMRATA CONSTRUCTION PRIVATE LIMITED</h2>
-                    <p className="text-[11px] text-slate-500 mt-2.5 flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5 text-slate-400" /> Plot No. 45, MIDC Industrial Area, Pune</p>
+                    <div className="text-[11px] text-slate-500 mt-2.5 space-y-1">
+                      <p className="flex items-center gap-1.5">
+                        <MapPin className="w-3.5 h-3.5 text-slate-400" /> 
+                        {selectedInvoice.firm?.companyAddress || "Plot No. 45, MIDC Industrial Area, Pune"}
+                      </p>
+                      <p className="flex items-center gap-1.5">
+                        <Mail className="w-3.5 h-3.5 text-slate-400" /> 
+                        {selectedInvoice.firm?.companyEmail || "contact@namrataconstruction.com"}
+                      </p>
+                    </div>
                   </div>
                   <div className="text-left sm:text-right shrink-0">
                     <span className="inline-block bg-violet-50 border border-violet-100 rounded-lg px-2.5 py-1 text-xs font-bold text-violet-700 mb-2">INVOICE</span>

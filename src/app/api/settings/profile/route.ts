@@ -10,7 +10,7 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ success: false, error: { message: 'Unauthorized' } }, { status: 401 })
     }
 
-    const { name, email } = await request.json()
+    const { name, email, companyAddress, companyEmail } = await request.json()
 
     if (!name || !email) {
       return NextResponse.json({ success: false, error: { message: 'Name and email are required' } }, { status: 400 })
@@ -31,7 +31,16 @@ export async function PATCH(request: Request) {
       select: { id: true, name: true, email: true }
     })
 
-    await createAuditLog(session.adminId, 'UPDATE_PROFILE', 'Updated profile information', 'Admin', session.adminId)
+    const { getFirmId } = await import('@/lib/firm');
+    const firmId = await getFirmId();
+    if (firmId) {
+      await prisma.firm.update({
+        where: { id: firmId },
+        data: { companyAddress, companyEmail }
+      })
+    }
+
+    await createAuditLog(session.adminId, 'UPDATE_PROFILE', 'Updated profile information and company details', 'Admin', session.adminId)
 
     return NextResponse.json({ success: true, data: updatedAdmin })
   } catch (error) {

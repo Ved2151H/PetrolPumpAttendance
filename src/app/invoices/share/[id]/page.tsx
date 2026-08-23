@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useParams } from "next/navigation";
-import { FileText, Loader2, ArrowLeft, Download } from "lucide-react";
+import { FileText, Loader2, ArrowLeft, Download, MapPin, Mail } from "lucide-react";
 
 interface InvoiceItem {
   materialName: string;
@@ -22,6 +22,10 @@ interface Invoice {
   subtotal: number;
   totalAmount: number;
   items: InvoiceItem[];
+  firm?: {
+    companyAddress?: string | null;
+    companyEmail?: string | null;
+  } | null;
 }
 
 export default function PublicInvoicePage() {
@@ -177,9 +181,15 @@ export default function PublicInvoicePage() {
             <div className="flex flex-col justify-between gap-4 border-b-2 border-slate-100 pb-5 sm:flex-row sm:items-start">
               <div>
                 <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">NAMRATA CONSTRUCTION PRIVATE LIMITED</h2>
-                <div className="text-xs text-slate-400 font-semibold mt-2.5 space-y-0.5">
-                  <p>Email: contact@namrataconstruction.com</p>
-                  <p>Site: Aurangabad, Maharashtra, India</p>
+                <div className="text-xs text-slate-400 font-semibold mt-2.5 space-y-1">
+                  <p className="flex items-center gap-1.5">
+                    <MapPin className="w-3.5 h-3.5 text-slate-400" />
+                    {invoice.firm?.companyAddress || "Aurangabad, Maharashtra, India"}
+                  </p>
+                  <p className="flex items-center gap-1.5">
+                    <Mail className="w-3.5 h-3.5 text-slate-400" />
+                    {invoice.firm?.companyEmail || "contact@namrataconstruction.com"}
+                  </p>
                 </div>
               </div>
               <div className="text-left sm:text-right shrink-0">
