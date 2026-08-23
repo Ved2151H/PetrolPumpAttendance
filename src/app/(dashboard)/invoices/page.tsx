@@ -256,7 +256,9 @@ export default function InvoicesPage() {
           link.href = url;
           link.download = `Invoice_${invoice.invoiceNumber}.png`;
           link.click();
-          URL.revokeObjectURL(url);
+          
+          // Fallback: open in new window/tab for WebViews
+          window.open(url, "_blank");
         }
         resolve(file);
       }, "image/png");
@@ -293,12 +295,17 @@ export default function InvoicesPage() {
 
     if (downloadOnly) {
       pdf.save(`Invoice_${invoice.invoiceNumber}.pdf`);
+      // Fallback: open in new window/tab for WebViews
+      const blobUrl = URL.createObjectURL(pdfBlob);
+      window.open(blobUrl, "_blank");
     }
 
     return file;
   };
 
   const getPrefilledShareText = (invoice: Invoice) => {
+    const origin = typeof window !== 'undefined' ? window.location.origin : '';
+    const shareUrl = `${origin}/invoices/share/${invoice.id}`;
     const lines = [
       `*NAMRATA CONSTRUCTION*`,
       `*Invoice:* ${invoice.invoiceNumber}`,
@@ -306,8 +313,8 @@ export default function InvoicesPage() {
       `*Customer:* ${invoice.customerName}`,
       `*Total Amount:* ₹${invoice.totalAmount}`,
       ``,
-      `*Items:*`,
-      ...invoice.items.map(item => `- ${item.materialName}: ${item.quantity} ${item.unit} @ ₹${item.price} = ₹${item.total}`),
+      `*View or Download PDF/PNG:*`,
+      shareUrl,
       ``,
       `Thank you for your business!`
     ];
