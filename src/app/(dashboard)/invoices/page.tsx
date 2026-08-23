@@ -947,18 +947,19 @@ export default function InvoicesPage() {
                   <span className="mt-0.5 block text-xs text-slate-500">Send prefilled invoice summary directly</span>
                 </span>
               </button>
-
               <button
                 onClick={() => {
-                  handleSMSShare(shareInvoice);
+                  const shareUrl = `${window.location.origin}/invoices/share/${shareInvoice.id}`;
+                  navigator.clipboard.writeText(shareUrl);
+                  alert("Invoice link copied to clipboard!");
                   setShareInvoice(null);
                 }}
-                className="group flex w-full items-center gap-3.5 rounded-xl border border-slate-200 bg-slate-50/70 p-3.5 text-left transition-all hover:border-blue-200 hover:bg-blue-50/60 hover:shadow-sm"
+                className="group flex w-full items-center gap-3.5 rounded-xl border border-slate-200 bg-slate-50/70 p-3.5 text-left transition-all hover:border-violet-200 hover:bg-violet-50/60 hover:shadow-sm"
               >
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-slate-500 shadow-sm ring-1 ring-slate-100 group-hover:text-blue-700 group-hover:bg-blue-50"><FileText className="h-4.5 w-4.5" /></span>
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-slate-500 shadow-sm ring-1 ring-slate-100 group-hover:text-violet-700 group-hover:bg-violet-50"><Share2 className="h-4.5 w-4.5" /></span>
                 <span className="min-w-0 flex-1">
-                  <span className="block text-sm font-bold text-slate-800">Share via SMS</span>
-                  <span className="mt-0.5 block text-xs text-slate-500">Send invoice details via messaging app</span>
+                  <span className="block text-sm font-bold text-slate-800">Copy Invoice Link</span>
+                  <span className="mt-0.5 block text-xs text-slate-500">Copy shareable link to clipboard</span>
                 </span>
               </button>
             </div>
