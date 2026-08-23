@@ -35,7 +35,7 @@ export default async function DashboardLayout({
       <div className="flex-1 min-w-0 md:ml-72 pb-16 md:pb-0">
         <Link 
           href="/"
-          className={`md:hidden block px-5 py-7 border-b border-white/10 relative shadow-lg active:opacity-95 transition-all ${
+          className={`md:hidden block px-5 py-7 border-b border-white/10 sticky top-0 z-40 shadow-lg active:opacity-95 transition-all ${
             firmId === 'patil' 
               ? "bg-gradient-to-br from-[#ff8237] via-[#ff934f] to-[#ffaa72] shadow-orange-950/20" 
               : "bg-gradient-to-br from-[#21386f] via-[#304f94] to-[#536eb0] shadow-indigo-950/20"
