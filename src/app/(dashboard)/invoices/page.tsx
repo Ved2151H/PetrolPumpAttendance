@@ -221,7 +221,7 @@ export default function InvoicesPage() {
   // 4. Export & Sharing implementation
   const generateCanvas = async (): Promise<HTMLCanvasElement | null> => {
     if (!invoicePreviewRef.current) return null;
-    const html2canvas = (await import("html2canvas")).default;
+    const html2canvas = (await import("html2canvas-pro")).default;
     
     // Temporarily apply full-screen scaling and style for clean captures
     const originalStyle = invoicePreviewRef.current.style.cssText;

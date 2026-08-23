@@ -57,7 +57,7 @@ export default function PublicInvoicePage() {
 
   const generateCanvas = async (): Promise<HTMLCanvasElement | null> => {
     if (!invoicePreviewRef.current) return null;
-    const html2canvas = (await import("html2canvas")).default;
+    const html2canvas = (await import("html2canvas-pro")).default;
     const originalStyle = invoicePreviewRef.current.style.cssText;
     invoicePreviewRef.current.style.cssText = "width: 800px; padding: 40px; background: white; color: black; font-family: sans-serif;";
     
