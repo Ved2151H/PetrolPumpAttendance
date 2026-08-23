@@ -12,7 +12,10 @@ export async function proxy(request: NextRequest) {
     path.startsWith('/workers') || 
     path.startsWith('/reports') || 
     path.startsWith('/settings') ||
-    (isApiRoute && !path.startsWith('/api/auth/login') && !path.startsWith('/api/auth/logout'))
+    (isApiRoute && 
+     !path.startsWith('/api/auth/login') && 
+     !path.startsWith('/api/auth/logout') && 
+     !path.startsWith('/api/invoices/share/'))
 
   const sessionCookie = request.cookies.get('session')?.value
   let isValidSession = false;
