@@ -5,6 +5,20 @@ import { getSession } from '@/lib/auth';
 import { getFirmId } from '@/lib/firm';
 import prisma from '@/lib/prisma';
 
+function serializeInvoice(invoice: any) {
+  if (!invoice) return null;
+  return {
+    ...invoice,
+    subtotal: parseFloat(invoice.subtotal.toString()),
+    totalAmount: parseFloat(invoice.totalAmount.toString()),
+    items: invoice.items?.map((item: any) => ({
+      ...item,
+      price: parseFloat(item.price.toString()),
+      total: parseFloat(item.total.toString())
+    })) || []
+  };
+}
+
 export async function GET(
   req: NextRequest,
   props: { params: Promise<{ id: string }> }
@@ -36,7 +50,8 @@ export async function GET(
       return NextResponse.json({ success: false, error: { message: 'Invoice not found or access denied' } }, { status: 404 });
     }
 
-    return NextResponse.json({ success: true, data: invoice });
+    const serialized = serializeInvoice(invoice);
+    return NextResponse.json({ success: true, data: serialized });
   } catch (error) {
     console.error('Failed to fetch invoice:', error);
     return NextResponse.json({ success: false, error: { message: 'Internal server error' } }, { status: 500 });

@@ -4,6 +4,22 @@ import { NextResponse, NextRequest } from 'next/server';
 import { getSession } from '@/lib/auth';
 import { getFirmId } from '@/lib/firm';
 import prisma from '@/lib/prisma';
+import { Prisma } from '@/generated/prisma';
+
+// Helper to convert Prisma Decimal fields to Javascript numbers for clean serialization
+function serializeInvoice(invoice: any) {
+  if (!invoice) return null;
+  return {
+    ...invoice,
+    subtotal: parseFloat(invoice.subtotal.toString()),
+    totalAmount: parseFloat(invoice.totalAmount.toString()),
+    items: invoice.items?.map((item: any) => ({
+      ...item,
+      price: parseFloat(item.price.toString()),
+      total: parseFloat(item.total.toString())
+    })) || []
+  };
+}
 
 export async function GET(req: NextRequest) {
   try {
@@ -28,7 +44,9 @@ export async function GET(req: NextRequest) {
       include: { items: true }
     });
 
-    return NextResponse.json({ success: true, data: invoices });
+    const serialized = invoices.map(invoice => serializeInvoice(invoice));
+
+    return NextResponse.json({ success: true, data: serialized });
   } catch (error) {
     console.error('Failed to fetch invoices:', error);
     return NextResponse.json({ success: false, error: { message: 'Internal server error' } }, { status: 500 });
@@ -71,8 +89,8 @@ export async function POST(req: NextRequest) {
         materialName: item.materialName || '',
         quantity,
         unit: item.unit || 'Unit',
-        price,
-        total
+        price: new Prisma.Decimal(price.toFixed(2)),
+        total: new Prisma.Decimal(total.toFixed(2))
       };
     });
 
@@ -106,8 +124,8 @@ export async function POST(req: NextRequest) {
             customerName,
             customerPhone,
             customerAddress,
-            subtotal: calculatedSubtotal,
-            totalAmount: calculatedTotalAmount,
+            subtotal: new Prisma.Decimal(calculatedSubtotal.toFixed(2)),
+            totalAmount: new Prisma.Decimal(calculatedTotalAmount.toFixed(2)),
             items: {
               create: validatedItems
             }
@@ -124,9 +142,10 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    return NextResponse.json({ success: true, data: newInvoice }, { status: 201 });
-  } catch (error) {
+    const serialized = serializeInvoice(newInvoice);
+    return NextResponse.json({ success: true, data: serialized }, { status: 201 });
+  } catch (error: any) {
     console.error('Failed to create invoice:', error);
-    return NextResponse.json({ success: false, error: { message: 'Internal server error' } }, { status: 500 });
+    return NextResponse.json({ success: false, error: { message: error.message || 'Internal server error', stack: error.stack } }, { status: 500 });
   }
 }

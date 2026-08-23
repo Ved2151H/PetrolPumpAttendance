@@ -486,8 +486,8 @@ export default function InvoicesPage() {
 
       {/* 9. Create Invoice Modal */}
       {isCreateOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 p-4 backdrop-blur-sm overflow-y-auto">
-          <div className="w-full max-w-3xl rounded-3xl border border-white/70 bg-white p-5 shadow-2xl max-h-[90vh] flex flex-col sm:p-7">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 sm:p-4 backdrop-blur-sm overflow-y-auto">
+          <div className="w-full max-w-3xl bg-white p-4 sm:p-7 shadow-2xl h-full sm:h-auto sm:max-h-[90vh] sm:rounded-3xl border border-white/70 flex flex-col rounded-none">
             <div className="mb-6 flex items-start justify-between gap-4 shrink-0">
               <div className="flex items-center gap-3">
                 <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-100 text-violet-700">
@@ -512,7 +512,7 @@ export default function InvoicesPage() {
               </div>
             )}
 
-            <form onSubmit={handleCreateSubmit} className="flex-1 overflow-y-auto space-y-6 pr-1">
+            <form onSubmit={handleCreateSubmit} className="flex-1 overflow-y-auto space-y-6 pr-1 pb-8">
               <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 pb-2">Customer Details</h3>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
@@ -580,7 +580,7 @@ export default function InvoicesPage() {
                         step="any"
                         required
                         min="0.01"
-                        value={item.quantity}
+                        value={item.quantity || ""}
                         onChange={(e) => handleItemChange(index, "quantity", e.target.value)}
                         className="input-field py-2 text-sm"
                       />
@@ -602,7 +602,7 @@ export default function InvoicesPage() {
                         step="any"
                         required
                         min="0.01"
-                        value={item.price}
+                        value={item.price || ""}
                         onChange={(e) => handleItemChange(index, "price", e.target.value)}
                         placeholder="₹"
                         className="input-field py-2 text-sm"
@@ -665,8 +665,8 @@ export default function InvoicesPage() {
 
       {/* 10. Invoice Preview / Details Modal */}
       {selectedInvoice && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 p-4 backdrop-blur-sm overflow-y-auto">
-          <div className="w-full max-w-3xl rounded-3xl border border-white/70 bg-white p-5 shadow-2xl max-h-[95vh] flex flex-col sm:p-7">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 sm:p-4 backdrop-blur-sm overflow-y-auto">
+          <div className="w-full max-w-3xl bg-white p-4 sm:p-7 shadow-2xl h-full sm:h-auto sm:max-h-[95vh] sm:rounded-3xl border border-white/70 flex flex-col rounded-none">
             <div className="mb-4 flex items-center justify-between border-b border-slate-100 pb-4 shrink-0">
               <div className="flex items-center gap-3">
                 <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-100 text-violet-700">
