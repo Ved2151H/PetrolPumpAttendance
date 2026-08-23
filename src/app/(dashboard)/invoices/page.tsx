@@ -452,7 +452,7 @@ export default function InvoicesPage() {
             placeholder="Search by invoice #, customer name or phone..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="input-field pl-10"
+            className="input-field !pl-11"
           />
         </div>
         <div className="flex items-center gap-3 shrink-0">
