@@ -23,7 +23,7 @@ export default function SettingsPage() {
   const router = useRouter();
   
   const [profile, setProfile] = useState({ name: "", email: "", role: "", adminNumber: 0, currentFirmId: "", companyAddress: "", companyEmail: "", supportContact: "" });
-  const [activeTab, setActiveTab] = useState<'profile' | 'security'>('profile');
+  const [activeTab, setActiveTab] = useState<'profile' | 'security' | 'company'>('profile');
   
   const [isProfileLoading, setIsProfileLoading] = useState(true);
   const [isProfileSaving, setIsProfileSaving] = useState(false);
@@ -185,7 +185,7 @@ export default function SettingsPage() {
             </div>
 
             {/* Tab switch control */}
-            <div className="flex gap-2 mt-2">
+            <div className="flex gap-2 mt-2 flex-wrap">
               <button
                 type="button"
                 onClick={() => setActiveTab('profile')}
@@ -207,6 +207,17 @@ export default function SettingsPage() {
                 }`}
               >
                 Security & Protection
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('company')}
+                className={`py-1.5 px-3.5 text-xs font-bold rounded-xl transition-all cursor-pointer ${
+                  activeTab === 'company'
+                    ? 'bg-indigo-600 text-white shadow-sm'
+                    : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200'
+                }`}
+              >
+                Company Details
               </button>
             </div>
           </div>
@@ -241,6 +252,19 @@ export default function SettingsPage() {
                   className="input-field" 
                 />
               </div>
+              <div className="flex flex-col gap-3 border-t border-slate-100 pt-5 sm:flex-row sm:items-center sm:justify-between">
+                <p className="text-xs leading-5 text-slate-500">Your profile details are used across the workspace.</p>
+                <button
+                  type="submit"
+                  disabled={isProfileSaving || isProfileLoading}
+                  className="btn-primary w-full shrink-0 gap-2 sm:w-auto disabled:opacity-70"
+                >
+                  {isProfileSaving ? 'Saving...' : 'Save Profile'} {!isProfileSaving && <ArrowRight className="h-4 w-4" />}
+                </button>
+              </div>
+            </form>
+          ) : activeTab === 'company' ? (
+            <form onSubmit={handleProfileSave} className="space-y-4">
               <div>
                 <label className="mb-1.5 block text-sm font-semibold text-slate-700">Company Email Address</label>
                 <input 
@@ -275,13 +299,13 @@ export default function SettingsPage() {
                 />
               </div>
               <div className="flex flex-col gap-3 border-t border-slate-100 pt-5 sm:flex-row sm:items-center sm:justify-between">
-                <p className="text-xs leading-5 text-slate-500">Your profile details are used across the workspace.</p>
+                <p className="text-xs leading-5 text-slate-500">Company details are printed dynamically on all invoices.</p>
                 <button
                   type="submit"
                   disabled={isProfileSaving || isProfileLoading}
                   className="btn-primary w-full shrink-0 gap-2 sm:w-auto disabled:opacity-70"
                 >
-                  {isProfileSaving ? 'Saving...' : 'Save Profile'} {!isProfileSaving && <ArrowRight className="h-4 w-4" />}
+                  {isProfileSaving ? 'Saving...' : 'Save Company Details'} {!isProfileSaving && <ArrowRight className="h-4 w-4" />}
                 </button>
               </div>
             </form>
