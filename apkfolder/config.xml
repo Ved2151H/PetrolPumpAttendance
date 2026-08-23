@@ -8,7 +8,7 @@
     <author email="dev@namrata.com" href="https://petrol-pump-attendance.vercel.app">
         Namrata Construction
     </author>
-    <content src="https://petrol-pump-attendance.vercel.app" />
+    <content src="index.html" />
     <allow-navigation href="https://petrol-pump-attendance.vercel.app/*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
