@@ -55,6 +55,7 @@ export default function InvoicesPage() {
   // Modals / Details state
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [shareInvoice, setShareInvoice] = useState<Invoice | null>(null);
 
   // Form state
   const [customerName, setCustomerName] = useState("");
@@ -297,30 +298,48 @@ export default function InvoicesPage() {
     return file;
   };
 
-  const handleShare = async (invoice: Invoice) => {
-    if (!navigator.share) {
-      alert("Sharing is not supported on this browser. Falling back to downloading the invoice files directly.");
-      handleExportPDF(invoice, true);
-      handleExportPNG(invoice, true);
-      return;
-    }
+  const getPrefilledShareText = (invoice: Invoice) => {
+    const lines = [
+      `*NAMRATA CONSTRUCTION*`,
+      `*Invoice:* ${invoice.invoiceNumber}`,
+      `*Date:* ${new Date(invoice.date).toLocaleDateString("en-IN")}`,
+      `*Customer:* ${invoice.customerName}`,
+      `*Total Amount:* ₹${invoice.totalAmount}`,
+      ``,
+      `*Items:*`,
+      ...invoice.items.map(item => `- ${item.materialName}: ${item.quantity} ${item.unit} @ ₹${item.price} = ₹${item.total}`),
+      ``,
+      `Thank you for your business!`
+    ];
+    return encodeURIComponent(lines.join("\n"));
+  };
 
+  const handleWhatsAppShare = (invoice: Invoice) => {
+    const text = getPrefilledShareText(invoice);
+    const phone = invoice.customerPhone ? invoice.customerPhone.replace(/\D/g, '') : '';
+    const formattedPhone = (phone.length === 10) ? `91${phone}` : phone;
+    window.open(`https://api.whatsapp.com/send?phone=${formattedPhone}&text=${text}`, '_blank');
+  };
+
+  const handleSMSShare = (invoice: Invoice) => {
+    const text = getPrefilledShareText(invoice);
+    const phone = invoice.customerPhone || '';
+    window.open(`sms:${phone}?body=${text}`, '_blank');
+  };
+
+  const handleSystemShare = async (invoice: Invoice) => {
     try {
-      // Generate both files to allow user options
       const pngFile = await handleExportPNG(invoice, false);
       const pdfFile = await handleExportPDF(invoice, false);
-
       const filesArray = [];
       if (pdfFile) filesArray.push(pdfFile);
 
       const shareText = `Invoice ${invoice.invoiceNumber} for ${invoice.customerName} - Total: ₹${invoice.totalAmount}`;
-      
       const shareData: ShareData = {
         title: `Invoice ${invoice.invoiceNumber}`,
         text: shareText,
       };
 
-      // Try file sharing if supported
       if (filesArray.length > 0 && navigator.canShare && navigator.canShare({ files: filesArray })) {
         shareData.files = filesArray;
       }
@@ -328,10 +347,29 @@ export default function InvoicesPage() {
       await navigator.share(shareData);
     } catch (err: any) {
       if (err.name !== "AbortError") {
-        console.error("Web Share failed:", err);
-        // Fallback downloads
-        handleExportPDF(invoice, true);
+        console.error("System share failed:", err);
+        alert("Failed to open system sharing sheet. Please use direct WhatsApp/SMS text sharing instead.");
       }
+    }
+  };
+
+  const handleShare = (invoice: Invoice) => {
+    setShareInvoice(invoice);
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this invoice? It will be moved to the Trash archive.")) return;
+    try {
+      const res = await fetch(`/api/invoices/${id}`, { method: "DELETE" });
+      const data = await res.json();
+      if (data.success) {
+        setInvoices(invoices.filter(i => i.id !== id));
+      } else {
+        alert(data.error?.message || "Failed to delete invoice");
+      }
+    } catch (err) {
+      console.error("Failed to delete invoice:", err);
+      alert("Failed to delete invoice");
     }
   };
 
@@ -474,6 +512,13 @@ export default function InvoicesPage() {
                         title="Share"
                       >
                         <Share2 className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(invoice.id)}
+                        className="p-2 border border-slate-200 rounded-lg hover:border-rose-300 hover:bg-rose-50 text-slate-600 hover:text-rose-600 transition-colors cursor-pointer"
+                        title="Delete"
+                      >
+                        <Trash2 className="w-4 h-4" />
                       </button>
                     </td>
                   </tr>
@@ -805,6 +850,98 @@ export default function InvoicesPage() {
                 className="w-full py-3 px-4 border border-gray-200 text-gray-600 rounded-xl font-bold hover:bg-gray-50 transition-colors"
               >
                 Close Preview
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Share Options Modal */}
+      {shareInvoice && (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-slate-950/45 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-3xl border border-white/70 bg-white p-5 shadow-2xl flex flex-col sm:p-7">
+            <div className="mb-4 flex items-center justify-between border-b border-slate-100 pb-4 shrink-0">
+              <div className="flex items-center gap-3">
+                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">
+                  <Share2 className="h-5 w-5" />
+                </span>
+                <div>
+                  <h2 className="text-lg font-bold text-slate-900">Share Invoice</h2>
+                  <p className="mt-0.5 text-xs text-slate-400">Choose sharing method for {shareInvoice.invoiceNumber}</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShareInvoice(null)}
+                className="rounded-lg p-1 text-gray-400 hover:bg-slate-100 hover:text-gray-600"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-3 my-4">
+              <button
+                onClick={() => {
+                  handleWhatsAppShare(shareInvoice);
+                  setShareInvoice(null);
+                }}
+                className="group flex w-full items-center gap-3.5 rounded-xl border border-slate-200 bg-slate-50/70 p-3.5 text-left transition-all hover:border-emerald-200 hover:bg-emerald-50/60 hover:shadow-sm"
+              >
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-slate-500 shadow-sm ring-1 ring-slate-100 group-hover:text-emerald-700 group-hover:bg-emerald-50"><Phone className="h-4.5 w-4.5" /></span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-sm font-bold text-slate-800">Share via WhatsApp</span>
+                  <span className="mt-0.5 block text-xs text-slate-500">Send prefilled invoice summary directly</span>
+                </span>
+              </button>
+
+              <button
+                onClick={() => {
+                  handleSMSShare(shareInvoice);
+                  setShareInvoice(null);
+                }}
+                className="group flex w-full items-center gap-3.5 rounded-xl border border-slate-200 bg-slate-50/70 p-3.5 text-left transition-all hover:border-blue-200 hover:bg-blue-50/60 hover:shadow-sm"
+              >
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-slate-500 shadow-sm ring-1 ring-slate-100 group-hover:text-blue-700 group-hover:bg-blue-50"><FileText className="h-4.5 w-4.5" /></span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-sm font-bold text-slate-800">Share via SMS</span>
+                  <span className="mt-0.5 block text-xs text-slate-500">Send text details via default messaging app</span>
+                </span>
+              </button>
+
+              {typeof navigator !== 'undefined' && 'share' in navigator && (
+                <button
+                  onClick={() => {
+                    handleSystemShare(shareInvoice);
+                    setShareInvoice(null);
+                  }}
+                  className="group flex w-full items-center gap-3.5 rounded-xl border border-slate-200 bg-slate-50/70 p-3.5 text-left transition-all hover:border-violet-200 hover:bg-violet-50/60 hover:shadow-sm"
+                >
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-slate-500 shadow-sm ring-1 ring-slate-100 group-hover:text-violet-700 group-hover:bg-violet-50"><Share2 className="h-4.5 w-4.5" /></span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-sm font-bold text-slate-800">System Share Sheet</span>
+                    <span className="mt-0.5 block text-xs text-slate-500">Share PDF / PNG files via system options</span>
+                  </span>
+                </button>
+              )}
+            </div>
+
+            <div className="border-t border-slate-100 pt-4 flex gap-3">
+              <button
+                onClick={() => {
+                  handleExportPDF(shareInvoice, true);
+                  setShareInvoice(null);
+                }}
+                className="flex-1 py-2 px-3 border border-slate-200 text-xs font-bold text-slate-700 rounded-xl hover:bg-slate-50 transition-colors flex items-center justify-center gap-1.5"
+              >
+                <Download className="w-3.5 h-3.5" /> PDF
+              </button>
+              <button
+                onClick={() => {
+                  handleExportPNG(shareInvoice, true);
+                  setShareInvoice(null);
+                }}
+                className="flex-1 py-2 px-3 border border-slate-200 text-xs font-bold text-slate-700 rounded-xl hover:bg-slate-50 transition-colors flex items-center justify-center gap-1.5"
+              >
+                <Download className="w-3.5 h-3.5" /> PNG
               </button>
             </div>
           </div>

@@ -39,7 +39,7 @@ export async function GET(req: NextRequest) {
     }
 
     const invoices = await prisma.invoice.findMany({
-      where: { firmId },
+      where: { firmId, deletedAt: null },
       orderBy: { date: 'desc' },
       include: { items: true }
     });

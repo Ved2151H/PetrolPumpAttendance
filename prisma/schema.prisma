@@ -111,6 +111,7 @@ model Invoice {
   firm           Firm          @relation(fields: [firmId], references: [id])
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
+  deletedAt      DateTime?
   items          InvoiceItem[]
 
   @@unique([firmId, invoiceNumber])

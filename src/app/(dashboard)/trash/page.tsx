@@ -19,20 +19,43 @@ interface Note {
   deletedAt: string | null;
 }
 
+interface Invoice {
+  id: string;
+  invoiceNumber: string;
+  customerName: string;
+  totalAmount: number;
+  date: string;
+  deletedAt: string | null;
+}
+
 export default function TrashPage() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<"workers" | "notes">("workers");
+  const [activeTab, setActiveTab] = useState<"workers" | "notes" | "invoices">("workers");
+  const [firmId, setFirmId] = useState("");
   
   const [workers, setWorkers] = useState<Worker[]>([]);
   const [notes, setNotes] = useState<Note[]>([]);
+  const [invoices, setInvoices] = useState<Invoice[]>([]);
   
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [actionId, setActionId] = useState<string | null>(null);
 
+  useEffect(() => {
+    fetch('/api/auth/me')
+      .then(r => r.json())
+      .then(d => {
+        if (d.success) {
+          setFirmId(d.data.currentFirmId);
+        }
+      })
+      .catch(console.error);
+  }, []);
+
   async function fetchTrash() {
     try {
       setLoading(true);
+      setError("");
       if (activeTab === "workers") {
         const res = await fetch('/api/workers/trash');
         if (!res.ok) throw new Error("Failed to fetch trashed workers");
@@ -40,12 +63,19 @@ export default function TrashPage() {
         if (data.success) {
           setWorkers(data.data);
         }
-      } else {
+      } else if (activeTab === "notes") {
         const res = await fetch('/api/notes/trash');
         if (!res.ok) throw new Error("Failed to fetch trashed notes");
         const data = await res.json();
         if (data.success) {
           setNotes(data.data);
+        }
+      } else {
+        const res = await fetch('/api/invoices/trash');
+        if (!res.ok) throw new Error("Failed to fetch trashed invoices");
+        const data = await res.json();
+        if (data.success) {
+          setInvoices(data.data);
         }
       }
     } catch (err: any) {
@@ -58,6 +88,41 @@ export default function TrashPage() {
   useEffect(() => {
     fetchTrash();
   }, [activeTab]);
+
+  const handleRestoreInvoice = async (invoiceId: string) => {
+    if (!confirm("Are you sure you want to restore this invoice?")) return;
+    setActionId(invoiceId);
+    try {
+      const res = await fetch(`/api/invoices/${invoiceId}/restore`, { method: 'PATCH' });
+      if (!res.ok) throw new Error("Failed to restore invoice");
+      const data = await res.json();
+      if (data.success) {
+        setInvoices(invoices.filter(i => i.id !== invoiceId));
+        router.refresh();
+      }
+    } catch (err: any) {
+      alert(err.message);
+    } finally {
+      setActionId(null);
+    }
+  };
+
+  const handlePermanentDeleteInvoice = async (invoiceId: string) => {
+    if (!confirm("Are you sure you want to permanently delete this invoice? This action cannot be undone.")) return;
+    setActionId(invoiceId);
+    try {
+      const res = await fetch(`/api/invoices/${invoiceId}/permanent`, { method: 'DELETE' });
+      if (!res.ok) throw new Error("Failed to permanently delete invoice");
+      const data = await res.json();
+      if (data.success) {
+        setInvoices(invoices.filter(i => i.id !== invoiceId));
+      }
+    } catch (err: any) {
+      alert(err.message);
+    } finally {
+      setActionId(null);
+    }
+  };
 
   const handleRestoreWorker = async (workerId: string) => {
     if (!confirm("Are you sure you want to restore this worker?")) return;
@@ -154,6 +219,16 @@ export default function TrashPage() {
           >
             Notes
           </button>
+          {firmId === "narmata" && (
+            <button
+              onClick={() => setActiveTab("invoices")}
+              className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+                activeTab === "invoices" ? "bg-white text-indigo-700 shadow-sm" : "text-slate-500 hover:text-slate-700"
+              }`}
+            >
+              Invoices
+            </button>
+          )}
         </div>
       </div>
 
@@ -230,7 +305,7 @@ export default function TrashPage() {
             ))}
           </div>
         )
-      ) : (
+      ) : activeTab === "notes" ? (
         notes.length === 0 ? (
           <div className="card text-center py-12">
             <FileText className="w-12 h-12 text-slate-300 mx-auto mb-4" />
@@ -272,6 +347,66 @@ export default function TrashPage() {
                   <button
                     onClick={() => handlePermanentDeleteNote(note.id)}
                     disabled={actionId === note.id}
+                    className="flex-1 btn-secondary py-2 text-sm flex justify-center items-center gap-2 hover:text-red-700 hover:border-red-200 hover:bg-red-50 text-red-600"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )
+      ) : (
+        invoices.length === 0 ? (
+          <div className="card text-center py-12">
+            <FileText className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+            <h3 className="text-lg font-bold text-slate-900 mb-1">No trashed invoices</h3>
+            <p className="text-slate-500">Deleted invoices will appear here.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {invoices.map((invoice) => (
+              <div key={invoice.id} className="card border-slate-200 hover:-translate-y-0.5 transition-all flex flex-col justify-between">
+                <div>
+                  <h3 className="font-bold text-slate-900 line-clamp-1 mb-2">{invoice.invoiceNumber}</h3>
+                  <div className="space-y-2 mb-4 text-sm text-slate-600">
+                    <div className="flex justify-between">
+                      <span>Customer:</span>
+                      <span className="font-medium text-slate-900">{invoice.customerName}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Total Amount:</span>
+                      <span className="font-medium text-slate-900">₹{invoice.totalAmount.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Invoice Date:</span>
+                      <span className="font-medium text-slate-900">
+                        {new Date(invoice.date).toLocaleDateString()}
+                      </span>
+                    </div>
+                    {invoice.deletedAt && (
+                      <div className="flex justify-between">
+                        <span>Deleted On:</span>
+                        <span className="font-medium text-red-600">
+                          {new Date(invoice.deletedAt).toLocaleDateString()}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className="flex gap-2 mt-4">
+                  <button
+                    onClick={() => handleRestoreInvoice(invoice.id)}
+                    disabled={actionId === invoice.id}
+                    className="flex-1 btn-secondary py-2 text-sm flex justify-center items-center gap-2 hover:text-indigo-700 hover:border-indigo-200 hover:bg-indigo-50"
+                  >
+                    <RefreshCw className={`w-4 h-4 ${actionId === invoice.id ? 'animate-spin' : ''}`} />
+                    Restore
+                  </button>
+                  <button
+                    onClick={() => handlePermanentDeleteInvoice(invoice.id)}
+                    disabled={actionId === invoice.id}
                     className="flex-1 btn-secondary py-2 text-sm flex justify-center items-center gap-2 hover:text-red-700 hover:border-red-200 hover:bg-red-50 text-red-600"
                   >
                     <Trash2 className="w-4 h-4" />
