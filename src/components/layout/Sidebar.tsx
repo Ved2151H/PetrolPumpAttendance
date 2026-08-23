@@ -11,7 +11,8 @@ import {
   Trash2,
   FileText,
   Building2,
-  Droplet
+  Droplet,
+  Receipt
 } from "lucide-react";
 
 export default function Sidebar() {
@@ -33,16 +34,23 @@ export default function Sidebar() {
       .catch(() => setFirmName("Workspace"));
   }, []);
   
-  const links = [
+  const isPatil = firmId === 'patil';
+
+  const links = isPatil ? [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard, active: "bg-indigo-500/25 ring-indigo-300/25" },
     { name: "Attendance", href: "/attendance", icon: ClipboardCheck, active: "bg-sky-500/25 ring-sky-300/25" },
     { name: "Workers", href: "/workers", icon: Users, active: "bg-emerald-500/25 ring-emerald-300/25" },
     { name: "Notes", href: "/settings/notes", icon: FileText, active: "bg-violet-500/25 ring-violet-300/25" }, 
     { name: "Trash", href: "/trash", icon: Trash2, active: "bg-rose-500/25 ring-rose-300/25" },
     { name: "Settings", href: "/settings", icon: Settings, active: "bg-amber-500/25 ring-amber-300/25" },
+  ] : [
+    { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard, active: "bg-indigo-500/25 ring-indigo-300/25" },
+    { name: "Attendance", href: "/attendance", icon: ClipboardCheck, active: "bg-sky-500/25 ring-sky-300/25" },
+    { name: "Workers", href: "/workers", icon: Users, active: "bg-emerald-500/25 ring-emerald-300/25" },
+    { name: "Invoice", href: "/invoices", icon: Receipt, active: "bg-violet-500/25 ring-violet-300/25" }, 
+    { name: "Trash", href: "/trash", icon: Trash2, active: "bg-rose-500/25 ring-rose-300/25" },
+    { name: "Settings", href: "/settings", icon: Settings, active: "bg-amber-500/25 ring-amber-300/25" },
   ];
-
-  const isPatil = firmId === 'patil';
 
   return (
     <div className={`hidden md:flex flex-col w-72 text-white min-h-screen fixed left-0 top-0 shadow-[12px_0_32px_-24px_rgba(15,23,42,.65)] transition-all duration-300 ${

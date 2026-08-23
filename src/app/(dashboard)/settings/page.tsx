@@ -15,13 +15,14 @@ import {
   User,
   UsersRound,
   X,
+  FileText
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function SettingsPage() {
   const router = useRouter();
   
-  const [profile, setProfile] = useState({ name: "", email: "", role: "", adminNumber: 0 });
+  const [profile, setProfile] = useState({ name: "", email: "", role: "", adminNumber: 0, currentFirmId: "" });
   
   const [isProfileLoading, setIsProfileLoading] = useState(true);
   const [isProfileSaving, setIsProfileSaving] = useState(false);
@@ -45,7 +46,8 @@ export default function SettingsPage() {
           name: data.data.name,
           email: data.data.email,
           role: data.data.role,
-          adminNumber: data.data.adminNumber
+          adminNumber: data.data.adminNumber,
+          currentFirmId: data.data.currentFirmId
         });
       }
     } catch (err) {
@@ -267,6 +269,30 @@ export default function SettingsPage() {
             </button>
           </div>
         </section>
+
+        {/* Notes Section - only for Narmata Construction since it is moved from bottom nav */}
+        {profile.currentFirmId === 'narmata' && (
+          <section className="card relative overflow-hidden border-violet-100 bg-gradient-to-br from-white via-white to-violet-50/80 lg:col-span-6 lg:p-7">
+            <div className="pointer-events-none absolute -right-10 -bottom-12 h-40 w-40 rounded-full bg-violet-100/70" />
+            <div className="relative flex h-full flex-col">
+              <div className="flex items-start gap-3.5">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-violet-100 text-violet-700 shadow-[inset_0_1px_0_rgba(255,255,255,.7)]"><FileText className="h-5 w-5" /></div>
+                <div>
+                  <p className="text-[11px] font-bold uppercase tracking-[.14em] text-violet-700/70">Workspace notebook</p>
+                  <h2 className="text-lg font-bold text-slate-900">Notes</h2>
+                  <p className="mt-1 text-sm leading-5 text-slate-500">Manage, create and search daily workspace notes.</p>
+                </div>
+              </div>
+              <button
+                onClick={() => router.push('/settings/notes')}
+                className="group relative mt-6 flex w-full items-center justify-between rounded-xl border border-violet-200 bg-white/90 px-4 py-3.5 text-left text-sm font-bold text-violet-700 shadow-sm transition-all hover:-translate-y-0.5 hover:border-violet-300 hover:bg-violet-50"
+              >
+                Go to Notes
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </button>
+            </div>
+          </section>
+        )}
 
         <section className="card space-y-5 md:hidden">
           <div className="flex items-center gap-3 border-b border-slate-100 pb-4">

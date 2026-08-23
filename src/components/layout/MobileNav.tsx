@@ -7,18 +7,25 @@ import {
   Users, 
   ClipboardCheck, 
   Menu,
-  FileText
+  FileText,
+  Receipt
 } from "lucide-react";
 
 export default function MobileNav({ firmId }: { firmId?: string | null }) {
   const pathname = usePathname();
   const isPatil = firmId === 'patil';
   
-  const links = [
+  const links = isPatil ? [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard, accent: "bg-indigo-600 shadow-indigo-200" },
     { name: "Attendance", href: "/attendance", icon: ClipboardCheck, accent: "bg-sky-600 shadow-sky-200" },
     { name: "Workers", href: "/workers", icon: Users, accent: "bg-emerald-600 shadow-emerald-200" },
     { name: "Notes", href: "/settings/notes", icon: FileText, accent: "bg-violet-600 shadow-violet-200" },
+    { name: "More", href: "/settings", icon: Menu, accent: "bg-amber-500 shadow-amber-200" },
+  ] : [
+    { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard, accent: "bg-indigo-600 shadow-indigo-200" },
+    { name: "Attendance", href: "/attendance", icon: ClipboardCheck, accent: "bg-sky-600 shadow-sky-200" },
+    { name: "Workers", href: "/workers", icon: Users, accent: "bg-emerald-600 shadow-emerald-200" },
+    { name: "Invoice", href: "/invoices", icon: Receipt, accent: "bg-violet-600 shadow-violet-200" },
     { name: "More", href: "/settings", icon: Menu, accent: "bg-amber-500 shadow-amber-200" },
   ];
 

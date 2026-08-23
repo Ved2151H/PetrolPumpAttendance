@@ -20,6 +20,7 @@ model Firm {
   workers   Worker[]
   auditLogs AuditLog[]
   notes     Note[]
+  invoices  Invoice[]
 }
 
 model Admin {
@@ -95,4 +96,40 @@ model Note {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   admin     Admin     @relation(fields: [adminId], references: [id])
+}
+
+model Invoice {
+  id             String        @id @default(cuid())
+  invoiceNumber  String
+  customerName   String
+  customerPhone  String?
+  customerAddress String?
+  date           DateTime      @default(now())
+  subtotal       Decimal       @db.Decimal(12, 2)
+  totalAmount    Decimal       @db.Decimal(12, 2)
+  firmId         String
+  firm           Firm          @relation(fields: [firmId], references: [id])
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  items          InvoiceItem[]
+
+  @@unique([firmId, invoiceNumber])
+  @@index([firmId])
+  @@index([invoiceNumber])
+  @@index([date])
+}
+
+model InvoiceItem {
+  id           String   @id @default(cuid())
+  invoiceId    String
+  invoice      Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  materialName String
+  quantity     Float
+  unit         String
+  price        Decimal  @db.Decimal(12, 2)
+  total        Decimal  @db.Decimal(12, 2)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([invoiceId])
 }
