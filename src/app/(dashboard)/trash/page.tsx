@@ -219,16 +219,14 @@ export default function TrashPage() {
           >
             Notes
           </button>
-          {firmId === "narmata" && (
-            <button
-              onClick={() => setActiveTab("invoices")}
-              className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
-                activeTab === "invoices" ? "bg-white text-indigo-700 shadow-sm" : "text-slate-500 hover:text-slate-700"
-              }`}
-            >
-              Invoices
-            </button>
-          )}
+          <button
+            onClick={() => setActiveTab("invoices")}
+            className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+              activeTab === "invoices" ? "bg-white text-indigo-700 shadow-sm" : "text-slate-500 hover:text-slate-700"
+            }`}
+          >
+            Invoices
+          </button>
         </div>
       </div>
 

@@ -33,10 +33,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ success: false, error: { message: 'Unauthorized - No firm selected' } }, { status: 401 });
     }
 
-    // Strict Tenant Isolation: Only Narmata Construction has access to invoices
-    if (firmId !== 'narmata') {
-      return NextResponse.json({ success: false, error: { message: 'Forbidden - Invoice management is only available for Narmata Construction' } }, { status: 403 });
-    }
+
 
     const invoices = await prisma.invoice.findMany({
       where: { firmId, deletedAt: null },
@@ -65,10 +62,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: { message: 'Unauthorized - No firm selected' } }, { status: 401 });
     }
 
-    // Strict Tenant Isolation: Only Narmata Construction has access to invoices
-    if (firmId !== 'narmata') {
-      return NextResponse.json({ success: false, error: { message: 'Forbidden - Invoice management is only available for Narmata Construction' } }, { status: 403 });
-    }
 
     const body = await req.json();
     const { customerName, customerPhone, customerAddress, items } = body;
@@ -115,7 +108,9 @@ export async function POST(req: NextRequest) {
           }
         }
         
-        const invoiceNumber = `NC-${nextNum}`;
+        // Firm-specific invoice number prefix
+        const prefix = firmId === 'narmata' ? 'NC' : firmId === 'patil' ? 'PP' : 'INV';
+        const invoiceNumber = `${prefix}-${nextNum}`;
 
         newInvoice = await prisma.invoice.create({
           data: {

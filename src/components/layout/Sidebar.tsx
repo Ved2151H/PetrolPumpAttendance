@@ -40,7 +40,7 @@ export default function Sidebar() {
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard, active: "bg-indigo-500/25 ring-indigo-300/25" },
     { name: "Attendance", href: "/attendance", icon: ClipboardCheck, active: "bg-sky-500/25 ring-sky-300/25" },
     { name: "Workers", href: "/workers", icon: Users, active: "bg-emerald-500/25 ring-emerald-300/25" },
-    { name: "Notes", href: "/settings/notes", icon: FileText, active: "bg-violet-500/25 ring-violet-300/25" }, 
+    { name: "Invoice", href: "/invoices", icon: Receipt, active: "bg-orange-500/25 ring-orange-300/25" },
     { name: "Trash", href: "/trash", icon: Trash2, active: "bg-rose-500/25 ring-rose-300/25" },
     { name: "Settings", href: "/settings", icon: Settings, active: "bg-amber-500/25 ring-amber-300/25" },
   ] : [

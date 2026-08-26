@@ -20,10 +20,18 @@ export default function NotesPage() {
   const [editingNote, setEditingNote] = useState<Note | null>(null);
   const [dateFilter, setDateFilter] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [firmId, setFirmId] = useState<string | null>(null);
 
   const fetchNotes = useCallback(async () => {
     setIsLoading(true);
     try {
+      // Fetch auth to get firmId for theming
+      const authRes = await fetch('/api/auth/me');
+      const authData = await authRes.json();
+      if (authData.success) {
+        setFirmId(authData.data.currentFirmId);
+      }
+
       let url = '/api/notes';
       if (dateFilter) {
         url += `?date=${dateFilter}`;
@@ -141,7 +149,7 @@ export default function NotesPage() {
             setEditingNote(null);
             setIsModalOpen(true);
           }}
-          className="btn-primary py-2 w-full md:w-auto flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-700 focus:ring-purple-500 shadow-md shadow-purple-200"
+          className={`btn-primary py-2 w-full md:w-auto flex items-center justify-center gap-2 shadow-md ${firmId === 'patil' ? 'bg-orange-600 hover:bg-orange-700 focus:ring-orange-500 shadow-orange-200' : 'bg-purple-600 hover:bg-purple-700 focus:ring-purple-500 shadow-purple-200'}`}
         >
           <Plus className="w-5 h-5" />
           Add Note
@@ -154,8 +162,8 @@ export default function NotesPage() {
         </div>
       ) : filteredNotes.length === 0 ? (
         <div className="bg-white rounded-2xl border border-slate-100 p-12 text-center shadow-sm">
-          <div className="w-16 h-16 bg-purple-50 rounded-full flex items-center justify-center mx-auto mb-4">
-            <CalendarIcon className="w-8 h-8 text-purple-600" />
+          <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 ${firmId === 'patil' ? 'bg-orange-50' : 'bg-purple-50'}`}>
+            <CalendarIcon className={`w-8 h-8 ${firmId === 'patil' ? 'text-orange-600' : 'text-purple-600'}`} />
           </div>
           <h3 className="text-lg font-bold text-slate-900 mb-2">No notes found</h3>
           <p className="text-slate-500 max-w-sm mx-auto mb-6">
@@ -169,7 +177,7 @@ export default function NotesPage() {
                 setEditingNote(null);
                 setIsModalOpen(true);
               }}
-              className="text-purple-600 font-medium hover:text-purple-700"
+              className={`font-medium ${firmId === 'patil' ? 'text-orange-600 hover:text-orange-700' : 'text-purple-600 hover:text-purple-700'}`}
             >
               + Create a new note
             </button>
@@ -181,6 +189,7 @@ export default function NotesPage() {
             <NoteCard 
               key={note.id} 
               note={note} 
+              firmId={firmId}
               onEdit={(note) => {
                 setEditingNote(note);
                 setIsModalOpen(true);

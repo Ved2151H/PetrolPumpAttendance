@@ -22,7 +22,9 @@ interface Invoice {
   subtotal: number;
   totalAmount: number;
   items: InvoiceItem[];
+  firmId: string;
   firm?: {
+    name?: string | null;
     companyAddress?: string | null;
     companyEmail?: string | null;
     supportContact?: string | null;
@@ -142,6 +144,15 @@ export default function PublicInvoicePage() {
     );
   }
 
+  // Normalize firm name for display (handles legacy "Narmata" typo in database)
+  const getDisplayFirmName = (name?: string | null): string => {
+    if (!name) return "";
+    let display = name;
+    if (display.includes("Narmata")) display = display.replace("Narmata", "Namrata");
+    if (!display.endsWith("Private Limited")) display += " Private Limited";
+    return display;
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 py-12">
       {/* Print styles */}
@@ -171,7 +182,7 @@ export default function PublicInvoicePage() {
         <div className="flex justify-end mb-4 no-print">
           <button
             onClick={handleExportPDF}
-            className="flex items-center gap-1.5 py-2 px-4 bg-violet-600 hover:bg-violet-700 text-xs font-bold text-white rounded-xl shadow-md transition-colors cursor-pointer"
+            className={`flex items-center gap-1.5 py-2 px-4 ${invoice.firmId === 'patil' ? 'bg-orange-600 hover:bg-orange-700' : 'bg-violet-600 hover:bg-violet-700'} text-xs font-bold text-white rounded-xl shadow-md transition-colors cursor-pointer`}
           >
             <Download className="w-3.5 h-3.5" /> Download PDF
           </button>
@@ -181,7 +192,7 @@ export default function PublicInvoicePage() {
             {/* Invoice Header */}
             <div className="flex flex-col justify-between gap-4 border-b-2 border-slate-100 pb-5 sm:flex-row sm:items-start">
               <div>
-                <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">NAMRATA CONSTRUCTION PRIVATE LIMITED</h2>
+                <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">{getDisplayFirmName(invoice.firm?.name)}</h2>
                 <div className="text-xs text-slate-400 font-semibold mt-2.5 space-y-1">
                   <p className="flex items-center gap-1.5">
                     <MapPin className="w-3.5 h-3.5 text-slate-400" />
@@ -194,7 +205,7 @@ export default function PublicInvoicePage() {
                 </div>
               </div>
               <div className="text-left sm:text-right shrink-0">
-                <span className="inline-block px-3 py-1 bg-violet-50 text-violet-700 text-xs font-extrabold rounded-lg tracking-wide uppercase mb-2">INVOICE</span>
+                <span className={`inline-block px-3 py-1 text-xs font-extrabold rounded-lg tracking-wide uppercase mb-2 ${invoice.firmId === 'patil' ? 'bg-orange-50 text-orange-700' : 'bg-violet-50 text-violet-700'}`}>INVOICE</span>
                 <p className="text-sm font-extrabold text-slate-900"># {invoice.invoiceNumber}</p>
                 <p className="text-xs text-slate-400 font-semibold mt-1">Date: {new Date(invoice.date).toLocaleDateString("en-IN", { day: 'numeric', month: 'short', year: 'numeric' })}</p>
               </div>

@@ -15,16 +15,17 @@ interface Note {
 
 interface NoteCardProps {
   note: Note;
+  firmId?: string | null;
   onEdit: (note: Note) => void;
   onDelete: (id: string) => void;
 }
 
-export default function NoteCard({ note, onEdit, onDelete }: NoteCardProps) {
+export default function NoteCard({ note, firmId, onEdit, onDelete }: NoteCardProps) {
   return (
-    <div className="bg-white rounded-2xl shadow-sm border-l-4 border-l-purple-600 border-y border-r border-y-slate-200 border-r-slate-200 p-5 hover:shadow-md hover:-translate-y-0.5 transition-all flex flex-col h-full relative group">
+    <div className={`bg-white rounded-2xl shadow-sm border-l-4 ${firmId === 'patil' ? 'border-l-orange-600' : 'border-l-purple-600'} border-y border-r border-y-slate-200 border-r-slate-200 p-5 hover:shadow-md hover:-translate-y-0.5 transition-all flex flex-col h-full relative group`}>
       <div className="flex justify-between items-start mb-3">
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5 text-purple-700 font-medium text-xs bg-purple-50 px-2.5 py-1 rounded-full">
+          <div className={`flex items-center gap-1.5 font-medium text-xs px-2.5 py-1 rounded-full ${firmId === 'patil' ? 'text-orange-700 bg-orange-50' : 'text-purple-700 bg-purple-50'}`}>
             <Calendar className="w-3.5 h-3.5" />
             <span>{format(new Date(note.noteDate), "dd MMM yyyy")}</span>
           </div>

@@ -22,10 +22,7 @@ export async function PATCH(
       return NextResponse.json({ success: false, error: { message: 'Unauthorized - No firm selected' } }, { status: 401 });
     }
 
-    // Strict Tenant Isolation: Only Narmata Construction has access to invoices
-    if (firmId !== 'narmata') {
-      return NextResponse.json({ success: false, error: { message: 'Forbidden - Invoice management is only available for Narmata Construction' } }, { status: 403 });
-    }
+
 
     const invoice = await prisma.invoice.findUnique({
       where: { id }

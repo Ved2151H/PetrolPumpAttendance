@@ -39,7 +39,9 @@ interface Invoice {
   subtotal: number;
   totalAmount: number;
   items: InvoiceItem[];
+  firmId: string;
   firm?: {
+    name?: string | null;
     companyAddress?: string | null;
     companyEmail?: string | null;
     supportContact?: string | null;
@@ -50,6 +52,7 @@ export default function InvoicesPage() {
   const router = useRouter();
   const [isAdmin, setIsAdmin] = useState(false);
   const [firmId, setFirmId] = useState<string | null>(null);
+  const [firmName, setFirmName] = useState<string>("");
   const [isAuthLoading, setIsAuthLoading] = useState(true);
 
   // Invoices state
@@ -89,12 +92,7 @@ export default function InvoicesPage() {
         if (data.success) {
           setFirmId(data.data.currentFirmId);
           setIsAdmin(data.data.role === "ADMIN" || data.data.role === "SUPER_ADMIN");
-          
-          // Strict Tenant Isolation check: redirect immediately if not Narmata
-          if (data.data.currentFirmId !== "narmata") {
-            router.push("/dashboard");
-            return;
-          }
+          setFirmName(data.data.currentFirmName || "");
         }
       } catch (err) {
         console.error("Auth check failed:", err);
@@ -108,7 +106,7 @@ export default function InvoicesPage() {
 
   // 2. Load Invoices
   useEffect(() => {
-    if (firmId === "narmata") {
+    if (firmId) {
       fetchInvoices();
     }
   }, [firmId]);
@@ -166,6 +164,15 @@ export default function InvoicesPage() {
   };
 
   const { subtotal, totalAmount } = calculateTotals();
+
+  // Normalize firm name for display (handles legacy "Narmata" typo in database)
+  const getDisplayFirmName = (name?: string | null): string => {
+    if (!name) return firmName || "";
+    let display = name;
+    if (display.includes("Narmata")) display = display.replace("Narmata", "Namrata");
+    if (!display.endsWith("Private Limited")) display += " Private Limited";
+    return display;
+  };
 
   const handleCreateSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -330,7 +337,7 @@ export default function InvoicesPage() {
     const origin = typeof window !== 'undefined' ? window.location.origin : '';
     const shareUrl = `${origin}/invoices/share/${invoice.id}`;
     const lines = [
-      `*NAMRATA CONSTRUCTION*`,
+      `*${firmName || ""}*`,
       `*Invoice:* ${invoice.invoiceNumber}`,
       `*Date:* ${new Date(invoice.date).toLocaleDateString("en-IN")}`,
       `*Customer:* ${invoice.customerName}`,
@@ -435,25 +442,23 @@ export default function InvoicesPage() {
     );
   }
 
-  if (firmId !== "narmata") {
-    return null; // Tenant protection in checkAuth handles redirection
-  }
+
 
   return (
     <div className="relative mx-auto max-w-6xl space-y-6 pb-4 sm:space-y-8">
       {/* 6. Header */}
-      <header className="relative overflow-hidden rounded-3xl border border-slate-200/80 bg-gradient-to-br from-white via-white to-violet-50/70 px-5 py-6 shadow-[0_18px_45px_-35px_rgba(30,48,93,0.55)] sm:px-7 sm:py-7">
-        <div className="pointer-events-none absolute -right-12 -top-20 h-48 w-48 rounded-full bg-violet-200/30 blur-3xl" />
+      <header className={`relative overflow-hidden rounded-3xl border border-slate-200/80 bg-gradient-to-br from-white via-white ${firmId === 'patil' ? 'to-orange-50/70' : 'to-violet-50/70'} px-5 py-6 shadow-[0_18px_45px_-35px_rgba(30,48,93,0.55)] sm:px-7 sm:py-7`}>
+        <div className={`pointer-events-none absolute -right-12 -top-20 h-48 w-48 rounded-full ${firmId === 'patil' ? 'bg-orange-200/30' : 'bg-violet-200/30'} blur-3xl`} />
         <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="mb-2 text-[11px] font-bold uppercase tracking-[.18em] text-violet-600">Finance Workspace</p>
+            <p className={`mb-2 text-[11px] font-bold uppercase tracking-[.18em] ${firmId === 'patil' ? 'text-orange-600' : 'text-violet-600'}`}>Finance Workspace</p>
             <h1 className="text-3xl font-bold text-slate-900 sm:text-[2rem]">Invoice Management</h1>
-            <p className="mt-2 max-w-xl text-sm leading-6 text-slate-500">Create, review, export and share invoices for Narmata Construction customers.</p>
+            <p className="mt-2 max-w-xl text-sm leading-6 text-slate-500">Create, review, export and share invoices for {firmName} customers.</p>
           </div>
           <button
             onClick={() => setIsCreateOpen(true)}
-            className="btn-primary gap-2 w-full sm:w-auto shrink-0 cursor-pointer shadow-violet-950/20"
-            style={{ background: 'linear-gradient(135deg, #7c3aed, #6d28d9)' }}
+            className={`btn-primary gap-2 w-full sm:w-auto shrink-0 cursor-pointer ${firmId === 'patil' ? 'shadow-orange-950/20' : 'shadow-violet-950/20'}`}
+            style={{ background: firmId === 'patil' ? 'linear-gradient(135deg, #f97316, #ea580c)' : 'linear-gradient(135deg, #7c3aed, #6d28d9)' }}
           >
             <Plus className="w-5 h-5" />
             Create Invoice
@@ -501,13 +506,13 @@ export default function InvoicesPage() {
         
         {isLoading ? (
           <div className="flex h-48 items-center justify-center">
-            <div className="h-6 w-6 animate-spin rounded-full border-3 border-violet-600 border-t-transparent" />
+            <div className={`h-6 w-6 animate-spin rounded-full border-3 border-t-transparent ${firmId === 'patil' ? 'border-orange-600' : 'border-violet-600'}`} />
           </div>
         ) : filteredInvoices.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-64 text-center p-6">
             <Receipt className="w-12 h-12 text-slate-300 mb-3" />
             <h3 className="text-base font-bold text-slate-700">No invoices recorded</h3>
-            <p className="text-xs text-slate-400 max-w-xs mt-1">Add your first invoice to Narmata Construction database using the create button above.</p>
+            <p className="text-xs text-slate-400 max-w-xs mt-1">Add your first invoice using the create button above.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -524,7 +529,7 @@ export default function InvoicesPage() {
               <tbody className="divide-y divide-slate-100/80">
                 {filteredInvoices.map((invoice) => (
                   <tr key={invoice.id} className="hover:bg-slate-50/50 transition-colors">
-                    <td className="p-4 text-sm font-bold text-violet-700">{invoice.invoiceNumber}</td>
+                    <td className={`p-4 text-sm font-bold ${firmId === 'patil' ? 'text-orange-700' : 'text-violet-700'}`}>{invoice.invoiceNumber}</td>
                     <td className="p-4">
                       <div className="font-bold text-slate-800 text-sm">{invoice.customerName}</div>
                       {invoice.customerPhone && (
@@ -538,7 +543,7 @@ export default function InvoicesPage() {
                     <td className="p-4 text-right flex items-center justify-end gap-2.5">
                       <button
                         onClick={() => setSelectedInvoice(invoice)}
-                        className="p-2 border border-slate-200 rounded-lg hover:border-violet-300 hover:bg-violet-50 text-slate-600 hover:text-violet-700 transition-colors cursor-pointer"
+                        className={`p-2 border border-slate-200 rounded-lg transition-colors cursor-pointer text-slate-600 ${firmId === 'patil' ? 'hover:border-orange-300 hover:bg-orange-50 hover:text-orange-700' : 'hover:border-violet-300 hover:bg-violet-50 hover:text-violet-700'}`}
                         title="View & Export"
                       >
                         <FileText className="w-4 h-4" />
@@ -572,7 +577,7 @@ export default function InvoicesPage() {
           <div className="w-full max-w-3xl bg-white p-4 sm:p-7 shadow-2xl h-full sm:h-auto sm:max-h-[90vh] sm:rounded-3xl border border-white/70 flex flex-col rounded-none">
             <div className="mb-6 flex items-start justify-between gap-4 shrink-0">
               <div className="flex items-center gap-3">
-                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-100 text-violet-700">
+                <span className={`flex h-10 w-10 items-center justify-center rounded-xl ${firmId === 'patil' ? 'bg-orange-100 text-orange-700' : 'bg-violet-100 text-violet-700'}`}>
                   <Receipt className="h-5 w-5" />
                 </span>
                 <div>
@@ -735,7 +740,7 @@ export default function InvoicesPage() {
                   type="submit"
                   disabled={isSubmitting}
                   className="flex-1 btn-primary disabled:opacity-70 justify-center text-center font-bold"
-                  style={{ background: 'linear-gradient(135deg, #7c3aed, #6d28d9)' }}
+                  style={{ background: firmId === 'patil' ? 'linear-gradient(135deg, #f97316, #ea580c)' : 'linear-gradient(135deg, #7c3aed, #6d28d9)' }}
                 >
                   {isSubmitting ? "Generating..." : "Generate & Save Invoice"}
                 </button>
@@ -751,7 +756,7 @@ export default function InvoicesPage() {
           <div className="w-full max-w-3xl bg-white p-4 sm:p-7 shadow-2xl h-full sm:h-auto sm:max-h-[95vh] sm:rounded-3xl border border-white/70 flex flex-col rounded-none">
             <div className="mb-4 flex items-center justify-between border-b border-slate-100 pb-4 shrink-0">
               <div className="flex items-center gap-3">
-                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-100 text-violet-700">
+                <span className={`flex h-10 w-10 items-center justify-center rounded-xl ${firmId === 'patil' ? 'bg-orange-100 text-orange-700' : 'bg-violet-100 text-violet-700'}`}>
                   <FileText className="h-5 w-5" />
                 </span>
                 <div>
@@ -771,7 +776,7 @@ export default function InvoicesPage() {
             <div className="flex gap-2.5 mb-5 shrink-0">
               <button
                 onClick={() => handleShare(selectedInvoice)}
-                className="flex flex-1 items-center justify-center gap-2 py-2.5 px-3 bg-violet-600 hover:bg-violet-700 text-xs font-bold text-white rounded-xl shadow-md transition-colors cursor-pointer"
+                className={`flex flex-1 items-center justify-center gap-2 py-2.5 px-3 ${firmId === 'patil' ? 'bg-orange-600 hover:bg-orange-700' : 'bg-violet-600 hover:bg-violet-700'} text-xs font-bold text-white rounded-xl shadow-md transition-colors cursor-pointer`}
               >
                 <Share2 className="w-4 h-4" /> Share
               </button>
@@ -808,7 +813,7 @@ export default function InvoicesPage() {
                 {/* Invoice Header */}
                 <div className="flex flex-col justify-between gap-4 border-b-2 border-slate-100 pb-5 sm:flex-row sm:items-start">
                   <div>
-                    <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">NAMRATA CONSTRUCTION PRIVATE LIMITED</h2>
+                    <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">{getDisplayFirmName(selectedInvoice.firm?.name)}</h2>
                     <div className="text-[11px] text-slate-500 mt-2.5 space-y-1">
                       <p className="flex items-center gap-1.5">
                         <MapPin className="w-3.5 h-3.5 text-slate-400" /> 
@@ -821,7 +826,7 @@ export default function InvoicesPage() {
                     </div>
                   </div>
                   <div className="text-left sm:text-right shrink-0">
-                    <span className="inline-block bg-violet-50 border border-violet-100 rounded-lg px-2.5 py-1 text-xs font-bold text-violet-700 mb-2">INVOICE</span>
+                    <span className={`inline-block border rounded-lg px-2.5 py-1 text-xs font-bold mb-2 ${selectedInvoice.firmId === 'patil' ? 'bg-orange-50 border-orange-100 text-orange-700' : 'bg-violet-50 border-violet-100 text-violet-700'}`}>INVOICE</span>
                     <h4 className="text-lg font-black text-slate-800">{selectedInvoice.invoiceNumber}</h4>
                     <p className="text-[11px] text-slate-500 mt-1.5 flex items-center gap-1.5 sm:justify-end">
                       <Calendar className="w-3.5 h-3.5 text-slate-400" /> 
