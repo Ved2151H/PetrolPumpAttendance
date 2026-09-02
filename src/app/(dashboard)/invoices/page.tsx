@@ -663,10 +663,9 @@ export default function InvoicesPage() {
                     <div className="w-full sm:w-20">
                       <label className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Qty *</label>
                       <input
-                        type="number"
-                        step="any"
+                        type="text"
+                        inputMode="text"
                         required
-                        min="0"
                         value={item.quantity === 0 ? 0 : (item.quantity || "")}
                         onChange={(e) => handleItemChange(index, "quantity", e.target.value)}
                         className="input-field py-2 text-sm"
