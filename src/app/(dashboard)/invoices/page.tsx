@@ -23,7 +23,7 @@ import { useRouter } from "next/navigation";
 interface InvoiceItem {
   id?: string;
   materialName: string;
-  quantity: number;
+  quantity: number | string;
   unit: string;
   price: number;
   total: number;
@@ -142,11 +142,23 @@ export default function InvoicesPage() {
     const newItems = [...items];
     const item = newItems[index];
 
-    if (field === "quantity" || field === "price") {
+    if (field === "quantity") {
+      let calcQty = 0;
+      if (typeof value === "string" && value.toUpperCase() === "N/A") {
+        (item as any)[field] = "N/A";
+      } else {
+        (item as any)[field] = value;
+        calcQty = parseFloat(value) || 0;
+      }
+      item.total = calcQty === 0 ? item.price : Math.round(calcQty * item.price * 100) / 100;
+    } else if (field === "price") {
       const numericVal = parseFloat(value) || 0;
       (item as any)[field] = numericVal;
-      // Precision calculation to prevent JS floating point errors
-      item.total = Math.round(item.quantity * item.price * 100) / 100;
+      let calcQty = 0;
+      if (item.quantity !== "N/A" && item.quantity !== "") {
+        calcQty = parseFloat(item.quantity as string) || 0;
+      }
+      item.total = calcQty === 0 ? numericVal : Math.round(calcQty * numericVal * 100) / 100;
     } else {
       (item as any)[field] = value;
     }
@@ -183,7 +195,11 @@ export default function InvoicesPage() {
       return;
     }
 
-    const invalidItem = items.some(item => !item.materialName.trim() || item.quantity < 0 || item.price <= 0);
+    const invalidItem = items.some(item => {
+      let q = 0;
+      if (item.quantity !== "N/A" && item.quantity !== "") q = parseFloat(item.quantity as string) || 0;
+      return !item.materialName.trim() || q < 0 || item.price <= 0;
+    });
     if (invalidItem) {
       setErrorMsg("All items must have a name, quantity 0 or greater, and rate greater than 0.");
       return;
@@ -666,7 +682,7 @@ export default function InvoicesPage() {
                         type="text"
                         inputMode="text"
                         required
-                        value={item.quantity === 0 ? 0 : (item.quantity || "")}
+                        value={(item.quantity === 0 || item.quantity === "0") ? "N/A" : (item.quantity === "" ? "" : item.quantity)}
                         onChange={(e) => handleItemChange(index, "quantity", e.target.value)}
                         className="input-field py-2 text-sm"
                       />
@@ -867,7 +883,7 @@ export default function InvoicesPage() {
                       {selectedInvoice.items.map((item, idx) => (
                         <tr key={idx} className="text-slate-700">
                           <td className="p-3 font-bold text-slate-900">{item.materialName}</td>
-                          <td className="p-3 text-right">{item.quantity === 0 ? "N/A" : item.quantity}</td>
+                          <td className="p-3 text-right">{(item.quantity === 0 || item.quantity === "N/A") ? "N/A" : item.quantity}</td>
                           <td className="p-3">{item.unit}</td>
                           <td className="p-3 text-right">₹{parseFloat(item.price.toString()).toFixed(2)}</td>
                           <td className="p-3 text-right font-bold text-slate-900">₹{parseFloat(item.total.toString()).toFixed(2)}</td>

@@ -73,9 +73,12 @@ export async function POST(req: NextRequest) {
     // Server-side calculation to ensure security and prevent floating point errors
     let calculatedSubtotal = 0;
     const validatedItems = items.map((item: any) => {
-      const quantity = parseFloat(item.quantity) || 0;
+      let quantity = 0;
+      if (item.quantity !== "N/A" && item.quantity !== "") {
+        quantity = parseFloat(item.quantity) || 0;
+      }
       const price = parseFloat(item.price) || 0;
-      const total = parseFloat((quantity * price).toFixed(2));
+      const total = quantity === 0 ? price : parseFloat((quantity * price).toFixed(2));
       calculatedSubtotal += total;
 
       return {
