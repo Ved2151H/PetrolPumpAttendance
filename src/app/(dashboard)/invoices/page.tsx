@@ -183,9 +183,9 @@ export default function InvoicesPage() {
       return;
     }
 
-    const invalidItem = items.some(item => !item.materialName.trim() || item.quantity <= 0 || item.price <= 0);
+    const invalidItem = items.some(item => !item.materialName.trim() || item.quantity < 0 || item.price <= 0);
     if (invalidItem) {
-      setErrorMsg("All items must have a name, quantity greater than 0, and rate greater than 0.");
+      setErrorMsg("All items must have a name, quantity 0 or greater, and rate greater than 0.");
       return;
     }
 
@@ -666,8 +666,8 @@ export default function InvoicesPage() {
                         type="number"
                         step="any"
                         required
-                        min="0.01"
-                        value={item.quantity || ""}
+                        min="0"
+                        value={item.quantity === 0 ? 0 : (item.quantity || "")}
                         onChange={(e) => handleItemChange(index, "quantity", e.target.value)}
                         className="input-field py-2 text-sm"
                       />
@@ -868,7 +868,7 @@ export default function InvoicesPage() {
                       {selectedInvoice.items.map((item, idx) => (
                         <tr key={idx} className="text-slate-700">
                           <td className="p-3 font-bold text-slate-900">{item.materialName}</td>
-                          <td className="p-3 text-right">{item.quantity}</td>
+                          <td className="p-3 text-right">{item.quantity === 0 ? "N/A" : item.quantity}</td>
                           <td className="p-3">{item.unit}</td>
                           <td className="p-3 text-right">₹{parseFloat(item.price.toString()).toFixed(2)}</td>
                           <td className="p-3 text-right font-bold text-slate-900">₹{parseFloat(item.total.toString()).toFixed(2)}</td>
