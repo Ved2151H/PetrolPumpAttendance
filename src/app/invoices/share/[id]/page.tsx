@@ -237,7 +237,7 @@ export default function PublicInvoicePage() {
                   {invoice.items.map((item, idx) => (
                     <tr key={idx} className="text-slate-700">
                       <td className="p-3 font-bold text-slate-900">{item.materialName}</td>
-                      <td className="p-3 text-right">{item.quantity === 0 ? "N/A" : item.quantity}</td>
+                      <td className="p-3 text-right">{(item.quantity === 0 || (item.quantity as any) === "N/A") ? "N/A" : item.quantity}</td>
                       <td className="p-3">{item.unit}</td>
                       <td className="p-3 text-right">₹{parseFloat(item.price.toString()).toFixed(2)}</td>
                       <td className="p-3 text-right font-bold text-slate-900">₹{parseFloat(item.total.toString()).toFixed(2)}</td>
